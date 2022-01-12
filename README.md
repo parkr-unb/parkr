@@ -1,6 +1,6 @@
 # parkr
 
-UNB Mobile Parking Management System
+UNB Parking Management System
 
 ## Getting Started
 
