@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:parkr/views/loginpage.dart';
+import 'package:parkr/views/signuppage.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -10,7 +12,6 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,8 +22,22 @@ class _WelcomePageState extends State<WelcomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextButton(onPressed: (){}, child: const Text('Login', style: TextStyle(fontSize: 20.0))),
-            TextButton(onPressed: (){}, child: const Text('Sign Up', style: TextStyle(fontSize: 20.0)))
+            ElevatedButton(
+                child: const Text('Login', style: TextStyle(fontSize: 20.0)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                }),
+            ElevatedButton(
+                child: const Text('Sign Up', style: TextStyle(fontSize: 20.0)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignupPage()),
+                  );
+                })
           ],
         ),
       ),
