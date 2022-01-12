@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parkr/views/loginpage.dart';
-import 'package:parkr/views/signuppage.dart';
+import 'package:parkr/views/registerpage.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -31,11 +31,11 @@ class _WelcomePageState extends State<WelcomePage> {
                   );
                 }),
             ElevatedButton(
-                child: const Text('Sign Up', style: TextStyle(fontSize: 20.0)),
+                child: const Text('Register', style: TextStyle(fontSize: 20.0)),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignupPage()),
+                    MaterialPageRoute(builder: (context) => const RegisterPage()),
                   );
                 })
           ],

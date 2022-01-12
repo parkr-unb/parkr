@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   static const String title = 'replace with one from AWS Cognito';
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(SignupPage.title),
+        title: const Text(RegisterPage.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextButton(onPressed: (){}, child: const Text('Signup', style: TextStyle(fontSize: 20.0)))
+            TextButton(onPressed: (){}, child: const Text('Register', style: TextStyle(fontSize: 20.0)))
           ],
         ),
       ),
