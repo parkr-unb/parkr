@@ -1,0 +1,26 @@
+{
+  "trigger": true,
+  "modules": [
+    "verification-link"
+  ],
+  "parentResource": "parkr4f818740",
+  "functionName": "parkr4f818740CustomMessage",
+  "resourceName": "parkr4f818740CustomMessage",
+  "parentStack": "auth",
+  "triggerEnvs": [
+    {
+      "key": "RESOURCENAME",
+      "value": "resourceName"
+    }
+  ],
+  "triggerDir": "/usr/lib/node_modules/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/CustomMessage",
+  "triggerTemplate": "CustomMessage.json.ejs",
+  "triggerEventPath": "CustomMessage.event.json",
+  "roleName": "parkr4f818740CustomMessage",
+  "skipEdit": true,
+  "REDIRECTURL": "",
+  "EMAILSUBJECT": "Parkr Officer Registration Confirmation",
+  "EMAILMESSAGE": "Thank you for registering with Parkr. Please verify you email address by clicking the following link",
+  "RESOURCENAME": "resourceName",
+  "enableCors": false
+}

@@ -9,7 +9,36 @@
       "UnauthRoleName": "amplify-parkr-dev-153337-unauthRole",
       "StackName": "amplify-parkr-dev-153337",
       "StackId": "arn:aws:cloudformation:us-east-2:127065734148:stack/amplify-parkr-dev-153337/8c4cf370-73de-11ec-8c63-0a7c82a51ada",
-      "AmplifyAppId": "d2w2g62qya6s3x"
+      "AmplifyAppId": "d2w2g62qya6s3x",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-parkr-dev-153337-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "parkr51dc0cfa": {},
+        "parkr4f818740": {}
+      },
+      "function": {
+        "parkr51dc0cfaDefineAuthChallenge": {
+          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
+          "s3Key": "amplify-builds/parkr51dc0cfaDefineAuthChallenge-424a4832356c47454e31-build.zip"
+        },
+        "parkr51dc0cfaCreateAuthChallenge": {
+          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
+          "s3Key": "amplify-builds/parkr51dc0cfaCreateAuthChallenge-69702f62325952703434-build.zip"
+        },
+        "parkr4f818740CustomMessage": {
+          "REDIRECTURL": "",
+          "EMAILSUBJECT": "Parkr Officer Registration Confirmation",
+          "EMAILMESSAGE": "Thank you for registering with Parkr. Please verify you email address by clicking the following link",
+          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
+          "s3Key": "amplify-builds/parkr4f818740CustomMessage-564b4d52715637643844-build.zip"
+        },
+        "parkr4f818740PreSignup": {
+          "DOMAINALLOWLIST": "unb.ca",
+          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
+          "s3Key": "amplify-builds/parkr4f818740PreSignup-6148764c666744557375-build.zip"
+        }
+      }
     }
   }
 }
