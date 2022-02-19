@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:parkr/views/loginpage.dart';
+import 'package:parkr/views/platepage.dart';
 import 'package:parkr/views/welcomepage.dart';
 
 class ParkrApp extends StatelessWidget {
@@ -22,6 +24,9 @@ class ParkrApp extends StatelessWidget {
         primarySwatch: Colors.red,
       ),
       home: const WelcomePage(),
+      routes: {
+        "plate": (BuildContext PlateContext) => PlatePage()
+      },
     );
   }
 }

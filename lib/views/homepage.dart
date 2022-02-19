@@ -50,11 +50,10 @@ class _HomePageState extends State<HomePage> {
                   // STUB
                   // examine(plate_ctrl.text);
                   Registration reg = Registration.basic();
-                  if(false)
+                  if(true)
                   {
-                    //const plate_page = PlatePage(registration: reg);
-                    //Navigator.push(context,
-                    //    MaterialPageRoute(builder: (context) => plate_page));
+                    const plate_page = PlatePage();
+                    Navigator.pushNamed(context, "plate", arguments: {"reg": reg});
                   }
                   else
                   {
