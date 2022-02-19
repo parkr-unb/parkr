@@ -1,24 +1,12 @@
 export type AmplifyDependentResourcesAttributes = {
     "function": {
-        "parkr51dc0cfaDefineAuthChallenge": {
+        "parkr2c0d94f5CustomMessage": {
             "Name": "string",
             "Arn": "string",
             "LambdaExecutionRole": "string",
             "Region": "string"
         },
-        "parkr51dc0cfaCreateAuthChallenge": {
-            "Name": "string",
-            "Arn": "string",
-            "LambdaExecutionRole": "string",
-            "Region": "string"
-        },
-        "parkr4f818740CustomMessage": {
-            "Name": "string",
-            "Arn": "string",
-            "LambdaExecutionRole": "string",
-            "Region": "string"
-        },
-        "parkr4f818740PreSignup": {
+        "parkr2c0d94f5PreSignup": {
             "Name": "string",
             "Arn": "string",
             "LambdaExecutionRole": "string",
@@ -26,7 +14,7 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "auth": {
-        "parkr4f818740": {
+        "parkr2c0d94f5": {
             "IdentityPoolId": "string",
             "IdentityPoolName": "string",
             "UserPoolId": "string",

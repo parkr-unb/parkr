@@ -1,42 +1,33 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-parkr-dev-153337-authRole",
-      "UnauthRoleArn": "arn:aws:iam::127065734148:role/amplify-parkr-dev-153337-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::127065734148:role/amplify-parkr-dev-153337-authRole",
-      "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-parkr-dev-153337-deployment",
-      "UnauthRoleName": "amplify-parkr-dev-153337-unauthRole",
-      "StackName": "amplify-parkr-dev-153337",
-      "StackId": "arn:aws:cloudformation:us-east-2:127065734148:stack/amplify-parkr-dev-153337/8c4cf370-73de-11ec-8c63-0a7c82a51ada",
-      "AmplifyAppId": "d2w2g62qya6s3x",
-      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-parkr-dev-153337-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+      "AuthRoleName": "amplify-parkr-dev-114942-authRole",
+      "UnauthRoleArn": "arn:aws:iam::127065734148:role/amplify-parkr-dev-114942-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::127065734148:role/amplify-parkr-dev-114942-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-parkr-dev-114942-deployment",
+      "UnauthRoleName": "amplify-parkr-dev-114942-unauthRole",
+      "StackName": "amplify-parkr-dev-114942",
+      "StackId": "arn:aws:cloudformation:us-east-1:127065734148:stack/amplify-parkr-dev-114942/903a6ff0-919b-11ec-9a24-124fe3f33699",
+      "AmplifyAppId": "d14sa912h5ccyx",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-parkr-dev-114942-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
-        "parkr51dc0cfa": {},
-        "parkr4f818740": {}
+        "parkr2c0d94f5": {}
       },
       "function": {
-        "parkr51dc0cfaDefineAuthChallenge": {
-          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
-          "s3Key": "amplify-builds/parkr51dc0cfaDefineAuthChallenge-424a4832356c47454e31-build.zip"
-        },
-        "parkr51dc0cfaCreateAuthChallenge": {
-          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
-          "s3Key": "amplify-builds/parkr51dc0cfaCreateAuthChallenge-69702f62325952703434-build.zip"
-        },
-        "parkr4f818740CustomMessage": {
+        "parkr2c0d94f5CustomMessage": {
           "REDIRECTURL": "",
-          "EMAILSUBJECT": "Parkr Officer Registration Confirmation",
-          "EMAILMESSAGE": "Thank you for registering with Parkr. Please verify you email address by clicking the following link",
-          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
-          "s3Key": "amplify-builds/parkr4f818740CustomMessage-564b4d52715637643844-build.zip"
+          "EMAILSUBJECT": "Verify your Parkr Account",
+          "EMAILMESSAGE": "Thank you for joining Parkr. Enter the following confirmation code in the Parkr app",
+          "deploymentBucketName": "amplify-parkr-dev-114942-deployment",
+          "s3Key": "amplify-builds/parkr2c0d94f5CustomMessage-47686248364f564f4d2b-build.zip"
         },
-        "parkr4f818740PreSignup": {
+        "parkr2c0d94f5PreSignup": {
           "DOMAINALLOWLIST": "unb.ca",
-          "deploymentBucketName": "amplify-parkr-dev-153337-deployment",
-          "s3Key": "amplify-builds/parkr4f818740PreSignup-6148764c666744557375-build.zip"
+          "deploymentBucketName": "amplify-parkr-dev-114942-deployment",
+          "s3Key": "amplify-builds/parkr2c0d94f5PreSignup-6c7171347875456d5665-build.zip"
         }
       }
     }

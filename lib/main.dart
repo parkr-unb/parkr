@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:amplify_flutter/amplify.dart';
-import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-//import 'package:amplify_authenticator/amplify_authenticator.dart';
+import 'package:amplify_authenticator/amplify_authenticator.dart';
 
 import 'package:parkr/amplifyconfiguration.dart';
 import 'package:parkr/views/welcomepage.dart';
@@ -23,12 +22,13 @@ class _ParkrAppState extends State<ParkrApp> {
   }
 
   Future<void> _configureAmplify() async {
+    print('configuring');
     // Add Pinpoint and Cognito Plugins, or any other plugins you want to use
     // Add all plugins before configuring Amplify
     // Amplify.configure() may only be called once
     try {
       await Amplify.addPlugins(
-          [AmplifyAnalyticsPinpoint(), AmplifyAuthCognito()]);
+          [AmplifyAuthCognito()]);
       await Amplify.configure(amplifyconfig); // from amplifyconfiguration.dart
     } on Exception catch (e) {
       print(
@@ -38,10 +38,21 @@ class _ParkrAppState extends State<ParkrApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Parkr',
-      theme: ThemeData(primarySwatch: Colors.red),
-      home: Scaffold(body: Container()),
+    final authenticated = Authenticator(
+      child: const Scaffold(
+        body: Center(child: Text('You are logged in!')),
+      ),
+    );
+
+    return Authenticator(
+      child: MaterialApp(
+        title: 'Parkr',
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.system,
+        builder: Authenticator.builder(),
+        home: authenticated,
+      ),
     );
   } // build
 }

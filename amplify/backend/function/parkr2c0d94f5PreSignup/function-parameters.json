@@ -3,15 +3,15 @@
   "modules": [
     "email-filter-allowlist"
   ],
-  "parentResource": "parkr4f818740",
-  "functionName": "parkr4f818740PreSignup",
-  "resourceName": "parkr4f818740PreSignup",
+  "parentResource": "parkr2c0d94f5",
+  "functionName": "parkr2c0d94f5PreSignup",
+  "resourceName": "parkr2c0d94f5PreSignup",
   "parentStack": "auth",
   "triggerEnvs": [],
   "triggerDir": "/usr/lib/node_modules/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/PreSignup",
   "triggerTemplate": "PreSignup.json.ejs",
   "triggerEventPath": "PreSignup.event.json",
-  "roleName": "parkr4f818740PreSignup",
+  "roleName": "parkr2c0d94f5PreSignup",
   "skipEdit": true,
   "DOMAINALLOWLIST": "unb.ca",
   "enableCors": false

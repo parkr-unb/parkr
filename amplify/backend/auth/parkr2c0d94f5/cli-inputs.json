@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "parkr51dc0cfa_identitypool_51dc0cfa",
+    "identityPoolName": "parkr2c0d94f5_identitypool_2c0d94f5",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "parkr51dc0cfa",
-    "userPoolName": "parkr51dc0cfa_userpool_51dc0cfa",
+    "resourceNameTruncated": "parkr2c0d94f5",
+    "userPoolName": "parkr2c0d94f5_userpool_2c0d94f5",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -20,7 +20,8 @@
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
-      "email"
+      "email",
+      "name"
     ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
@@ -31,25 +32,16 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "parkr551dc0cfa_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "parkr22c0d94f5_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "51dc0cfa",
-    "resourceName": "parkr51dc0cfa",
+    "sharedId": "2c0d94f5",
+    "resourceName": "parkr2c0d94f5",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "default",
     "usernameAttributes": [
       "email"
     ],
     "triggers": {
-      "DefineAuthChallenge": [
-        "captcha-define-challenge"
-      ],
-      "CreateAuthChallenge": [
-        "captcha-create-challenge"
-      ],
-      "VerifyAuthChallengeResponse": [
-        "captcha-verify"
-      ],
       "CustomMessage": [
         "verification-link"
       ],
@@ -59,7 +51,7 @@
     },
     "userPoolGroupList": [],
     "serviceName": "Cognito",
-    "verificationBucketName": "parkr51dc0cfaverificationbucket",
+    "verificationBucketName": "parkr2c0d94f5verificationbucket",
     "usernameCaseSensitive": false,
     "useEnabledMfas": true
   }

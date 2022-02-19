@@ -1,8 +1,12 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.5\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.19\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
-    "CHALLENGEANSWER": {
+    "DOMAINBLACKLIST": {
+      "Type": "String",
+      "Default": ""
+    },
+    "DOMAINALLOWLIST": {
       "Type": "String",
       "Default": ""
     },
@@ -67,12 +71,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkr51dc0cfaCreateAuthChallenge",
+            "parkr2c0d94f5PreSignup",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkr51dc0cfaCreateAuthChallenge",
+                  "parkr2c0d94f5PreSignup",
                   "-",
                   {
                     "Ref": "env"
@@ -93,8 +97,11 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "CHALLENGEANSWER": {
-              "Ref": "CHALLENGEANSWER"
+            "DOMAINALLOWLIST": {
+              "Ref": "DOMAINALLOWLIST"
+            },
+            "DOMAINBLACKLIST": {
+              "Ref": "DOMAINBLACKLIST"
             }
           }
         },
@@ -122,12 +129,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkr51dc0cfaCreateAuthChallenge",
+            "parkr2c0d94f5PreSignup",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkr51dc0cfaCreateAuthChallenge",
+                  "parkr2c0d94f5PreSignup",
                   "-",
                   {
                     "Ref": "env"
