@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_authenticator/amplify_authenticator.dart';
 
 import 'package:parkr/amplifyconfiguration.dart';
 import 'package:parkr/views/welcomepage.dart';
@@ -38,21 +37,24 @@ class _ParkrAppState extends State<ParkrApp> {
 
   @override
   Widget build(BuildContext context) {
-    final authenticated = Authenticator(
-      child: const Scaffold(
-        body: Center(child: Text('You are logged in!')),
+    return MaterialApp(
+      title: 'Parkr',
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.red,
+          backgroundColor: Colors.white,
+        ),
+      ).copyWith(
+        indicatorColor: Colors.red,
       ),
-    );
-
-    return Authenticator(
-      child: MaterialApp(
-        title: 'Parkr',
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
-        themeMode: ThemeMode.system,
-        builder: Authenticator.builder(),
-        home: authenticated,
+      darkTheme: ThemeData.from(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.red,
+          backgroundColor: Colors.black,
+          brightness: Brightness.dark,
+        ),
       ),
+      home: const WelcomePage(),
     );
   } // build
 }
