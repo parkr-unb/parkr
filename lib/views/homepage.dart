@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:parkr/registration.dart';
+import 'package:parkr/views/platepage.dart';
+import 'package:parkr/views/registerpage.dart';
+import 'package:parkr/views/settingspage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  static const String title = 'replace with one from AWS Cognito';
+  static const String title = 'Examination';
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  TextEditingController plate_ctrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,6 +27,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             const Spacer(),
             TextFormField(
+              controller: plate_ctrl,
               decoration: const InputDecoration(
                 icon: Icon(Icons.confirmation_number),
                 hintText: 'What license place would you like to examine?',
@@ -40,15 +46,49 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
                 child: const Text('Examine Registration',
                     style: TextStyle(fontSize: 20.0)),
-                onPressed: () {}),
+                onPressed: () {
+                  // STUB
+                  // examine(plate_ctrl.text);
+                  Registration reg = Registration.basic();
+                  if(false)
+                  {
+                    //const plate_page = PlatePage(registration: reg);
+                    //Navigator.push(context,
+                    //    MaterialPageRoute(builder: (context) => plate_page));
+                  }
+                  else
+                  {
+                    showDialog(context: context, builder: (BuildContext context) {
+                      return AlertDialog(
+                          title: Text('Plate not found in system'),
+                          content: Text('Please administer a paper ticket to plate - ' + plate_ctrl.text),
+                          actions: [
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ]
+                      );
+                    });
+                  }
+                }),
             const Spacer(),
             TextButton(
                 child: const Text('Logout', style: TextStyle(fontSize: 20.0)),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }),
             TextButton(
-                child: const Text('Update Password',
+                child: const Text('Edit Profile',
                     style: TextStyle(fontSize: 20.0)),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const SettingsPage()),
+                  );
+                }),
           ],
         ),
       ),

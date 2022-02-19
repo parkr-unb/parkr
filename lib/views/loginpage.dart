@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:parkr/views/homepage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -53,8 +52,7 @@ class _LoginPageState extends State<LoginPage> {
             TextButton(
                 onPressed: () {
                   // auth = login(name_ctrl.text, pass_ctrl.text);
-                  print(name_ctrl.text + " " + pass_ctrl.text);
-                  const auth = false;
+                  const auth = true;
                   if(auth)
                   {
                     Navigator.push(
