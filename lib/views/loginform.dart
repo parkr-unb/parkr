@@ -93,14 +93,17 @@ class _LoginFormState extends State<LoginForm> {
                           builder: (BuildContext context) {
                             return AlertDialog(
                                 title: const Text('Account Confirmation'),
-                                content: Column(children: [
-                                  const Text('Enter your confirmation code'),
-                                  TextField(
-                                    onChanged: (value) {
-                                      code = value.trim();
-                                    },
-                                  )
-                                ]),
+                                content: SizedBox(
+                                    height: 400,
+                                    child: Column(children: [
+                                      const Text(
+                                          'Enter your confirmation code'),
+                                      TextField(
+                                        onChanged: (value) {
+                                          code = value.trim();
+                                        },
+                                      )
+                                    ])),
                                 actions: [
                                   TextButton(
                                     child: const Text('Confirm'),
