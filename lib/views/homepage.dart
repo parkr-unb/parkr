@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parkr/views/registerofficerpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -42,6 +43,16 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(fontSize: 20.0)),
                 onPressed: () {}),
             const Spacer(),
+            TextButton(
+                child: const Text('Register Parking Officer',
+                    style: TextStyle(fontSize: 20.0)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterOfficerPage()),
+                  );
+                }),
             TextButton(
                 child: const Text('Logout', style: TextStyle(fontSize: 20.0)),
                 onPressed: () {}),

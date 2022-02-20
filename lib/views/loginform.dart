@@ -1,9 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/views/homepage.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
-
-  static const String title = 'Login';
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -55,14 +55,54 @@ class _LoginFormState extends State<LoginForm> {
                   if (_formKey.currentState!.validate()) {
                     // If the form is valid, display a snackbar. In the real world,
                     // you'd often call a server or save the information in a database.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Processing Data')),
+                    const processingBar =
+                        SnackBar(content: Text('Processing Data'));
+                    ScaffoldMessenger.of(context).showSnackBar(processingBar);
+
+                    // process login
+                    if (false) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                                title: const Text('Failed to Log in'),
+                                content: const Text(
+                                    'Invalid Username and/or Password'),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ]);
+                          });
+                    }
+
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomePage()),
                     );
                   }
                 },
                 child: const Text('Login'),
               ),
             ),
+            if (kDebugMode)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomePage()),
+                    );
+                  },
+                  child: const Text('Debug Skip Login'),
+                ),
+              ),
           ],
         ));
 
@@ -106,21 +146,6 @@ class _LoginFormState extends State<LoginForm> {
     //               } else {
     //                 emailCtrl.text = "";
     //                 emailCtrl.text = "";
-    //                 showDialog(
-    //                     context: context,
-    //                     builder: (BuildContext context) {
-    //                       return AlertDialog(
-    //                           title: Text('Failed to Log in'),
-    //                           content: Text('Invalid Username and/or Password'),
-    //                           actions: [
-    //                             TextButton(
-    //                               child: Text('OK'),
-    //                               onPressed: () {
-    //                                 Navigator.of(context).pop();
-    //                               },
-    //                             ),
-    //                           ]);
-    //                     });
     //               }
     //               setState(() {
     //                 _auth = auth;
