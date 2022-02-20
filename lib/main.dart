@@ -1,10 +1,13 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/views/homepage.dart';
 import 'package:parkr/views/loginpage.dart';
 import 'package:parkr/views/platepage.dart';
 import 'package:parkr/views/welcomepage.dart';
 
 class ParkrApp extends StatelessWidget {
-  const ParkrApp({Key? key}) : super(key: key);
+  final CameraDescription camera;
+  const ParkrApp({Key? key, required this.camera}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -25,13 +28,18 @@ class ParkrApp extends StatelessWidget {
       ),
       home: const WelcomePage(),
       routes: {
-        "plate": (BuildContext PlateContext) => PlatePage()
+        "plate": (BuildContext context) => PlatePage(),
+        "examine": (BuildContext context) => HomePage(camera: camera,),
       },
     );
   }
 }
 
-void main() {
-  runApp(const ParkrApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final cameras = await availableCameras();
+  final camera = cameras.first;
+  runApp(ParkrApp(camera: camera));
 }
 

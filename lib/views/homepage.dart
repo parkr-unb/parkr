@@ -3,9 +3,12 @@ import 'package:parkr/registration.dart';
 import 'package:parkr/views/platepage.dart';
 import 'package:parkr/views/registerpage.dart';
 import 'package:parkr/views/settingspage.dart';
+import 'package:camera/camera.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final CameraDescription camera;
+  const HomePage({Key? key, required this.camera}) : super(key: key);
+
 
   static const String title = 'Examination';
 
@@ -15,6 +18,25 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController plate_ctrl = TextEditingController();
+  late CameraController _camera;
+  late Future<void> _cameraFuture;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _camera = CameraController(
+      widget.camera,
+      ResolutionPreset.low
+    );
+    _cameraFuture = _camera.initialize();
+  }
+  @override
+  void dispose() {
+    this._camera.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +47,29 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            FutureBuilder(
+              future: _cameraFuture,
+              builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.done) {
+                  final size = MediaQuery.of(context).size;
+                  return
+                    Container(
+                      child: Transform.scale(
+                        scale: (_camera.value.aspectRatio / size.aspectRatio)/2.5,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: _camera.value.aspectRatio,
+                            child:
+                              CameraPreview(_camera)
+                          )
+                        )
+                      )
+                    );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
             const Spacer(),
             TextFormField(
               controller: plate_ctrl,

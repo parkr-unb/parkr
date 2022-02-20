@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/views/homepage.dart';
 
@@ -50,15 +51,12 @@ class _LoginPageState extends State<LoginPage> {
                     hintText: 'Enter Valid Password')
             ),
             TextButton(
-                onPressed: () {
+                onPressed: () async {
                   // auth = login(name_ctrl.text, pass_ctrl.text);
                   const auth = true;
                   if(auth)
                   {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
+                    Navigator.pushNamed(context, 'examine');
                   }
                   else
                   {

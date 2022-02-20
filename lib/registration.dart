@@ -1,8 +1,8 @@
 class Registration {
   final String plate;
+  final String email;
   final DateTime start;
   final DateTime end;
 
-  Registration(this.plate, this.start, this.end);
-  Registration.basic() : plate = "123", start = DateTime(2000,6,6), end = DateTime(2001,6,6);
+  Registration.basic() : plate = "123", email = "y@bil.com", start = DateTime(2000,6,6), end = DateTime(2001,6,6);
 }
