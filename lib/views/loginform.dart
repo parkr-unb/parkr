@@ -25,6 +25,8 @@ class _LoginFormState extends State<LoginForm> {
       if (result.isSignedIn) {
         return true;
       }
+    } on UserNotConfirmedException {
+      rethrow;
     } on AuthException catch (e) {
       print(e.message);
     }
@@ -80,7 +82,38 @@ class _LoginFormState extends State<LoginForm> {
                     ScaffoldMessenger.of(context).showSnackBar(processingBar);
 
                     // process login
-                    final signedIn = await signInUser();
+
+                    bool signedIn = false;
+                    try {
+                      signedIn = await signInUser();
+                    } on UserNotConfirmedException catch (e) {
+                      String code = "";
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                                title: const Text('Account Confirmation'),
+                                content: Column(children: [
+                                  const Text('Enter your confirmation code'),
+                                  TextField(
+                                    onChanged: (value) {
+                                      code = value.trim();
+                                    },
+                                  )
+                                ]),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('Confirm'),
+                                    onPressed: () {
+                                      Amplify.Auth.confirmSignUp(
+                                          username: emailCtrl.text.trim(),
+                                          confirmationCode: code);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ]);
+                          });
+                    }
                     if (!signedIn) {
                       showDialog(
                           context: context,

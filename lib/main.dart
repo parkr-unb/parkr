@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
 import 'package:parkr/amplifyconfiguration.dart';
+import 'package:parkr/views/homepage.dart';
 import 'package:parkr/views/welcomepage.dart';
 
 class ParkrApp extends StatefulWidget {
@@ -16,8 +17,8 @@ class ParkrApp extends StatefulWidget {
 class _ParkrAppState extends State<ParkrApp> {
   @override
   initState() {
-    super.initState();
     _configureAmplify();
+    super.initState();
   }
 
   Future<void> _configureAmplify() async {
@@ -26,8 +27,7 @@ class _ParkrAppState extends State<ParkrApp> {
     // Add all plugins before configuring Amplify
     // Amplify.configure() may only be called once
     try {
-      await Amplify.addPlugins(
-          [AmplifyAuthCognito()]);
+      await Amplify.addPlugins([AmplifyAuthCognito()]);
       await Amplify.configure(amplifyconfig); // from amplifyconfiguration.dart
     } on Exception catch (e) {
       print(
@@ -37,6 +37,17 @@ class _ParkrAppState extends State<ParkrApp> {
 
   @override
   Widget build(BuildContext context) {
+    print('building');
+    Widget startPage = const WelcomePage();
+
+    Amplify.Auth.fetchAuthSession().then((session) {
+      if (!session.isSignedIn) {
+        startPage = const HomePage();
+      }
+    }).catchError((err) {
+      print(err);
+    });
+
     return MaterialApp(
       title: 'Parkr',
       theme: ThemeData.from(
@@ -54,7 +65,7 @@ class _ParkrAppState extends State<ParkrApp> {
           brightness: Brightness.dark,
         ),
       ),
-      home: const WelcomePage(),
+      home: startPage,
     );
   } // build
 }

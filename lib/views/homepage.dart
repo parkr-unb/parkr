@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/views/registerofficerpage.dart';
 
@@ -53,7 +54,9 @@ class _HomePageState extends State<HomePage> {
                 }),
             TextButton(
                 child: const Text('Logout', style: TextStyle(fontSize: 20.0)),
-                onPressed: () {}),
+                onPressed: () {
+                  Amplify.Auth.signOut();
+                }),
             TextButton(
                 child: const Text('Update Password',
                     style: TextStyle(fontSize: 20.0)),
