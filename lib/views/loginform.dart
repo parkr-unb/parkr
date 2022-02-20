@@ -1,3 +1,5 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/views/homepage.dart';
@@ -14,10 +16,27 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  Future<bool> signInUser() async {
+    try {
+      SignInResult result = await Amplify.Auth.signIn(
+        username: emailCtrl.text.trim(),
+        password: passCtrl.text.trim(),
+      );
+      if (result.isSignedIn) {
+        return true;
+      }
+    } on AuthException catch (e) {
+      print(e.message);
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -50,7 +69,7 @@ class _LoginFormState extends State<LoginForm> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Validate returns true if the form is valid, or false otherwise.
                   if (_formKey.currentState!.validate()) {
                     // If the form is valid, display a snackbar. In the real world,
@@ -60,7 +79,8 @@ class _LoginFormState extends State<LoginForm> {
                     ScaffoldMessenger.of(context).showSnackBar(processingBar);
 
                     // process login
-                    if (false) {
+                    final signedIn = await signInUser();
+                    if (!signedIn) {
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -77,14 +97,15 @@ class _LoginFormState extends State<LoginForm> {
                                   ),
                                 ]);
                           });
+                    } else {
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
+                      );
                     }
-
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
                   }
                 },
                 child: const Text('Login'),
@@ -105,56 +126,5 @@ class _LoginFormState extends State<LoginForm> {
               ),
           ],
         ));
-
-    // OLD WITHOUT A FORM FOR VALIDATION
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: const Text(LoginPage.title),
-    //   ),
-    //   body: Center(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: <Widget>[
-    //         TextField(
-    //             controller: emailCtrl,
-    //             decoration: InputDecoration(
-    //                 enabledBorder: OutlineInputBorder(
-    //                   borderSide: BorderSide(
-    //                       color: _auth ? Colors.black : Colors.red, width: 1.0),
-    //                 ),
-    //                 labelText: 'Email',
-    //                 hintText: 'Enter Valid Email')),
-    //         TextField(
-    //             controller: passCtrl,
-    //             decoration: InputDecoration(
-    //                 enabledBorder: OutlineInputBorder(
-    //                   borderSide: BorderSide(
-    //                       color: _auth ? Colors.black : Colors.red, width: 1.0),
-    //                 ),
-    //                 labelText: 'Password',
-    //                 hintText: 'Enter Valid Password')),
-    //         TextButton(
-    //             onPressed: () {
-    //               // auth = login(name_ctrl.text, pass_ctrl.text);
-    //               print(emailCtrl.text + " " + passCtrl.text);
-    //               const auth = false;
-    //               if (auth) {
-    //                 Navigator.push(
-    //                   context,
-    //                   MaterialPageRoute(builder: (context) => const HomePage()),
-    //                 );
-    //               } else {
-    //                 emailCtrl.text = "";
-    //                 emailCtrl.text = "";
-    //               }
-    //               setState(() {
-    //                 _auth = auth;
-    //               });
-    //             },
-    //             child: const Text('Login', style: TextStyle(fontSize: 20.0)))
-    //       ],
-    //     ),
-    //   ),
-    // );
   } // build
 }

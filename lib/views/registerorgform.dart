@@ -23,6 +23,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   Widget build(BuildContext context) {
     return Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

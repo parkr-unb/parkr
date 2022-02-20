@@ -1,3 +1,5 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 
 class RegisterOfficerPage extends StatefulWidget {
@@ -14,6 +16,27 @@ class _RegisterOfficerPageState extends State<RegisterOfficerPage> {
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  Future<bool> registerOfficer() async {
+    final fullName = lastNameCtrl.text + ',' + firstNameCtrl.text;
+    try {
+      Map<CognitoUserAttributeKey, String> userAttributes = {
+        CognitoUserAttributeKey.name: fullName
+        // additional attributes as needed
+      };
+
+      SignUpResult result = await Amplify.Auth.signUp(
+          username: emailCtrl.text,
+          password: passCtrl.text,
+          options: CognitoSignUpOptions(userAttributes: userAttributes));
+      if (result.isSignUpComplete) {
+        return true;
+      }
+    } on AuthException catch (e) {
+      print(e.message);
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,6 +45,7 @@ class _RegisterOfficerPageState extends State<RegisterOfficerPage> {
         ),
         body: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -58,7 +82,8 @@ class _RegisterOfficerPageState extends State<RegisterOfficerPage> {
                   child: TextFormField(
                       controller: emailCtrl,
                       decoration: const InputDecoration(
-                          labelText: 'Email', hintText: 'Enter Officer\'s Email'),
+                          labelText: 'Email',
+                          hintText: 'Enter Officer\'s Email'),
                       validator: (val) {
                         if (val == null || val.isEmpty) {
                           return "Email is mandatory";
@@ -82,7 +107,7 @@ class _RegisterOfficerPageState extends State<RegisterOfficerPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       // Validate returns true if the form is valid, or false otherwise.
                       if (_formKey.currentState!.validate()) {
                         // If the form is valid, display a snackbar. In the real world,
@@ -93,7 +118,31 @@ class _RegisterOfficerPageState extends State<RegisterOfficerPage> {
                             .showSnackBar(processingBar);
 
                         // process login
-                        if (false) {
+                        final registered = await registerOfficer();
+                        if (registered) {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: const Text('Officer Registered'),
+                                    content: const Text(
+                                        'Successfully registered officer!'),
+                                    actions: [
+                                      TextButton(
+                                        child: const Text('OK'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          setState(() {
+                                            firstNameCtrl.clear();
+                                            lastNameCtrl.clear();
+                                            emailCtrl.clear();
+                                            passCtrl.clear();
+                                          });
+                                        },
+                                      ),
+                                    ]);
+                              });
+                        } else {
                           showDialog(
                               context: context,
                               builder: (BuildContext context) {
