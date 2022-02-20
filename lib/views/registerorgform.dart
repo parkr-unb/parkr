@@ -58,6 +58,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextFormField(
+                    obscureText: true,
                     controller: passCtrl,
                     decoration: const InputDecoration(
                         labelText: 'Admin Password',

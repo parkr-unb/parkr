@@ -56,6 +56,7 @@ class _LoginFormState extends State<LoginForm> {
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextFormField(
+                    obscureText: true,
                     controller: passCtrl,
                     decoration: const InputDecoration(
                         labelText: 'Password',

@@ -94,6 +94,7 @@ class _RegisterOfficerPageState extends State<RegisterOfficerPage> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: TextFormField(
+                        obscureText: true,
                         controller: passCtrl,
                         decoration: const InputDecoration(
                             labelText: 'Temporary Password',
