@@ -16,32 +16,11 @@ class ParkrApp extends StatefulWidget {
 
 class _ParkrAppState extends State<ParkrApp> {
   @override
-  initState() {
-    _configureAmplify();
-    super.initState();
-  }
-
-  Future<void> _configureAmplify() async {
-    print('configuring');
-    // Add Pinpoint and Cognito Plugins, or any other plugins you want to use
-    // Add all plugins before configuring Amplify
-    // Amplify.configure() may only be called once
-    try {
-      await Amplify.addPlugins([AmplifyAuthCognito()]);
-      await Amplify.configure(amplifyconfig); // from amplifyconfiguration.dart
-    } on Exception catch (e) {
-      print(
-          "Tried to reconfigure Amplify; this can occur when your app restarts on Android. $e");
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    print('building');
+    // navigate straight to home page if already signed in
     Widget startPage = const WelcomePage();
-
     Amplify.Auth.fetchAuthSession().then((session) {
-      if (!session.isSignedIn) {
+      if (session.isSignedIn) {
         startPage = const HomePage();
       }
     }).catchError((err) {
@@ -70,6 +49,16 @@ class _ParkrAppState extends State<ParkrApp> {
   } // build
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Amplify.addPlugins([AmplifyAuthCognito()]);
+    await Amplify.configure(amplifyconfig); // from amplifyconfiguration.dart
+  } on Exception catch (e) {
+    print(
+        "Tried to reconfigure Amplify; this can occur when your app restarts on Android. $e");
+  }
+
   runApp(const ParkrApp());
 }
