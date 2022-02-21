@@ -137,10 +137,9 @@ class _LoginFormState extends State<LoginForm> {
                     } else {
                       ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
+                        "home",
                       );
                     }
                   }
@@ -153,10 +152,7 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
+                    Navigator.pushNamed(context, "home");
                   },
                   child: const Text('Debug Skip Login'),
                 ),
