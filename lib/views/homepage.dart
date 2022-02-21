@@ -1,6 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:parkr/views/registerofficerpage.dart';
+import 'package:parkr/views/manageofficerspage.dart';
 import 'package:parkr/views/welcomepage.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,13 +45,13 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {}),
             const Spacer(),
             TextButton(
-                child: const Text('Register Parking Officer',
+                child: const Text('Parking Officers',
                     style: TextStyle(fontSize: 20.0)),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const RegisterOfficerPage()),
+                        builder: (context) => const ManageOfficersPage()),
                   );
                 }),
             TextButton(

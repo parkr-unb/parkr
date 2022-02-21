@@ -81,6 +81,11 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Processing Data')),
                     );
+
+                    // TODO:
+                    // register the admin user
+                    // register the org
+                    // immediatly present the confirmation dialog
                   }
                 },
                 child: const Text('Create Organization'),
