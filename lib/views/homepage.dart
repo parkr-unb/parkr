@@ -1,6 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/views/registerofficerpage.dart';
+import 'package:parkr/views/welcomepage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -57,6 +58,13 @@ class _HomePageState extends State<HomePage> {
                 child: const Text('Logout', style: TextStyle(fontSize: 20.0)),
                 onPressed: () {
                   Amplify.Auth.signOut();
+
+                  // completely wipe navigation stack and replace with welcome
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const WelcomePage()),
+                      (_) => false);
                 }),
             TextButton(
                 child: const Text('Update Password',
