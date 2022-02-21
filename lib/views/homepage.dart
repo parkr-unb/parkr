@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:parkr/views/manageofficerspage.dart';
 import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/registration.dart';
-import 'package:parkr/views/platepage.dart';
 import 'package:parkr/views/settingspage.dart';
 import 'package:camera/camera.dart';
 
