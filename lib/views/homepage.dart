@@ -1,11 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/views/manageofficerspage.dart';
 import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/registration.dart';
-import 'package:parkr/views/platepage.dart';
 import 'package:parkr/views/settingspage.dart';
 import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomePage extends StatefulWidget {
   final CameraDescription camera;
@@ -20,12 +23,14 @@ class _HomePageState extends State<HomePage> {
   TextEditingController plateCtrl = TextEditingController();
   late CameraController _camera;
   late Future<void> _cameraFuture;
-  bool enableExamination = false;
+  
+  bool _enableExamination = false;
 
   @override
   void initState() {
     super.initState();
-    _camera = CameraController(widget.camera, ResolutionPreset.low);
+    _camera = CameraController(widget.camera,
+        ResolutionPreset.medium);
     _cameraFuture = _camera.initialize();
   }
 
@@ -45,19 +50,41 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            const Spacer(),
             FutureBuilder(
               future: _cameraFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   final size = MediaQuery.of(context).size;
-                  return Transform.scale(
-                      scale:
-                          (_camera.value.aspectRatio / size.aspectRatio) / 2.5,
-                      child: Center(
-                          child: AspectRatio(
-                              aspectRatio: _camera.value.aspectRatio,
-                              child: CameraPreview(_camera))));
+                  return Expanded(
+                      child:
+                        GestureDetector(
+                          onTap: () async {
+                            try{
+                              await _cameraFuture;
+                              _camera.takePicture().then((XFile img) async {
+                                String plate = await getPlate(img);
+                              });
+                            } catch(e) {
+                              print("Failed to capture photo");
+                              print(e);
+                            }
+                          },
+                          child:
+                            Transform.scale(
+                                scale:
+                                ((_camera.value.aspectRatio / size.aspectRatio)*1.25),
+                                child: Center(
+                                    child: AspectRatio(
+                                        aspectRatio: _camera.value.aspectRatio,
+                                        child: CameraPreview(_camera)
+                                    )
+                                )
+                            )
+                        )
+                    );
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -71,21 +98,16 @@ class _HomePageState extends State<HomePage> {
                 hintText: 'What license place would you like to examine?',
                 labelText: 'License Plate Number *',
               ),
-              onSaved: (String? value) {
-                print("SAAAAAAAAAAAVING");
-                enableExamination = value != null && value.isNotEmpty;
-              },
-              validator: (String? value) {
-                final err = (value != null && value.contains('@'))
-                    ? 'Do not use the @ character.'
-                    : null;
-                return err;
-              },
+              onChanged: (String? value) {
+                setState(() {
+                  _enableExamination = value != null && value.isNotEmpty;
+                });
+              }
             ),
             ElevatedButton(
                 child: const Text('Examine Registration',
                     style: TextStyle(fontSize: 20.0)),
-                onPressed: enableExamination == false
+                onPressed: _enableExamination == false
                     ? null
                     : () {
                         // STUB
@@ -146,10 +168,39 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(
                         builder: (context) => const SettingsPage()),
                   );
-                }),
+                }
+            ),
           ],
         ),
       ),
     );
   } // build
+  Future<String> getPlate(XFile img) async
+  {
+    final directory = await getTemporaryDirectory();
+    final path = directory.path;
+    img.saveTo('$path/plate.jpg');
+
+    var url = Uri.parse('api.platerecognizer.com/v1/plate-reader/');
+    var formData = [];
+
+    var response = await http.post(url,
+      headers:
+      {
+        'accept': 'application/json',
+        'Content-Type': 'application/json-patch+json',
+        'Authorization': '***'
+      },
+      body:
+      {
+        'upload': '@$path/plate.jpg',
+        'regions': 'ca'
+      }
+    );
+
+    print(response.body);
+
+    return "";
+
+  }
 }
