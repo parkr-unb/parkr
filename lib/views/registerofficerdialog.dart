@@ -131,7 +131,10 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
                                   Navigator.of(context).pop();
                                 })
                           ]);
-                    });
+                    }
+                  );
+              } else {
+                Navigator.of(context).pop();
               }
             }
           },

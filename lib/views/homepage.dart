@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Parkr Home'),
+        title: Text('Parkr Home - Welcome $username'),
       ),
       body: Center(
         child: Column(

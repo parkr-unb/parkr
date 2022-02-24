@@ -19,14 +19,16 @@ class _WelcomePageState extends State<WelcomePage> {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
-          appBar: AppBar(
+          appBar: PreferredSize(preferredSize: Size.fromHeight(100.0), child: AppBar(
               title: const Text(WelcomePage.title),
               bottom: const TabBar(tabs: [
                 Tab(icon: Icon(Icons.account_box), text: "Login"),
                 Tab(icon: Icon(Icons.house), text: "New Organization")
-              ])),
+              ]))),
           body: const TabBarView(
-            children: [LoginForm(), RegisterOrgForm()],
+            children: [
+              Expanded(child: LoginForm()),
+              Expanded(child: RegisterOrgForm())],
           ),
         ));
   } // build
