@@ -45,7 +45,9 @@ class _PlatePageState extends State<PlatePage> {
   bool _alt = false;
   @override
   Widget build(BuildContext context) {
-    final registration = (ModalRoute.of(context)?.settings.arguments as Map)['reg'] as Registration;
+    final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
+    final registration = arguments["reg"] as Registration;
+    final username = arguments["user"] as String;
     bool valid = isValid(registration) && (_hasPass || _invalidLot || _blocking || _blocking || _multiple || _alt);
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +57,7 @@ class _PlatePageState extends State<PlatePage> {
         decoration: BoxDecoration(
             border: Border.all(width: 10, color: valid ? Colors.green : Colors.red)
           ),
+        padding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
         child: Column(
           children: <Widget>[
@@ -132,34 +135,38 @@ class _PlatePageState extends State<PlatePage> {
                 ),
                 const VerticalDivider(),
                 const VerticalDivider(),
-                const VerticalDivider(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
+                Expanded(
+                  child:
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SizedBox(height: 50),
-                        Text('Parking Officer'),
-                        Text('Richard Stallman',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 50),
-                        Text('Infraction Date'),
-                        Text(DateString(DateTime.now()),
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 50),
-                        Text('Infraction Location'),
-                        Text('Head Hall Lot 4',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text('')
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 50),
+                            Text('Parking Officer'),
+                            Text(username,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            SizedBox(height: 50),
+                            Text('Infraction Date'),
+                            Text(DateString(DateTime.now()),
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            SizedBox(height: 50),
+                            Text('Infraction Location'),
+                            Text('Head Hall Lot 4',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text('')
+                          ],
+                        )
                       ],
                     )
-                  ],
                 )
               ],
             ),
-            SizedBox(height: 50),
+            Expanded(
+              child: SizedBox(height: 50),
+            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,

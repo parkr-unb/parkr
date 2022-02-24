@@ -13,22 +13,18 @@
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-parkr-dev-114942-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
-      "auth": {
-        "parkr2c0d94f5": {}
-      },
       "function": {
         "parkr2c0d94f5CustomMessage": {
-          "REDIRECTURL": "",
-          "EMAILSUBJECT": "Verify your Parkr Account",
-          "EMAILMESSAGE": "Thank you for joining Parkr. Enter the following confirmation code in the Parkr app",
           "deploymentBucketName": "amplify-parkr-dev-114942-deployment",
           "s3Key": "amplify-builds/parkr2c0d94f5CustomMessage-47686248364f564f4d2b-build.zip"
         },
         "parkr2c0d94f5PreSignup": {
-          "DOMAINALLOWLIST": "unb.ca",
           "deploymentBucketName": "amplify-parkr-dev-114942-deployment",
           "s3Key": "amplify-builds/parkr2c0d94f5PreSignup-6c7171347875456d5665-build.zip"
         }
+      },
+      "auth": {
+        "parkr2c0d94f5": {}
       }
     }
   }

@@ -42,6 +42,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print(ModalRoute.of(context)?.settings);
+    final username = (ModalRoute.of(context)?.settings.arguments as Map)['user'] as String;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -115,7 +117,12 @@ class _HomePageState extends State<HomePage> {
                         Registration reg = Registration.basic();
                         if (true) {
                           Navigator.pushNamed(context, "plate",
-                              arguments: {"reg": reg});
+                              arguments:
+                                {
+                                  "reg": reg,
+                                  "user": username
+                                }
+                          );
                         } else {
                           showDialog(
                               context: context,
@@ -135,41 +142,53 @@ class _HomePageState extends State<HomePage> {
                                     ]);
                               });
                         }
-                      }),
-            const Spacer(),
-            TextButton(
-                child: const Text('Parking Officers',
-                    style: TextStyle(fontSize: 20.0)),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ManageOfficersPage()),
-                  );
-                }),
-            TextButton(
-                child: const Text('Logout', style: TextStyle(fontSize: 20.0)),
-                onPressed: () {
-                  Amplify.Auth.signOut();
-
-                  // completely wipe navigation stack and replace with welcome
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const WelcomePage()),
-                      (_) => false);
-                }),
-            TextButton(
-                child: const Text('Edit Profile',
-                    style: TextStyle(fontSize: 20.0)),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
-                  );
-                }
+                      }
             ),
+            Expanded(
+              child:
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      child: const Text('Register',
+                        style: TextStyle(fontSize: 20.0)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ManageOfficersPage()),
+                        );
+                      }
+                    ),
+                    const VerticalDivider(),
+                    ElevatedButton(
+                      child: const Text('Logout', style: TextStyle(fontSize: 20.0)),
+                      onPressed: () {
+                        Amplify.Auth.signOut();
+
+                        // completely wipe navigation stack and replace with welcome
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WelcomePage()),
+                            (_) => false);
+                      }
+                    ),
+                    const VerticalDivider(),
+                    ElevatedButton(
+                      child: const Text('Profile',
+                        style: TextStyle(fontSize: 20.0)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsPage()),
+                        );
+                      }
+                    )
+                  ],
+                ),
+            )
           ],
         ),
       ),
@@ -188,7 +207,6 @@ class _HomePageState extends State<HomePage> {
       headers:
       {
         'accept': 'application/json',
-        'Content-Type': 'application/json-patch+json',
         'Authorization': '***'
       },
       body:

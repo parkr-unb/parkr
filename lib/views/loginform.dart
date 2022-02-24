@@ -140,6 +140,7 @@ class _LoginFormState extends State<LoginForm> {
                       Navigator.pushNamed(
                         context,
                         "home",
+                        arguments: {'user': emailCtrl.text.trim()}
                       );
                     }
                   }
@@ -152,7 +153,9 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "home");
+                    Navigator.pushNamed(context, "home", arguments: {
+                      'user': 'DEBUG'
+                    });
                   },
                   child: const Text('Debug Skip Login'),
                 ),
