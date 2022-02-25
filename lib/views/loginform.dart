@@ -118,9 +118,10 @@ class _LoginFormState extends State<LoginForm> {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: 10),
+              SizedBox(height: 10,),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
@@ -135,7 +136,7 @@ class _LoginFormState extends State<LoginForm> {
                     }),
               ),
               Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextFormField(
                       obscureText: true,
                       controller: passCtrl,

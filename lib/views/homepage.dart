@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                           child:
                             Transform.scale(
                                 scale:
-                                ((_camera.value.aspectRatio / size.aspectRatio)*1.25),
+                                ((_camera.value.aspectRatio / size.aspectRatio)),
                                 child: Center(
                                     child: AspectRatio(
                                         aspectRatio: _camera.value.aspectRatio,
@@ -150,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      child: const Text('Register',
+                      child: const Text('Officers',
                         style: TextStyle(fontSize: 20.0)),
                       onPressed: () {
                         Navigator.push(
@@ -176,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const VerticalDivider(),
                     ElevatedButton(
-                      child: const Text('Profile',
+                      child: const Text('Settings',
                         style: TextStyle(fontSize: 20.0)),
                       onPressed: () {
                         Navigator.push(

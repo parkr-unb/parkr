@@ -30,7 +30,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: TextFormField(
-                  controller: emailCtrl,
+                  controller: orgNameCtrl,
                   decoration: const InputDecoration(
                       labelText: 'Organization Name',
                       hintText: 'Enter New Organization Name'),
