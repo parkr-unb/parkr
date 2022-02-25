@@ -43,19 +43,31 @@ class _PlatePageState extends State<PlatePage> {
   bool _blocking = false;
   bool _multiple = false;
   bool _alt = false;
+  bool init = false;
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
     final registration = arguments["reg"] as Registration;
     final username = arguments["user"] as String;
-    bool valid = isValid(registration) && (_hasPass || _invalidLot || _blocking || _blocking || _multiple || _alt);
+    if(!init)
+    {
+      var result = isValid(registration);
+      _hasPass = result['haspass'];
+      _invalidLot = result['invalidLot'];
+      _blocking = result['blocking'];
+      _multiple = result['multiple'];
+      _alt = result['alt'];
+      init = true;
+
+    }
+    bool valid = (_hasPass || _invalidLot || _blocking || _blocking || _multiple || _alt);
     return Scaffold(
       appBar: AppBar(
         title: const Text(PlatePage.title),
       ),
       body: Container(
         decoration: BoxDecoration(
-            border: Border.all(width: 10, color: valid ? Colors.green : Colors.red)
+            border: Border.all(width: 10, color: valid ? Colors.red : Colors.green)
           ),
         padding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,

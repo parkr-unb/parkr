@@ -20,16 +20,23 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextField(
-                decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter Valid Username')
+            Text('Change Profile Settings',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20
+              ),
             ),
             TextField(
                 decoration: InputDecoration(
                     labelText: 'Password',
                     hintText: 'Enter Valid Password')
             ),
+            ElevatedButton(
+              child: Text('Change Settings'),
+              onPressed: () {
+
+              },
+            )
           ],
         ),
       ),
