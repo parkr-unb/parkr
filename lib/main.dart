@@ -67,14 +67,14 @@ void main() async {
     print(
         "Tried to reconfigure Amplify; this can occur when your app restarts on Android. $e");
   }
+
+  late CameraDescription camera;
   try {
     final cameras = await availableCameras();
-    final camera = cameras.first;
-    runApp(ParkrApp(camera: camera));
-
-  } on Exception catch(e) {
-    print(
-      "Tried to initialize camera but failed"
-    );
+    camera = cameras.first;
+  } on Exception catch (e) {
+    print("Tried to initialize camera but failed");
   }
+
+  runApp(ParkrApp(camera: camera));
 }
