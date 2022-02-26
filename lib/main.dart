@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -23,13 +25,21 @@ class _ParkrAppState extends State<ParkrApp> {
   Widget build(BuildContext context) {
     // navigate straight to home page if already signed in
     Widget startPage = const WelcomePage();
-    Amplify.Auth.fetchAuthSession().then((session) {
-      if (session.isSignedIn) {
-        startPage = HomePage(camera: widget.camera);
-      }
-    }).catchError((err) {
-      print(err);
-    });
+    try {
+      Amplify.Auth.fetchAuthSession()
+          .timeout(const Duration(seconds: 5))
+          .then((session) {
+        if (session.isSignedIn) {
+          startPage = HomePage(camera: widget.camera);
+        }
+      });
+    } on TimeoutException {
+      // just continue, and let the user sign in, as usual
+      print('Poor network quality while fetching user session timed out');
+    } on Exception catch (e) {
+      print(e);
+      rethrow;
+    }
 
     return MaterialApp(
       title: 'Parkr',
