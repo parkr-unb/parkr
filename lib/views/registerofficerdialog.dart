@@ -17,7 +17,7 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
   final _formKey = GlobalKey<FormState>();
 
   Future<bool> registerOfficer() async {
-    final fullName = lastNameCtrl.text + ',' + firstNameCtrl.text;
+    final fullName = lastNameCtrl.text.trim() + ',' + firstNameCtrl.text.trim();
     try {
       Map<CognitoUserAttributeKey, String> userAttributes = {
         CognitoUserAttributeKey.name: fullName
@@ -25,8 +25,8 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
       };
 
       SignUpResult result = await Amplify.Auth.signUp(
-          username: emailCtrl.text,
-          password: passCtrl.text,
+          username: emailCtrl.text.trim(),
+          password: passCtrl.text.trim(),
           options: CognitoSignUpOptions(userAttributes: userAttributes));
       if (result.isSignUpComplete) {
         return true;

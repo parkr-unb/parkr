@@ -16,7 +16,7 @@
       "function": {
         "parkr2c0d94f5CustomMessage": {
           "deploymentBucketName": "amplify-parkr-dev-114942-deployment",
-          "s3Key": "amplify-builds/parkr2c0d94f5CustomMessage-47686248364f564f4d2b-build.zip"
+          "s3Key": "amplify-builds/parkr2c0d94f5CustomMessage-57786941785a5a313851-build.zip"
         },
         "parkr2c0d94f5PreSignup": {
           "deploymentBucketName": "amplify-parkr-dev-114942-deployment",
