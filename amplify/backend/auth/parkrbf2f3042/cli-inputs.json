@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "parkr2c0d94f5_identitypool_2c0d94f5",
-    "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "parkr2c0d94f5",
-    "userPoolName": "parkr2c0d94f5_userpool_2c0d94f5",
+    "identityPoolName": "parkrbf2f3042_identitypool_bf2f3042",
+    "allowUnauthenticatedIdentities": true,
+    "resourceNameTruncated": "parkrbf2f3042",
+    "userPoolName": "parkrbf2f3042_userpool_bf2f3042",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -32,10 +32,10 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "parkr22c0d94f5_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "parkrbbf2f3042_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "2c0d94f5",
-    "resourceName": "parkr2c0d94f5",
+    "sharedId": "bf2f3042",
+    "resourceName": "parkrbf2f3042",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "default",
     "usernameAttributes": [
@@ -45,13 +45,16 @@
       "CustomMessage": [
         "verification-link"
       ],
+      "PostConfirmation": [
+        "add-to-group"
+      ],
       "PreSignup": [
         "email-filter-allowlist"
       ]
     },
     "userPoolGroupList": [],
     "serviceName": "Cognito",
-    "verificationBucketName": "parkr2c0d94f5verificationbucket",
+    "verificationBucketName": "parkrbf2f3042verificationbucket",
     "usernameCaseSensitive": false,
     "useEnabledMfas": true
   }

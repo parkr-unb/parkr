@@ -1,16 +1,8 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.19\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
-    "REDIRECTURL": {
-      "Type": "String",
-      "Default": ""
-    },
-    "EMAILMESSAGE": {
-      "Type": "String",
-      "Default": ""
-    },
-    "EMAILSUBJECT": {
+    "GROUP": {
       "Type": "String",
       "Default": ""
     },
@@ -75,12 +67,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkr2c0d94f5CustomMessage",
+            "parkrbf2f3042PostConfirmation",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkr2c0d94f5CustomMessage",
+                  "parkrbf2f3042PostConfirmation",
                   "-",
                   {
                     "Ref": "env"
@@ -101,17 +93,8 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "REDIRECTURL": {
-              "Ref": "REDIRECTURL"
-            },
-            "EMAILSUBJECT": {
-              "Ref": "EMAILSUBJECT"
-            },
-            "EMAILMESSAGE": {
-              "Ref": "EMAILMESSAGE"
-            },
-            "RESOURCENAME": {
-              "Ref": "resourceName"
+            "GROUP": {
+              "Ref": "GROUP"
             }
           }
         },
@@ -139,12 +122,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkr2c0d94f5CustomMessage",
+            "parkrbf2f3042PostConfirmation",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkr2c0d94f5CustomMessage",
+                  "parkrbf2f3042PostConfirmation",
                   "-",
                   {
                     "Ref": "env"

@@ -1,24 +1,29 @@
 {
   "function": {
-    "parkr2c0d94f5CustomMessage": {
+    "parkrbf2f3042CustomMessage": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "parkr2c0d94f5PreSignup": {
+    "parkrbf2f3042PostConfirmation": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "parkrbf2f3042PreSignup": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
   },
   "auth": {
-    "parkr2c0d94f5": {
+    "parkrbf2f3042": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "parkr2c0d94f5CustomMessage",
+          "resourceName": "parkrbf2f3042CustomMessage",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",
@@ -27,7 +32,16 @@
         },
         {
           "category": "function",
-          "resourceName": "parkr2c0d94f5PreSignup",
+          "resourceName": "parkrbf2f3042PostConfirmation",
+          "triggerProvider": "Cognito",
+          "attributes": [
+            "Arn",
+            "Name"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "parkrbf2f3042PreSignup",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",

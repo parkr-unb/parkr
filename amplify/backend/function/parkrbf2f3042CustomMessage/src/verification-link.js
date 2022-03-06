@@ -6,12 +6,12 @@ exports.handler = async event => {
   if (event.triggerSource === 'CustomMessage_SignUp') {
     const { codeParameter } = event.request;
 
-// Used to create redirect URL, which currently is being replaced by only the confirmation code
-// May be employed in the future
+// ALL TO CREATE REDIRECT URL. CURRENTLY ONLY SENDING CONFIRM CODE
 //    const { region, userName } = event;
 //    const { clientId } = event.callerContext;
 //    const redirectUrl = `${process.env.REDIRECTURL}/?username=${userName}`;
 //    const resourcePrefix = process.env.RESOURCENAME.split('CustomMessage')[0];
+//
 //    const hyphenRegions = [
 //      'us-east-1',
 //      'us-west-1',
@@ -35,9 +35,8 @@ exports.handler = async event => {
 //    ).toString('base64');
 //    const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website${separator}${region}.amazonaws.com`;
 //    const url = `${bucketUrl}/?data=${payload}&code=${codeParameter}`;
-//    const message = `${process.env.EMAILMESSAGE}. \n ${url}`;
 
-    const message = `${process.env.EMAILMESSAGE}: ${codeParameter}`;
+    const message = `${process.env.EMAILMESSAGE}: \n ${codeParameter}`;
     event.response.smsMessage = message;
     event.response.emailSubject = process.env.EMAILSUBJECT;
     event.response.emailMessage = message;

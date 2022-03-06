@@ -1,7 +1,4 @@
 {
-  "providers": [
-    "awscloudformation"
-  ],
   "projectName": "parkr",
   "version": "3.1",
   "frontend": "flutter",
@@ -9,5 +6,8 @@
     "config": {
       "ResDir": "./lib/"
     }
-  }
+  },
+  "providers": [
+    "awscloudformation"
+  ]
 }

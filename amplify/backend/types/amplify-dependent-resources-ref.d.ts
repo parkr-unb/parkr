@@ -1,12 +1,18 @@
 export type AmplifyDependentResourcesAttributes = {
     "function": {
-        "parkr2c0d94f5CustomMessage": {
+        "parkrbf2f3042CustomMessage": {
             "Name": "string",
             "Arn": "string",
             "LambdaExecutionRole": "string",
             "Region": "string"
         },
-        "parkr2c0d94f5PreSignup": {
+        "parkrbf2f3042PostConfirmation": {
+            "Name": "string",
+            "Arn": "string",
+            "LambdaExecutionRole": "string",
+            "Region": "string"
+        },
+        "parkrbf2f3042PreSignup": {
             "Name": "string",
             "Arn": "string",
             "LambdaExecutionRole": "string",
@@ -14,7 +20,7 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "auth": {
-        "parkr2c0d94f5": {
+        "parkrbf2f3042": {
             "IdentityPoolId": "string",
             "IdentityPoolName": "string",
             "UserPoolId": "string",
