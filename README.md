@@ -28,7 +28,7 @@ samples, guidance on mobile development, and a full API reference.
 2. Pull all of the backend configuration through the Amplify service:
    
     ```bash
-    amplify pull --appId d14sa912h5ccyx --envName dev
+    amplify pull --appId d2hizxojn9njyk --envName dev
     ```
 
     - Select 'Yes' when it asks if you will work on the backend. This will pull all of the cloudformation and lambda scripts.
