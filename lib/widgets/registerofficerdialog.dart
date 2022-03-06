@@ -124,7 +124,7 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
 
               // process login
               final registerErrMsg = await registerOfficer();
-              setState(() async {
+              setState(() {
                 errMsg = registerErrMsg;
               });
               if (errMsg.isNotEmpty) {
