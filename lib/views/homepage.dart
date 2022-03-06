@@ -1,12 +1,16 @@
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+
 import 'package:parkr/views/manageofficerspage.dart';
 import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/views/settingspage.dart';
-import 'package:camera/camera.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:parkr/widgets/loadingdialog.dart';
+
 
 class HomePage extends StatefulWidget {
   final CameraDescription camera;
@@ -19,9 +23,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController plateCtrl = TextEditingController();
+  KeyboardVisibilityController _keyboard = KeyboardVisibilityController();
+  bool typing = false;
   late CameraController _camera;
   late Future<void> _cameraFuture;
-  
+
   bool _enableExamination = false;
 
   @override
@@ -30,6 +36,11 @@ class _HomePageState extends State<HomePage> {
     _camera = CameraController(widget.camera,
         ResolutionPreset.medium);
     _cameraFuture = _camera.initialize();
+    _keyboard.onChange.listen((bool visible) {
+      setState(() {
+        typing = visible;
+      });
+    });
   }
 
   @override
@@ -109,7 +120,8 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(fontSize: 20.0)),
                 onPressed: _enableExamination == false
                     ? null
-                    : () {
+                    : () async {
+                        await loading(context, Future.delayed(const Duration(seconds: 2), (){return "";}), "Examining registration...");
                         // STUB
                         // examine(plate_ctrl.text);
                         Registration reg = Registration.basic();
@@ -142,6 +154,7 @@ class _HomePageState extends State<HomePage> {
                         }
                       }
             ),
+            if(!typing)
             Expanded(
               child:
                 Row(

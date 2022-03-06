@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parkr/views/registerofficerdialog.dart';
+import 'package:parkr/widgets/registerofficerdialog.dart';
 
 class ManageOfficersPage extends StatefulWidget {
   const ManageOfficersPage({Key? key}) : super(key: key);
