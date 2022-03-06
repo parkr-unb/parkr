@@ -33,14 +33,12 @@ class _LoginFormState extends State<LoginForm> {
     return false;
   }
 
-  void login(BuildContext context) async
-  {
+  void login(BuildContext context) async {
     // Validate returns true if the form is valid, or false otherwise.
     if (_formKey.currentState!.validate()) {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
-      const processingBar =
-      SnackBar(content: Text('Processing Data'));
+      const processingBar = SnackBar(content: Text('Processing Data'));
       ScaffoldMessenger.of(context).showSnackBar(processingBar);
 
       // process login
@@ -58,9 +56,9 @@ class _LoginFormState extends State<LoginForm> {
                   content: SizedBox(
                       height: 400,
                       child: Column(children: [
-                        const Text(
-                            'Enter your confirmation code'),
+                        const Text('Enter your confirmation code'),
                         TextField(
+                          style: const TextStyle(fontSize: 25),
                           onChanged: (value) {
                             code = value.trim();
                           },
@@ -87,8 +85,7 @@ class _LoginFormState extends State<LoginForm> {
             builder: (BuildContext context) {
               return AlertDialog(
                   title: const Text('Failed to Log in'),
-                  content: const Text(
-                      'Invalid Username and/or Password'),
+                  content: const Text('Invalid Username and/or Password'),
                   actions: [
                     TextButton(
                       child: const Text('OK'),
@@ -101,11 +98,8 @@ class _LoginFormState extends State<LoginForm> {
       } else {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
-        Navigator.pushNamed(
-            context,
-            "home",
-            arguments: {'user': emailCtrl.text.trim()}
-        );
+        Navigator.pushNamed(context, "home",
+            arguments: {'user': emailCtrl.text.trim()});
       }
     }
   }
@@ -116,60 +110,61 @@ class _LoginFormState extends State<LoginForm> {
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const SizedBox(height: 10,),
-              Padding(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: TextFormField(
+                  controller: emailCtrl,
+                  decoration: const InputDecoration(
+                      labelText: 'Email', hintText: 'Enter Valid Email'),
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return "Email is mandatory";
+                    }
+                    return null;
+                  }),
+            ),
+            Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
-                    controller: emailCtrl,
+                    obscureText: true,
+                    controller: passCtrl,
                     decoration: const InputDecoration(
-                        labelText: 'Email', hintText: 'Enter Valid Email'),
+                        labelText: 'Password',
+                        hintText: 'Enter Valid Password'),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
-                        return "Email is mandatory";
+                        return "Password is mandatory";
                       }
                       return null;
-                    }),
+                    })),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  login(context);
+                },
+                child: const Text('Login'),
               ),
-              Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: TextFormField(
-                      obscureText: true,
-                      controller: passCtrl,
-                      decoration: const InputDecoration(
-                          labelText: 'Password',
-                          hintText: 'Enter Valid Password'),
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return "Password is mandatory";
-                        }
-                        return null;
-                      })),
+            ),
+            if (kDebugMode)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
-                  onPressed: () {login(context);},
-                  child: const Text('Login'),
+                  onPressed: () {
+                    Navigator.pushNamed(context, "home",
+                        arguments: {'user': 'DEBUG'});
+                  },
+                  child: const Text('Debug Skip Login'),
                 ),
               ),
-              if (kDebugMode)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, "home", arguments: {
-                        'user': 'DEBUG'
-                      });
-                    },
-                    child: const Text('Debug Skip Login'),
-                  ),
-                ),
-            ],
-          )
-        )
-    );
+          ],
+        )));
   } // build
 }
