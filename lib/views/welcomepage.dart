@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:parkr/views/homepage.dart';
 import 'package:parkr/widgets/loginform.dart';
 import 'package:parkr/widgets/registerorgform.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
