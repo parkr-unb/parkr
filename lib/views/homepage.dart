@@ -11,7 +11,7 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
-import '../util/loadingdialog.dart';
+import '../widgets/loadingdialog.dart';
 
 class HomePage extends StatefulWidget {
   final CameraDescription camera;
