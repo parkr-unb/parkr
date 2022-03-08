@@ -25,7 +25,7 @@
           "s3Key": "amplify-builds/parkrbf2f3042CustomMessage-526c78334679694e2b52-build.zip"
         },
         "parkrbf2f3042PostConfirmation": {
-          "GROUP": "org-admin",
+          "GROUP": "orgAdmins",
           "deploymentBucketName": "amplify-parkr-dev-154410-deployment",
           "s3Key": "amplify-builds/parkrbf2f3042PostConfirmation-742b6e496d4172616e38-build.zip"
         },

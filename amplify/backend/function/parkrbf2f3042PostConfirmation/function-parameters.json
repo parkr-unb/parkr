@@ -13,6 +13,6 @@
   "triggerEventPath": "PostConfirmation.event.json",
   "roleName": "parkrbf2f3042PostConfirmation",
   "skipEdit": true,
-  "GROUP": "org-admin",
+  "GROUP": "orgAdmins",
   "enableCors": false
 }
