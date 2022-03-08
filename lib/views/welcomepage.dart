@@ -26,7 +26,8 @@ class _WelcomePageState extends State<WelcomePage> {
           body: const TabBarView(
             children: [
               LoginForm(),
-              RegisterOrgForm()],
+              RegisterOrgForm(),
+            ],
           ),
         ));
   } // build

@@ -25,8 +25,11 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: Image.asset('assets/parkr_logo.png'),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: TextFormField(
