@@ -14,6 +14,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isObscure = true;
 
   //This is just a temporary form. We will need a way for organizations to
   // register themselves. Credit card info, parking lot geography, contact phone
@@ -61,12 +62,23 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextFormField(
-                    obscureText: true,
                     controller: passCtrl,
-                    decoration: const InputDecoration(
-                        labelText: 'Admin Password',
-                        hintText:
-                            'Enter Organization Administrator\'s Password'),
+                    obscureText: _isObscure,
+                    decoration: InputDecoration(
+                      labelText: 'Admin Password',
+                      hintText:
+                        'Enter Organization Administrator\'s Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        },
+                      ),
+                    ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return "Admin password is mandatory";
