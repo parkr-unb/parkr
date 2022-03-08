@@ -14,6 +14,7 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isObscure = true;
 
   Future<bool> signInUser() async {
     try {
@@ -133,11 +134,21 @@ class _LoginFormState extends State<LoginForm> {
             Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
-                    obscureText: true,
                     controller: passCtrl,
-                    decoration: const InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter Valid Password'),
+                    obscureText: _isObscure,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        },
+                      ),
+                    ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return "Password is mandatory";
