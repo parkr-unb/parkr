@@ -22,7 +22,7 @@ samples, guidance on mobile development, and a full API reference.
 1. Install the amplify cli:
    
     ```bash
-    npm install -g @aws-amplify/cli
+    # npm install -g @aws-amplify/cli
     ```
 
 2. Pull all of the backend configuration through the Amplify service:
