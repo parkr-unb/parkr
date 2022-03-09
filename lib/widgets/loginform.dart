@@ -2,8 +2,8 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:parkr/widgets/passwordfield.dart';
-import 'package:parkr/widgets/emailfield.dart';
+import 'package:parkr/widgets/obscuredtextfield.dart';
+import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 
 class LoginForm extends StatefulWidget {
@@ -118,14 +118,14 @@ class _LoginFormState extends State<LoginForm> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const Logo(),
-            EmailField(
-              emailController: emailCtrl,
+            VisibleTextField(
+              controller: emailCtrl,
             ),
-            PasswordField(
-              passwordController: passCtrl,
+            ObscuredTextField(
+              controller: passCtrl,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: ElevatedButton(
                 onPressed: () {
                   login(context);
@@ -135,7 +135,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
             if (kDebugMode)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, "home",

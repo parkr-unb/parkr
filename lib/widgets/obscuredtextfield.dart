@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
-class PasswordField extends StatefulWidget {
-  const PasswordField({Key? key, required this.passwordController}) : super(key: key);
-  final TextEditingController passwordController;
+class ObscuredTextField extends StatefulWidget {
+  const ObscuredTextField({Key? key,
+    required this.controller,
+    this.label = "Password",
+    this.hint = '',
+    this.validatorText = "Please enter a valid password"}) : super(key: key);
+  final TextEditingController controller;
+  final String label;
+  final String hint;
+  final String validatorText;
 
   @override
-  State<PasswordField> createState() => _PasswordFieldState();
+  State<ObscuredTextField> createState() => _ObscuredTextFieldState();
 }
 
-class _PasswordFieldState extends State<PasswordField> {
-  final _formKey = GlobalKey<FormState>();
+class _ObscuredTextFieldState extends State<ObscuredTextField> {
   bool _isObscure = true;
 
   @override
@@ -17,10 +23,11 @@ class _PasswordFieldState extends State<PasswordField> {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: TextFormField(
-            controller: widget.passwordController,
+            controller: widget.controller,
             obscureText: _isObscure,
             decoration: InputDecoration(
-              labelText: 'Password',
+              labelText: widget.label,
+              hintText: widget.hint,
               suffixIcon: IconButton(
                 icon: Icon(
                   _isObscure ? Icons.visibility : Icons.visibility_off,
@@ -34,7 +41,7 @@ class _PasswordFieldState extends State<PasswordField> {
             ),
             validator: (val) {
               if (val == null || val.isEmpty) {
-                return "Password is mandatory";
+                return widget.validatorText;
               }
               return null;
             }));
