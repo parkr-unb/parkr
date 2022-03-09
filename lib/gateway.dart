@@ -1,7 +1,6 @@
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:parkr/models/ModelProvider.dart';
-import 'package:parkr/models/Ticket.dart';
 
 class Gateway {
   static final Gateway _instance = Gateway._privateConstructor();
@@ -17,12 +16,10 @@ class Gateway {
     // TODO: also send an email to parker
     final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
     try {
-      final ticket = Ticket(
-          licenseOrg: licenseOrg, createdAt: TemporalDateTime.now());
+      final ticket =
+          Ticket(licenseOrg: licenseOrg, createdAt: TemporalDateTime.now());
       final request = ModelMutations.create(ticket);
-      final response = await Amplify.API
-          .mutate(request: request)
-          .response;
+      final response = await Amplify.API.mutate(request: request).response;
 
       if (response.data == null) {
         print('errors: ' + response.errors.toString());
@@ -39,9 +36,7 @@ class Gateway {
     try {
       final officer = Officer(userId: userId);
       final request = ModelMutations.create(officer);
-      final response = await Amplify.API
-          .mutate(request: request)
-          .response;
+      final response = await Amplify.API.mutate(request: request).response;
 
       if (response.data == null) {
         print('errors: ' + response.errors.toString());
@@ -50,6 +45,29 @@ class Gateway {
     } on ApiException catch (e) {
       print('Mutation failed: $e');
       rethrow;
+    }
+  }
+
+  Future<List<ParkingPermit>?> queryParkingPermits(String license) async {
+    final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
+    const getTodo = 'getParkingPermits';
+    String graphQLDocument = '''query GetParkingPermits(\$id: ID!) {
+      $getParkingPermit(licenseOrg: "jjt495-unb", termStart: "false") {
+          termEnd
+          termStart
+          passType
+        }
+      }''';
+    try {
+      final request = ModelQueries.list(ParkingPermit.classType,
+          where: QueryField(fieldName: fieldName));
+      final response = await Amplify.API.query(request: request).response;
+      if (response.data == null) {
+        print('errors: ' + response.errors.toString());
+      }
+      return response.data;
+    } on ApiException catch (e) {
+      print('Query failed: $e');
     }
   }
 }

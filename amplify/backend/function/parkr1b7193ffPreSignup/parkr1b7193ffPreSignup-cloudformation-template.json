@@ -1,8 +1,12 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.23\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
-    "GROUP": {
+    "DOMAINBLACKLIST": {
+      "Type": "String",
+      "Default": ""
+    },
+    "DOMAINALLOWLIST": {
       "Type": "String",
       "Default": ""
     },
@@ -67,12 +71,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkrbf2f3042PostConfirmation",
+            "parkr1b7193ffPreSignup",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkrbf2f3042PostConfirmation",
+                  "parkr1b7193ffPreSignup",
                   "-",
                   {
                     "Ref": "env"
@@ -93,8 +97,11 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "GROUP": {
-              "Ref": "GROUP"
+            "DOMAINALLOWLIST": {
+              "Ref": "DOMAINALLOWLIST"
+            },
+            "DOMAINBLACKLIST": {
+              "Ref": "DOMAINBLACKLIST"
             }
           }
         },
@@ -122,12 +129,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkrbf2f3042PostConfirmation",
+            "parkr1b7193ffPreSignup",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkrbf2f3042PostConfirmation",
+                  "parkr1b7193ffPreSignup",
                   "-",
                   {
                     "Ref": "env"

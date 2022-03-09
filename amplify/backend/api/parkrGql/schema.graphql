@@ -5,7 +5,7 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 
 # NOTE: 'createdAt' and 'updatedAt' fields are automatically added to each entity
 
-type ParkingPermit @model {
+type ParkingPermit @model @searchable {
   # license plate joined with the user org ex. jjt495-unb
   licenseOrg: String! @primaryKey(sortKeyFields: ["termStart"])
   termStart: AWSDateTime!
@@ -16,7 +16,7 @@ type ParkingPermit @model {
   emailAddress: String!
 }
 
-type Ticket @model(timestamps: { createdAt: "createdAt"}) {
+type Ticket @model(timestamps: { createdAt: "createdAt"}) @searchable {
   # license plate joined with the user org ex. jjt495-unb
   licenseOrg: String! @primaryKey(sortKeyFields: ["createdAt"])
   createdAt: AWSDateTime!

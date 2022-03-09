@@ -3,19 +3,19 @@
   "modules": [
     "verification-link"
   ],
-  "parentResource": "parkrbf2f3042",
-  "functionName": "parkrbf2f3042CustomMessage",
-  "resourceName": "parkrbf2f3042CustomMessage",
+  "parentResource": "parkr1b7193ff",
+  "functionName": "parkr1b7193ffCustomMessage",
+  "resourceName": "parkr1b7193ffCustomMessage",
   "parentStack": "auth",
   "triggerEnvs": "[\n  {\n    \"key\": \"RESOURCENAME\",\n    \"value\": \"resourceName\"\n  }\n]",
   "triggerDir": "/usr/lib/node_modules/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/CustomMessage",
   "triggerTemplate": "CustomMessage.json.ejs",
   "triggerEventPath": "CustomMessage.event.json",
-  "roleName": "parkrbf2f3042CustomMessage",
+  "roleName": "parkr1b7193ffCustomMessage",
   "skipEdit": true,
   "REDIRECTURL": "",
   "EMAILSUBJECT": "Verify Your Parkr Account",
-  "EMAILMESSAGE": "Thank you for joining Parkr. To confirm your Parkr account, enter the following confirmation code when you login to the app",
+  "EMAILMESSAGE": "Thank you for joining Parkr! Please verify your Parkr account by entering the following confirmation code on your next sign-in",
   "RESOURCENAME": "resourceName",
   "enableCors": false
 }

@@ -1,16 +1,8 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.23\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
-    "REDIRECTURL": {
-      "Type": "String",
-      "Default": ""
-    },
-    "EMAILMESSAGE": {
-      "Type": "String",
-      "Default": ""
-    },
-    "EMAILSUBJECT": {
+    "GROUP": {
       "Type": "String",
       "Default": ""
     },
@@ -75,12 +67,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkrbf2f3042CustomMessage",
+            "parkr1b7193ffPostConfirmation",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkrbf2f3042CustomMessage",
+                  "parkr1b7193ffPostConfirmation",
                   "-",
                   {
                     "Ref": "env"
@@ -101,17 +93,8 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "REDIRECTURL": {
-              "Ref": "REDIRECTURL"
-            },
-            "EMAILSUBJECT": {
-              "Ref": "EMAILSUBJECT"
-            },
-            "EMAILMESSAGE": {
-              "Ref": "EMAILMESSAGE"
-            },
-            "RESOURCENAME": {
-              "Ref": "resourceName"
+            "GROUP": {
+              "Ref": "GROUP"
             }
           }
         },
@@ -139,12 +122,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkrbf2f3042CustomMessage",
+            "parkr1b7193ffPostConfirmation",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkrbf2f3042CustomMessage",
+                  "parkr1b7193ffPostConfirmation",
                   "-",
                   {
                     "Ref": "env"
@@ -190,26 +173,44 @@
             {
               "Effect": "Allow",
               "Action": [
-                "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents",
+                "cognito-idp:CreateGroup",
+                "cognito-idp:AdminAddUserToGroup",
+                "cognito-idp:GetGroup"
               ],
-              "Resource": {
-                "Fn::Sub": [
-                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
-                  {
-                    "region": {
-                      "Ref": "AWS::Region"
-                    },
-                    "account": {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "lambda": {
-                      "Ref": "LambdaFunction"
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                    {
+                      "region": {
+                        "Ref": "AWS::Region"
+                      },
+                      "account": {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "lambda": {
+                        "Ref": "LambdaFunction"
+                      }
                     }
-                  }
-                ]
-              }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:aws:cognito-idp:${region}:${account}:userpool/us-east-1_fPDi3YOgE",
+                    {
+                      "region": {
+                        "Ref": "AWS::Region"
+                      },
+                      "account": {
+                        "Ref": "AWS::AccountId"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

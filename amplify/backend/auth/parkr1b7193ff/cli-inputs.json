@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "parkrbf2f3042_identitypool_bf2f3042",
-    "allowUnauthenticatedIdentities": true,
-    "resourceNameTruncated": "parkrbf2f3042",
-    "userPoolName": "parkrbf2f3042_userpool_bf2f3042",
+    "identityPoolName": "parkr1b7193ff_identitypool_1b7193ff",
+    "allowUnauthenticatedIdentities": false,
+    "resourceNameTruncated": "parkr1b7193ff",
+    "userPoolName": "parkr1b7193ff_userpool_1b7193ff",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -32,10 +32,10 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "parkrbbf2f3042_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "parkr11b7193ff_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "bf2f3042",
-    "resourceName": "parkrbf2f3042",
+    "sharedId": "1b7193ff",
+    "resourceName": "parkr1b7193ff",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "default",
     "usernameAttributes": [
@@ -54,10 +54,10 @@
     },
     "userPoolGroupList": [
       "orgAdmins",
-      "parkingOfficers"
+      "officers"
     ],
     "serviceName": "Cognito",
-    "verificationBucketName": "parkrbf2f3042verificationbucket",
+    "verificationBucketName": "parkr1b7193ffverificationbucket",
     "usernameCaseSensitive": false,
     "useEnabledMfas": true,
     "authRoleArn": {
@@ -76,7 +76,7 @@
     "dependsOn": [
       {
         "category": "function",
-        "resourceName": "parkrbf2f3042CustomMessage",
+        "resourceName": "parkr1b7193ffCustomMessage",
         "triggerProvider": "Cognito",
         "attributes": [
           "Arn",
@@ -85,7 +85,7 @@
       },
       {
         "category": "function",
-        "resourceName": "parkrbf2f3042PostConfirmation",
+        "resourceName": "parkr1b7193ffPostConfirmation",
         "triggerProvider": "Cognito",
         "attributes": [
           "Arn",
@@ -94,7 +94,7 @@
       },
       {
         "category": "function",
-        "resourceName": "parkrbf2f3042PreSignup",
+        "resourceName": "parkr1b7193ffPreSignup",
         "triggerProvider": "Cognito",
         "attributes": [
           "Arn",
@@ -105,7 +105,7 @@
     "permissions": [
       "{\n  \"policyName\": \"AddToGroupCognito\",\n  \"trigger\": \"PostConfirmation\",\n  \"effect\": \"Allow\",\n  \"actions\": [\n    \"cognito-idp:AdminAddUserToGroup\",\n    \"cognito-idp:GetGroup\",\n    \"cognito-idp:CreateGroup\"\n  ],\n  \"resource\": {\n    \"paramType\": \"!GetAtt\",\n    \"keys\": [\n      \"UserPool\",\n      \"Arn\"\n    ]\n  }\n}"
     ],
-    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"CustomMessage\",\n    \"lambdaFunctionName\": \"parkrbf2f3042CustomMessage\"\n  },\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"parkrbf2f3042PostConfirmation\"\n  },\n  {\n    \"triggerType\": \"PreSignUp\",\n    \"lambdaFunctionName\": \"parkrbf2f3042PreSignup\"\n  }\n]",
+    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"CustomMessage\",\n    \"lambdaFunctionName\": \"parkr1b7193ffCustomMessage\"\n  },\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"parkr1b7193ffPostConfirmation\"\n  },\n  {\n    \"triggerType\": \"PreSignUp\",\n    \"lambdaFunctionName\": \"parkr1b7193ffPreSignup\"\n  }\n]",
     "parentStack": {
       "Ref": "AWS::StackId"
     }

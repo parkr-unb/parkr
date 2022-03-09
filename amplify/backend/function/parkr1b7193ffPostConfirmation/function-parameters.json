@@ -3,16 +3,16 @@
   "modules": [
     "add-to-group"
   ],
-  "parentResource": "parkrbf2f3042",
-  "functionName": "parkrbf2f3042PostConfirmation",
-  "resourceName": "parkrbf2f3042PostConfirmation",
+  "parentResource": "parkr1b7193ff",
+  "functionName": "parkr1b7193ffPostConfirmation",
+  "resourceName": "parkr1b7193ffPostConfirmation",
   "parentStack": "auth",
   "triggerEnvs": "[]",
   "triggerDir": "/usr/lib/node_modules/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/PostConfirmation",
   "triggerTemplate": "PostConfirmation.json.ejs",
   "triggerEventPath": "PostConfirmation.event.json",
-  "roleName": "parkrbf2f3042PostConfirmation",
+  "roleName": "parkr1b7193ffPostConfirmation",
   "skipEdit": true,
-  "GROUP": "orgAdmins",
+  "GROUP": "officers",
   "enableCors": false
 }

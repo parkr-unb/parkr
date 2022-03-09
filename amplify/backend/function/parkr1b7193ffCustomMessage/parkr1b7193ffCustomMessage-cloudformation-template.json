@@ -1,12 +1,16 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.23\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
-    "DOMAINBLACKLIST": {
+    "REDIRECTURL": {
       "Type": "String",
       "Default": ""
     },
-    "DOMAINALLOWLIST": {
+    "EMAILMESSAGE": {
+      "Type": "String",
+      "Default": ""
+    },
+    "EMAILSUBJECT": {
       "Type": "String",
       "Default": ""
     },
@@ -71,12 +75,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkrbf2f3042PreSignup",
+            "parkr1b7193ffCustomMessage",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkrbf2f3042PreSignup",
+                  "parkr1b7193ffCustomMessage",
                   "-",
                   {
                     "Ref": "env"
@@ -97,11 +101,17 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "DOMAINALLOWLIST": {
-              "Ref": "DOMAINALLOWLIST"
+            "REDIRECTURL": {
+              "Ref": "REDIRECTURL"
             },
-            "DOMAINBLACKLIST": {
-              "Ref": "DOMAINBLACKLIST"
+            "EMAILSUBJECT": {
+              "Ref": "EMAILSUBJECT"
+            },
+            "EMAILMESSAGE": {
+              "Ref": "EMAILMESSAGE"
+            },
+            "RESOURCENAME": {
+              "Ref": "resourceName"
             }
           }
         },
@@ -129,12 +139,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "parkrbf2f3042PreSignup",
+            "parkr1b7193ffCustomMessage",
             {
               "Fn::Join": [
                 "",
                 [
-                  "parkrbf2f3042PreSignup",
+                  "parkr1b7193ffCustomMessage",
                   "-",
                   {
                     "Ref": "env"

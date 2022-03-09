@@ -1,29 +1,29 @@
 {
   "function": {
-    "parkrbf2f3042CustomMessage": {
+    "parkr1b7193ffCustomMessage": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "parkrbf2f3042PostConfirmation": {
+    "parkr1b7193ffPostConfirmation": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "parkrbf2f3042PreSignup": {
+    "parkr1b7193ffPreSignup": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
   },
   "auth": {
-    "parkrbf2f3042": {
+    "parkr1b7193ff": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "parkrbf2f3042CustomMessage",
+          "resourceName": "parkr1b7193ffCustomMessage",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",
@@ -32,7 +32,7 @@
         },
         {
           "category": "function",
-          "resourceName": "parkrbf2f3042PostConfirmation",
+          "resourceName": "parkr1b7193ffPostConfirmation",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",
@@ -41,7 +41,7 @@
         },
         {
           "category": "function",
-          "resourceName": "parkrbf2f3042PreSignup",
+          "resourceName": "parkr1b7193ffPreSignup",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",
@@ -78,7 +78,7 @@
       "dependsOn": [
         {
           "category": "auth",
-          "resourceName": "parkrbf2f3042",
+          "resourceName": "parkr1b7193ff",
           "attributes": [
             "UserPoolId",
             "AppClientIDWeb",
@@ -98,7 +98,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authparkrbf2f3042"
+              "userPoolId": "authparkr1b7193ff"
             }
           },
           "additionalAuthenticationProviders": []
