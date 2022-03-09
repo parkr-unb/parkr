@@ -169,11 +169,8 @@ class _HomePageState extends State<HomePage> {
                             Amplify.Auth.signOut();
 
                             // completely wipe navigation stack and replace with welcome
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const WelcomePage()),
-                                (_) => false);
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, "welcome", (_) => false);
                           }),
                       const VerticalDivider(),
                       ElevatedButton(

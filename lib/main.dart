@@ -4,11 +4,12 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_api/amplify_api.dart';
 
 import 'package:parkr/amplifyconfiguration.dart';
 import 'package:parkr/views/homepage.dart';
 import 'package:parkr/views/welcomepage.dart';
-
+import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/views/platepage.dart';
 
 class ParkrApp extends StatefulWidget {
@@ -62,6 +63,7 @@ class _ParkrAppState extends State<ParkrApp> {
       routes: {
         "plate": (BuildContext context) => const PlatePage(),
         "home": (BuildContext context) => HomePage(camera: widget.camera),
+        "welcome": (BuildContext context) => const WelcomePage(),
       },
     );
   } // build
@@ -71,7 +73,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await Amplify.addPlugins([AmplifyAuthCognito()]);
+    await Amplify.addPlugins([
+      AmplifyAuthCognito(),
+      AmplifyAPI(modelProvider: ModelProvider.instance)
+    ]);
     await Amplify.configure(amplifyconfig); // from amplifyconfiguration.dart
   } on Exception catch (e) {
     print(

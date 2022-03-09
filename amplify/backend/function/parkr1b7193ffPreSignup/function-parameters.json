@@ -1,0 +1,18 @@
+{
+  "trigger": true,
+  "modules": [
+    "email-filter-allowlist"
+  ],
+  "parentResource": "parkr1b7193ff",
+  "functionName": "parkr1b7193ffPreSignup",
+  "resourceName": "parkr1b7193ffPreSignup",
+  "parentStack": "auth",
+  "triggerEnvs": "[]",
+  "triggerDir": "/usr/lib/node_modules/@aws-amplify/cli/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/PreSignup",
+  "triggerTemplate": "PreSignup.json.ejs",
+  "triggerEventPath": "PreSignup.event.json",
+  "roleName": "parkr1b7193ffPreSignup",
+  "skipEdit": true,
+  "DOMAINALLOWLIST": "unb.ca",
+  "enableCors": false
+}

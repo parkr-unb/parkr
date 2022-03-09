@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "parkrGql",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authparkr1b7193ff",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

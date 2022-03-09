@@ -1,18 +1,18 @@
 export type AmplifyDependentResourcesAttributes = {
     "function": {
-        "parkrbf2f3042CustomMessage": {
+        "parkr1b7193ffCustomMessage": {
             "Name": "string",
             "Arn": "string",
             "LambdaExecutionRole": "string",
             "Region": "string"
         },
-        "parkrbf2f3042PostConfirmation": {
+        "parkr1b7193ffPostConfirmation": {
             "Name": "string",
             "Arn": "string",
             "LambdaExecutionRole": "string",
             "Region": "string"
         },
-        "parkrbf2f3042PreSignup": {
+        "parkr1b7193ffPreSignup": {
             "Name": "string",
             "Arn": "string",
             "LambdaExecutionRole": "string",
@@ -20,7 +20,7 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "auth": {
-        "parkrbf2f3042": {
+        "parkr1b7193ff": {
             "IdentityPoolId": "string",
             "IdentityPoolName": "string",
             "UserPoolId": "string",
@@ -28,6 +28,16 @@ export type AmplifyDependentResourcesAttributes = {
             "UserPoolName": "string",
             "AppClientIDWeb": "string",
             "AppClientID": "string"
+        },
+        "userPoolGroups": {
+            "orgAdminsGroupRole": "string",
+            "officersGroupRole": "string"
+        }
+    },
+    "api": {
+        "parkrGql": {
+            "GraphQLAPIIdOutput": "string",
+            "GraphQLAPIEndpointOutput": "string"
         }
     }
 }
