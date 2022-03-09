@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:parkr/widgets/loginform.dart';
 
 class EmailField extends StatefulWidget {
   const EmailField({Key? key, required this.emailController}) : super(key: key);
