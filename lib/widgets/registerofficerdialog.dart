@@ -35,6 +35,10 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
       if (!result.isSignUpComplete) {
         errMsg = "Register Operation did not complete";
       }
+    } on InvalidPasswordException {
+      errMsg = "Password must be at least 8 characters";
+    } on UsernameExistsException {
+      errMsg = "An officer with the provided email already exists";
     } on AuthException catch (e) {
       print(e.message);
       final msgParts = e.message.split(':');

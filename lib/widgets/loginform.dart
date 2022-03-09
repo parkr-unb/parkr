@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/gateway.dart';
+import 'package:parkr/user.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -10,8 +11,6 @@ class LoginForm extends StatefulWidget {
   @override
   State<LoginForm> createState() => _LoginFormState();
 }
-
-bool should_throw = true;
 
 class _LoginFormState extends State<LoginForm> {
   TextEditingController emailCtrl = TextEditingController();
@@ -21,11 +20,6 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<bool> signInUser() async {
     try {
-      if (should_throw) {
-        should_throw = false;
-        throw UserNotConfirmedException("message");
-      }
-      return true;
       SignInResult result = await Amplify.Auth.signIn(
         username: emailCtrl.text.trim(),
         password: passCtrl.text.trim(),
@@ -42,7 +36,7 @@ class _LoginFormState extends State<LoginForm> {
     return false;
   }
 
-  void login(BuildContext context) async {
+  Future<void> login(BuildContext context) async {
     // Validate returns true if the form is valid, or false otherwise.
     if (!_formKey.currentState!.validate()) {
       return;
@@ -76,26 +70,21 @@ class _LoginFormState extends State<LoginForm> {
                     ])),
                 actions: [
                   TextButton(
-                    child: const Text('Confirm'),
-                    onPressed: () {
-                      Amplify.Auth.confirmSignUp(
-                              username: emailCtrl.text.trim(),
-                              confirmationCode: code)
-                          .then((result) {
-                        Navigator.of(context).pop();
-                        login(_formKey.currentContext as BuildContext);
-                      });
-                      Navigator.of(context).pop();
-                      login(_formKey.currentContext as BuildContext);
-
-                      // await Gateway().addOfficer(userId);
-                      // final user = await Amplify.Auth.getCurrentUser();
-                    },
-                  ),
-                  TextButton(
                     child: const Text('Cancel'),
                     onPressed: () {
                       Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Confirm'),
+                    onPressed: () async {
+                      await Amplify.Auth.confirmSignUp(
+                          username: emailCtrl.text.trim(),
+                          confirmationCode: code);
+                      Navigator.of(context).pop();
+                      await login(_formKey.currentContext as BuildContext);
+                      final user = await CurrentUser().get();
+                      await Gateway().addOfficer(user.userId);
                     },
                   ),
                 ]);
@@ -119,10 +108,10 @@ class _LoginFormState extends State<LoginForm> {
                 ]);
           });
     } else {
-      // navigate home
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
           arguments: {'user': emailCtrl.text.trim()});
+      await CurrentUser().get();
     }
   }
 
