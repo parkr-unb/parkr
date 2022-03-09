@@ -62,6 +62,7 @@ class _ParkrAppState extends State<ParkrApp> {
       routes: {
         "plate": (BuildContext context) => const PlatePage(),
         "home": (BuildContext context) => HomePage(camera: widget.camera),
+        "welcome": (BuildContext context) => const WelcomePage(),
       },
     );
   } // build

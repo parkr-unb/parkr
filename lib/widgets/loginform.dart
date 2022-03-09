@@ -47,7 +47,7 @@ class _LoginFormState extends State<LoginForm> {
       bool signedIn = false;
       try {
         signedIn = await signInUser();
-      } on UserNotConfirmedException catch (e) {
+      } on UserNotConfirmedException {
         String code = "";
         showDialog(
             context: context,
@@ -55,7 +55,7 @@ class _LoginFormState extends State<LoginForm> {
               return AlertDialog(
                   title: const Text('Account Confirmation'),
                   content: SizedBox(
-                      height: 400,
+                      height: 200,
                       child: Column(children: [
                         const Text('Enter your confirmation code'),
                         TextField(
@@ -98,8 +98,7 @@ class _LoginFormState extends State<LoginForm> {
             });
       } else {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
-
-        Navigator.pushNamed(context, "home",
+        Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
             arguments: {'user': emailCtrl.text.trim()});
       }
     }
@@ -169,7 +168,8 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "home",
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, "home", (_) => false,
                         arguments: {'user': 'DEBUG'});
                   },
                   child: const Text('Debug Skip Login'),
