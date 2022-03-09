@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/gateway.dart';
 
 class RegisterOfficerDialog extends StatefulWidget {
   const RegisterOfficerDialog({Key? key}) : super(key: key);
