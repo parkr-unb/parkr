@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "parkrGql",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "/home/justen/school/fourth-year/term1/engg4000/parkr/amplify/backend/api/parkrGql/schema.graphql",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authparkrbf2f3042"
+    }
+  }
+}
