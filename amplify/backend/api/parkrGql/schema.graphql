@@ -1,9 +1,32 @@
+# TODO: remove this public auth rule and place org-based auth on each model
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
+# NOTE: 'createdAt' and 'updatedAt' fields are automatically added to each entity
+
+type ParkingPermit @model {
+  # license plate joined with the user org ex. jjt495-unb
+  licenseOrg: String! @primaryKey(sortKeyFields: ["termStart"])
+  termStart: AWSDateTime!
+  termEnd: AWSDateTime!
+  passType: String!
+  firstName: String!
+  lastName: String!
+  emailAddress: String!
+}
+
+type Ticket @model(timestamps: { createdAt: "createdAt"}) {
+  # license plate joined with the user org ex. jjt495-unb
+  licenseOrg: String! @primaryKey(sortKeyFields: ["createdAt"])
+  createdAt: AWSDateTime!
+  # TODO: add additional fields, like notes, location, officer, etc
+}
+
+type Officer @model {
+  userId: ID! @primaryKey
+}
+
+type Organization @model {
+  orgName: String! @primaryKey
 }

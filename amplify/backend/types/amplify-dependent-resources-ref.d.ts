@@ -33,5 +33,11 @@ export type AmplifyDependentResourcesAttributes = {
             "orgAdminsGroupRole": "string",
             "parkingOfficersGroupRole": "string"
         }
+    },
+    "api": {
+        "parkrGql": {
+            "GraphQLAPIIdOutput": "string",
+            "GraphQLAPIEndpointOutput": "string"
+        }
     }
 }
