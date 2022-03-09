@@ -2,6 +2,9 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/widgets/obscuredtextfield.dart';
+import 'package:parkr/widgets/visibletextfield.dart';
+import 'package:parkr/widgets/logo.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -14,7 +17,6 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isObscure = true;
 
   Future<bool> signInUser() async {
     try {
@@ -115,49 +117,15 @@ class _LoginFormState extends State<LoginForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: Image.asset('assets/parkr_logo.png'),
+            const Logo(),
+            VisibleTextField(
+              controller: emailCtrl,
+            ),
+            ObscuredTextField(
+              controller: passCtrl,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: TextFormField(
-                  controller: emailCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Email', hintText: 'Enter Valid Email'),
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return "Email is mandatory";
-                    }
-                    return null;
-                  }),
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: TextFormField(
-                    controller: passCtrl,
-                    obscureText: _isObscure,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isObscure = !_isObscure;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return "Password is mandatory";
-                      }
-                      return null;
-                    })),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: ElevatedButton(
                 onPressed: () {
                   login(context);
@@ -167,7 +135,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
             if (kDebugMode)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, "home",

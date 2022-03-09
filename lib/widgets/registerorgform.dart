@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:parkr/widgets/visibletextfield.dart';
+import 'package:parkr/widgets/logo.dart';
+import 'package:parkr/widgets/obscuredtextfield.dart';
 
 class RegisterOrgForm extends StatefulWidget {
   const RegisterOrgForm({Key? key}) : super(key: key);
@@ -14,7 +17,6 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isObscure = true;
 
   //This is just a temporary form. We will need a way for organizations to
   // register themselves. Credit card info, parking lot geography, contact phone
@@ -27,64 +29,25 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: Image.asset('assets/parkr_logo.png'),
+            const Logo(),
+            VisibleTextField(
+                controller: orgNameCtrl,
+                label: 'Organization Name',
+                hint: 'Enter New Organization Name',
+                validatorText: 'Organization name is mandatory',
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextFormField(
-                  controller: orgNameCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Organization Name',
-                      hintText: 'Enter New Organization Name'),
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return "Organization name is mandatory";
-                    }
-                    return null;
-                  }),
+            VisibleTextField(
+                controller: emailCtrl,
+                label: 'Admin Email',
+                hint: 'Enter Organization Administrator\'s Email',
+                validatorText: 'Admin email is mandatory',
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextFormField(
-                  controller: emailCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Admin Email',
-                      hintText: 'Enter Organization Administrator\'s Email'),
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return "Admin email is mandatory";
-                    }
-                    return null;
-                  }),
+            ObscuredTextField(
+                controller: passCtrl,
+                label: 'Admin Password',
+                hint: 'Enter the Organization Administrator\'s Password',
+                validatorText: 'Admin password is mandatory',
             ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextFormField(
-                    controller: passCtrl,
-                    obscureText: _isObscure,
-                    decoration: InputDecoration(
-                      labelText: 'Admin Password',
-                      hintText:
-                        'Enter Organization Administrator\'s Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isObscure = !_isObscure;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return "Admin password is mandatory";
-                      }
-                      return null;
-                    })),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: ElevatedButton(
