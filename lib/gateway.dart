@@ -16,8 +16,7 @@ class Gateway {
     // TODO: also send an email to parker
     final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
     try {
-      final ticket =
-          Ticket(licenseOrg: licenseOrg, createdAt: TemporalDateTime.now());
+      final ticket = Ticket(id: licenseOrg, createdAt: TemporalDateTime.now());
       final request = ModelMutations.create(ticket);
       final response = await Amplify.API.mutate(request: request).response;
 
@@ -34,7 +33,7 @@ class Gateway {
   // provide the userId created by cognito
   Future<Officer?> addOfficer(String userId) async {
     try {
-      final officer = Officer(id: null, userId: userId);
+      final officer = Officer(id: userId, role: "officer");
       final request = ModelMutations.create(officer);
       final response = await Amplify.API.mutate(request: request).response;
 
@@ -44,6 +43,22 @@ class Gateway {
       return response.data;
     } on ApiException catch (e) {
       print('Mutation failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<Officer?>?> listOfficers() async {
+    try {
+      final request = ModelQueries.list(Officer.classType);
+      final response = await Amplify.API.query(request: request).response;
+      if (response.data == null) {
+        print('errors: ' + response.errors.toString());
+        return null;
+      } else {
+        return response.data?.items;
+      }
+    } on ApiException catch (e) {
+      print('Query failed: $e');
       rethrow;
     }
   }

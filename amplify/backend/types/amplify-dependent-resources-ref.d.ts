@@ -36,6 +36,7 @@ export type AmplifyDependentResourcesAttributes = {
     },
     "api": {
         "parkrGql": {
+            "GraphQLAPIKeyOutput": "string",
             "GraphQLAPIIdOutput": "string",
             "GraphQLAPIEndpointOutput": "string"
         }
