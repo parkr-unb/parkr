@@ -25,9 +25,12 @@ type Ticket @model(timestamps: { createdAt: "createdAt"}) @searchable {
 
 type Officer @model {
   userId: ID! @primaryKey
-  # TODO: add role
+  role: String!
+  organization: Organization @belongsTo
 }
 
 type Organization @model {
   orgName: String! @primaryKey
+  domainAllow: [String!]
+  officers: [Officer!] @hasMany
 }
