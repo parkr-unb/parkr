@@ -73,10 +73,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await Amplify.addPlugins([
-      AmplifyAuthCognito(),
-      AmplifyAPI(modelProvider: ModelProvider.instance)
-    ]);
+    await Amplify.addPlugin(AmplifyAPI(modelProvider: ModelProvider.instance));
+    await Amplify.addPlugin(AmplifyAuthCognito());
     await Amplify.configure(amplifyconfig); // from amplifyconfiguration.dart
   } on Exception catch (e) {
     print(

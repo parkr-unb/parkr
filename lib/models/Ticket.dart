@@ -28,7 +28,6 @@ import 'package:flutter/foundation.dart';
 class Ticket extends Model {
   static const classType = const _TicketModelType();
   final String id;
-  final String? _licenseOrg;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -38,19 +37,6 @@ class Ticket extends Model {
   @override
   String getId() {
     return id;
-  }
-  
-  String get licenseOrg {
-    try {
-      return _licenseOrg!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
   }
   
   TemporalDateTime get createdAt {
@@ -70,12 +56,11 @@ class Ticket extends Model {
     return _updatedAt;
   }
   
-  const Ticket._internal({required this.id, required licenseOrg, required createdAt, updatedAt}): _licenseOrg = licenseOrg, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Ticket._internal({required this.id, required createdAt, updatedAt}): _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Ticket({String? id, required String licenseOrg, required TemporalDateTime createdAt}) {
+  factory Ticket({String? id, required TemporalDateTime createdAt}) {
     return Ticket._internal(
       id: id == null ? UUID.getUUID() : id,
-      licenseOrg: licenseOrg,
       createdAt: createdAt);
   }
   
@@ -88,7 +73,6 @@ class Ticket extends Model {
     if (identical(other, this)) return true;
     return other is Ticket &&
       id == other.id &&
-      _licenseOrg == other._licenseOrg &&
       _createdAt == other._createdAt;
   }
   
@@ -101,7 +85,6 @@ class Ticket extends Model {
     
     buffer.write("Ticket {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("licenseOrg=" + "$_licenseOrg" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -109,37 +92,28 @@ class Ticket extends Model {
     return buffer.toString();
   }
   
-  Ticket copyWith({String? id, String? licenseOrg, TemporalDateTime? createdAt}) {
+  Ticket copyWith({String? id, TemporalDateTime? createdAt}) {
     return Ticket._internal(
       id: id ?? this.id,
-      licenseOrg: licenseOrg ?? this.licenseOrg,
       createdAt: createdAt ?? this.createdAt);
   }
   
   Ticket.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _licenseOrg = json['licenseOrg'],
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'licenseOrg': _licenseOrg, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "ticket.id");
-  static final QueryField LICENSEORG = QueryField(fieldName: "licenseOrg");
   static final QueryField CREATEDAT = QueryField(fieldName: "createdAt");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Ticket";
     modelSchemaDefinition.pluralName = "Tickets";
     
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Ticket.LICENSEORG,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Ticket.CREATEDAT,

@@ -2,6 +2,8 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/gateway.dart';
+import 'package:parkr/user.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
@@ -36,73 +38,82 @@ class _LoginFormState extends State<LoginForm> {
     return false;
   }
 
-  void login(BuildContext context) async {
+  Future<void> login(BuildContext context) async {
     // Validate returns true if the form is valid, or false otherwise.
-    if (_formKey.currentState!.validate()) {
-      // If the form is valid, display a snackbar. In the real world,
-      // you'd often call a server or save the information in a database.
-      const processingBar = SnackBar(content: Text('Processing Data'));
-      ScaffoldMessenger.of(context).showSnackBar(processingBar);
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      // process login
+    const processingBar = SnackBar(content: Text('Processing Data'));
+    ScaffoldMessenger.of(context).showSnackBar(processingBar);
 
-      bool signedIn = false;
-      try {
-        signedIn = await signInUser();
-      } on UserNotConfirmedException {
-        String code = "";
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  title: const Text('Account Confirmation'),
-                  content: SizedBox(
-                      height: 200,
-                      child: Column(children: [
-                        const Text('Enter your confirmation code'),
-                        TextField(
-                          style: const TextStyle(fontSize: 25),
-                          onChanged: (value) {
-                            code = value.trim();
-                          },
-                        )
-                      ])),
-                  actions: [
-                    TextButton(
-                      child: const Text('Confirm'),
-                      onPressed: () {
-                        Amplify.Auth.confirmSignUp(
-                            username: emailCtrl.text.trim(),
-                            confirmationCode: code);
-                        Navigator.of(context).pop();
-                        login(context);
-                      },
-                    ),
-                  ]);
-            });
-        return;
-      }
-      if (!signedIn) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  title: const Text('Failed to Log in'),
-                  content: const Text('Invalid Username and/or Password'),
-                  actions: [
-                    TextButton(
-                      child: const Text('OK'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ]);
-            });
-      } else {
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
-            arguments: {'user': emailCtrl.text.trim()});
-      }
+    // process login
+
+    bool signedIn = false;
+    try {
+      signedIn = await signInUser();
+    } on UserNotConfirmedException {
+      String code = "";
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: const Text('Account Confirmation'),
+                content: SizedBox(
+                    height: 200,
+                    child: Column(children: [
+                      const Text('Enter your confirmation code'),
+                      TextField(
+                        style: const TextStyle(fontSize: 25),
+                        onChanged: (value) {
+                          code = value.trim();
+                        },
+                      )
+                    ])),
+                actions: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Confirm'),
+                    onPressed: () async {
+                      await Amplify.Auth.confirmSignUp(
+                          username: emailCtrl.text.trim(),
+                          confirmationCode: code);
+                      Navigator.of(context).pop();
+                      await login(_formKey.currentContext as BuildContext);
+                      final user = await CurrentUser().get();
+                      await Gateway().addOfficer(user.userId);
+                    },
+                  ),
+                ]);
+          });
+      return;
+    }
+    if (!signedIn) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: const Text('Failed to Log in'),
+                content: const Text('Invalid Username and/or Password'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ]);
+          });
+    } else {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
+          arguments: {'user': emailCtrl.text.trim()});
+      await CurrentUser().get();
     }
   }
 
@@ -147,4 +158,5 @@ class _LoginFormState extends State<LoginForm> {
           ],
         )));
   } // build
+
 }

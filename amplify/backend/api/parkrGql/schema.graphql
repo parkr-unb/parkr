@@ -4,29 +4,36 @@
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
 # NOTE: 'createdAt' and 'updatedAt' fields are automatically added to each entity
+# NOTE: id
 
 type ParkingPermit @model @searchable {
-  # license plate joined with the user org ex. jjt495-unb
-  licenseOrg: String! @primaryKey(sortKeyFields: ["termStart"])
-  termStart: AWSDateTime!
-  termEnd: AWSDateTime!
-  passType: String!
-  firstName: String!
-  lastName: String!
-  emailAddress: String!
+    # id is license plate joined with the user org ex. jjt495-unb
+    id: ID! @primaryKey(sortKeyFields: ["termStart"])
+    termStart: AWSDateTime!
+    termEnd: AWSDateTime!
+    passType: String!
+    firstName: String!
+    lastName: String!
+    emailAddress: String!
 }
 
 type Ticket @model(timestamps: { createdAt: "createdAt"}) @searchable {
-  # license plate joined with the user org ex. jjt495-unb
-  licenseOrg: String! @primaryKey(sortKeyFields: ["createdAt"])
-  createdAt: AWSDateTime!
-  # TODO: add additional fields, like notes, location, officer, etc
+    # id is license plate joined with the user org ex. jjt495-unb
+    id: ID! @primaryKey(sortKeyFields: ["createdAt"])
+    createdAt: AWSDateTime!
+    # TODO: add additional fields, like notes, location, officer, etc
 }
 
 type Officer @model {
-  userId: ID! @primaryKey
+    # id is userId from Cognito
+    id: ID!
+    role: String!
+    organization: Organization @belongsTo
 }
 
 type Organization @model {
-  orgName: String! @primaryKey
+    # id is orgName
+    id: ID!
+    domainAllow: [String!]
+    officers: [Officer!] @hasMany
 }

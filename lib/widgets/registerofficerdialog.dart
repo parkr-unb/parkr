@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/gateway.dart';
 
 class RegisterOfficerDialog extends StatefulWidget {
   const RegisterOfficerDialog({Key? key}) : super(key: key);
@@ -34,6 +35,10 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
       if (!result.isSignUpComplete) {
         errMsg = "Register Operation did not complete";
       }
+    } on InvalidPasswordException {
+      errMsg = "Password must be at least 8 characters";
+    } on UsernameExistsException {
+      errMsg = "An officer with the provided email already exists";
     } on AuthException catch (e) {
       print(e.message);
       final msgParts = e.message.split(':');

@@ -22,7 +22,7 @@
           "EMAILSUBJECT": "Verify Your Parkr Account",
           "EMAILMESSAGE": "Thank you for joining Parkr! Please verify your Parkr account by entering the following confirmation code on your next sign-in",
           "deploymentBucketName": "amplify-parkr-dev-131845-deployment",
-          "s3Key": "amplify-builds/parkr1b7193ffCustomMessage-696c736975675454316d-build.zip"
+          "s3Key": "amplify-builds/parkr1b7193ffCustomMessage-4a41615051526e2f615a-build.zip"
         },
         "parkr1b7193ffPostConfirmation": {
           "GROUP": "officers",
