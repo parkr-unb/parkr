@@ -251,7 +251,7 @@ class _PlatePageState extends State<PlatePage> {
                 ElevatedButton(
                     child: Text('Generate Ticket'),
                     onPressed: !valid ? null : () {
-                      Gateway().queryParkingPermits('123-unb-unb');
+                      Gateway().administerTicket(registration.plate);
                       Navigator.pop(context);
                     }
                 ),
