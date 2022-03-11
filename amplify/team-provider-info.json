@@ -14,7 +14,8 @@
     },
     "categories": {
       "auth": {
-        "parkr1b7193ff": {}
+        "parkr1b7193ff": {},
+        "userPoolGroups": {}
       },
       "function": {
         "parkr1b7193ffCustomMessage": {

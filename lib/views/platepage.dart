@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:parkr/analyzer.dart';
+import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
 
 class PlatePage extends StatefulWidget {
@@ -250,7 +251,7 @@ class _PlatePageState extends State<PlatePage> {
                 ElevatedButton(
                     child: Text('Generate Ticket'),
                     onPressed: !valid ? null : () {
-                      // send ticket
+                      Gateway().queryParkingPermits('123-unb-unb');
                       Navigator.pop(context);
                     }
                 ),
