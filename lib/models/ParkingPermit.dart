@@ -25,26 +25,11 @@ import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the ParkingPermit type in your schema. */
 @immutable
-class ParkingPermit extends Model {
-  static const classType = const _ParkingPermitModelType();
-  final String id;
+class ParkingPermit {
   final TemporalDateTime? _termStart;
   final TemporalDateTime? _termEnd;
   final String? _passType;
-  final String? _firstName;
-  final String? _lastName;
-  final String? _emailAddress;
-  final TemporalDateTime? _createdAt;
-  final TemporalDateTime? _updatedAt;
 
-  @override
-  getInstanceType() => classType;
-  
-  @override
-  String getId() {
-    return id;
-  }
-  
   TemporalDateTime get termStart {
     try {
       return _termStart!;
@@ -84,64 +69,13 @@ class ParkingPermit extends Model {
     }
   }
   
-  String get firstName {
-    try {
-      return _firstName!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
+  const ParkingPermit._internal({required termStart, required termEnd, required passType}): _termStart = termStart, _termEnd = termEnd, _passType = passType;
   
-  String get lastName {
-    try {
-      return _lastName!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
-  String get emailAddress {
-    try {
-      return _emailAddress!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
-  TemporalDateTime? get createdAt {
-    return _createdAt;
-  }
-  
-  TemporalDateTime? get updatedAt {
-    return _updatedAt;
-  }
-  
-  const ParkingPermit._internal({required this.id, required termStart, required termEnd, required passType, required firstName, required lastName, required emailAddress, createdAt, updatedAt}): _termStart = termStart, _termEnd = termEnd, _passType = passType, _firstName = firstName, _lastName = lastName, _emailAddress = emailAddress, _createdAt = createdAt, _updatedAt = updatedAt;
-  
-  factory ParkingPermit({String? id, required TemporalDateTime termStart, required TemporalDateTime termEnd, required String passType, required String firstName, required String lastName, required String emailAddress}) {
+  factory ParkingPermit({required TemporalDateTime termStart, required TemporalDateTime termEnd, required String passType}) {
     return ParkingPermit._internal(
-      id: id == null ? UUID.getUUID() : id,
       termStart: termStart,
       termEnd: termEnd,
-      passType: passType,
-      firstName: firstName,
-      lastName: lastName,
-      emailAddress: emailAddress);
+      passType: passType);
   }
   
   bool equals(Object other) {
@@ -152,13 +86,9 @@ class ParkingPermit extends Model {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is ParkingPermit &&
-      id == other.id &&
       _termStart == other._termStart &&
       _termEnd == other._termEnd &&
-      _passType == other._passType &&
-      _firstName == other._firstName &&
-      _lastName == other._lastName &&
-      _emailAddress == other._emailAddress;
+      _passType == other._passType;
   }
   
   @override
@@ -169,116 +99,50 @@ class ParkingPermit extends Model {
     var buffer = new StringBuffer();
     
     buffer.write("ParkingPermit {");
-    buffer.write("id=" + "$id" + ", ");
     buffer.write("termStart=" + (_termStart != null ? _termStart!.format() : "null") + ", ");
     buffer.write("termEnd=" + (_termEnd != null ? _termEnd!.format() : "null") + ", ");
-    buffer.write("passType=" + "$_passType" + ", ");
-    buffer.write("firstName=" + "$_firstName" + ", ");
-    buffer.write("lastName=" + "$_lastName" + ", ");
-    buffer.write("emailAddress=" + "$_emailAddress" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("passType=" + "$_passType");
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  ParkingPermit copyWith({String? id, TemporalDateTime? termStart, TemporalDateTime? termEnd, String? passType, String? firstName, String? lastName, String? emailAddress}) {
+  ParkingPermit copyWith({TemporalDateTime? termStart, TemporalDateTime? termEnd, String? passType}) {
     return ParkingPermit._internal(
-      id: id ?? this.id,
       termStart: termStart ?? this.termStart,
       termEnd: termEnd ?? this.termEnd,
-      passType: passType ?? this.passType,
-      firstName: firstName ?? this.firstName,
-      lastName: lastName ?? this.lastName,
-      emailAddress: emailAddress ?? this.emailAddress);
+      passType: passType ?? this.passType);
   }
   
   ParkingPermit.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      _termStart = json['termStart'] != null ? TemporalDateTime.fromString(json['termStart']) : null,
+    : _termStart = json['termStart'] != null ? TemporalDateTime.fromString(json['termStart']) : null,
       _termEnd = json['termEnd'] != null ? TemporalDateTime.fromString(json['termEnd']) : null,
-      _passType = json['passType'],
-      _firstName = json['firstName'],
-      _lastName = json['lastName'],
-      _emailAddress = json['emailAddress'],
-      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
+      _passType = json['passType'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'termStart': _termStart?.format(), 'termEnd': _termEnd?.format(), 'passType': _passType, 'firstName': _firstName, 'lastName': _lastName, 'emailAddress': _emailAddress, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'termStart': _termStart?.format(), 'termEnd': _termEnd?.format(), 'passType': _passType
   };
 
-  static final QueryField ID = QueryField(fieldName: "parkingPermit.id");
-  static final QueryField TERMSTART = QueryField(fieldName: "termStart");
-  static final QueryField TERMEND = QueryField(fieldName: "termEnd");
-  static final QueryField PASSTYPE = QueryField(fieldName: "passType");
-  static final QueryField FIRSTNAME = QueryField(fieldName: "firstName");
-  static final QueryField LASTNAME = QueryField(fieldName: "lastName");
-  static final QueryField EMAILADDRESS = QueryField(fieldName: "emailAddress");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "ParkingPermit";
     modelSchemaDefinition.pluralName = "ParkingPermits";
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: ParkingPermit.TERMSTART,
+    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+      fieldName: 'termStart',
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: ParkingPermit.TERMEND,
+    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+      fieldName: 'termEnd',
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: ParkingPermit.PASSTYPE,
+    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+      fieldName: 'passType',
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: ParkingPermit.FIRSTNAME,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: ParkingPermit.LASTNAME,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: ParkingPermit.EMAILADDRESS,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
-      fieldName: 'createdAt',
-      isRequired: false,
-      isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
-      fieldName: 'updatedAt',
-      isRequired: false,
-      isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
   });
-}
-
-class _ParkingPermitModelType extends ModelType<ParkingPermit> {
-  const _ParkingPermitModelType();
-  
-  @override
-  ParkingPermit fromJson(Map<String, dynamic> jsonData) {
-    return ParkingPermit.fromJson(jsonData);
-  }
 }

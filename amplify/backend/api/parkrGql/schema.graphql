@@ -4,24 +4,32 @@
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
 # NOTE: 'createdAt' and 'updatedAt' fields are automatically added to each entity
-# NOTE: id
 
-type ParkingPermit @model @searchable {
-    # id is license plate joined with the user org ex. jjt495-unb
-    id: ID! @primaryKey(sortKeyFields: ["termStart"])
+type ParkingPermit {
     termStart: AWSDateTime!
     termEnd: AWSDateTime!
     passType: String!
+}
+
+type ParkingPermits @model {
+    # id is license plate joined with the user org ex. jjt495-unb
+    id: ID!
+    permits: [ParkingPermit!]
     firstName: String!
     lastName: String!
     emailAddress: String!
 }
 
-type Ticket @model(timestamps: { createdAt: "createdAt"}) @searchable {
-    # id is license plate joined with the user org ex. jjt495-unb
-    id: ID! @primaryKey(sortKeyFields: ["createdAt"])
+type Ticket {
     createdAt: AWSDateTime!
-    # TODO: add additional fields, like notes, location, officer, etc
+    type: String!
+    # TODO: add additional fields like notes, location, officer, etc
+}
+
+type Tickets @model {
+    # id is license plate joined with the user org ex. jjt495-unb
+    id: ID!
+    tickets: [Ticket!]
 }
 
 type Officer @model {

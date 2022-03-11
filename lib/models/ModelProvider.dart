@@ -22,22 +22,26 @@
 import 'package:amplify_core/amplify_core.dart';
 import 'Officer.dart';
 import 'Organization.dart';
+import 'ParkingPermits.dart';
+import 'Tickets.dart';
 import 'ParkingPermit.dart';
 import 'Ticket.dart';
 
 export 'Officer.dart';
 export 'Organization.dart';
 export 'ParkingPermit.dart';
+export 'ParkingPermits.dart';
 export 'Ticket.dart';
+export 'Tickets.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "b85577648a00052a374887c61933bce9";
+  String version = "0f932d9345012720078cab2217143b58";
   @override
-  List<ModelSchema> modelSchemas = [Officer.schema, Organization.schema, ParkingPermit.schema, Ticket.schema];
+  List<ModelSchema> modelSchemas = [Officer.schema, Organization.schema, ParkingPermits.schema, Tickets.schema];
   static final ModelProvider _instance = ModelProvider();
   @override
-  List<ModelSchema> customTypeSchemas = [];
+  List<ModelSchema> customTypeSchemas = [ParkingPermit.schema, Ticket.schema];
 
   static ModelProvider get instance => _instance;
   
@@ -47,10 +51,10 @@ class ModelProvider implements ModelProviderInterface {
         return Officer.classType;
       case "Organization":
         return Organization.classType;
-      case "ParkingPermit":
-        return ParkingPermit.classType;
-      case "Ticket":
-        return Ticket.classType;
+      case "ParkingPermits":
+        return ParkingPermits.classType;
+      case "Tickets":
+        return Tickets.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }
