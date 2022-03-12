@@ -11,7 +11,7 @@ class Gateway {
     return _instance;
   }
 
-  Future<Tickets?> administerTicket(String license) async {
+  Future<Tickets?> administerTicket(String license, String ticketType) async {
     // TODO: accept org in a better way
     // TODO: also send an email to parker
     final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
@@ -22,22 +22,24 @@ class Gateway {
           .query(request: request)
           .response;
       Tickets? tickets = response.data;
-      if (tickets == null) {
-        final Ticket ticket = Ticket(
+      if (tickets == null) { // No tickets associated with license plate, create a row
+        final Ticket newTicket = Ticket(
             createdAt: TemporalDateTime.now(),
-            type: 'wrong lot');
-        final List<Ticket> listTickets = List.filled(1, ticket, growable: true);
-        final Tickets newTickets = Tickets(id: licenseOrg, tickets: listTickets);
-        final request = ModelMutations.create(newTickets);
-        final response = await Amplify.API
-            .mutate(request: request)
+            type: ticketType);
+        final List<Ticket> newTicketList = List.filled(1, newTicket, growable: true);
+        final Tickets newTickets = Tickets(
+            id: licenseOrg, tickets: newTicketList);
+        final createRequest = ModelMutations.create(newTickets);
+        final createResponse = await Amplify.API
+            .mutate(request: createRequest)
             .response;
-        return response.data;
+        return createResponse.data;
       }
-      final Ticket ticket = Ticket(
+      // Tickets found with license plate, add ticket to Tickets list
+      final Ticket newTicket = Ticket(
           createdAt: TemporalDateTime.now(),
-          type: 'wrong lot');
-      tickets.tickets?.add(ticket);
+          type: ticketType);
+      tickets.tickets?.add(newTicket);
       final mutationRequest = ModelMutations.create(tickets);
       final mutationResponse = await Amplify.API
           .mutate(request: mutationRequest)
@@ -83,6 +85,8 @@ class Gateway {
   }
 
   Future<ParkingPermits?> createParkingPermit(String license, String firstName, String lastName, String email) async {
+    // Only used for inputting passes into database manually
+    // Would use existing system to enter passes in real world
     final ParkingPermit pass = ParkingPermit(termStart: TemporalDateTime(DateTime.parse("2022-02-10T20:03:33.604760000Z")), termEnd: TemporalDateTime(DateTime.parse("2022-02-10T20:03:33.604760000Z")), passType: 'student');
     final List<ParkingPermit> passes = List.filled(1, pass, growable: true);
     try {
@@ -96,13 +100,14 @@ class Gateway {
         return null;
       }
       print('Mutation result: ' + created.toString());
+      return created;
     } on ApiException catch (e) {
       print('Mutation failed: $e');
     }
+    return null;
   }
 
-  Future<List<ParkingPermits>?> queryParkingPermits(String license) async {
-    // chef's kiss
+  Future<ParkingPermits?> queryParkingPermits(String license) async {
     try {
       final request = ModelQueries.get(
           ParkingPermits.classType, license);
@@ -113,8 +118,10 @@ class Gateway {
         return null;
       }
       print("Query: " + (passes.permits?.elementAt(0)?.toString() ?? ''));
+      return passes;
     } on ApiException catch (e) {
       print('Query failed: $e');
     }
+    return null;
   }
 }
