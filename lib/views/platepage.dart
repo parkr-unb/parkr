@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:parkr/analyzer.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
+import 'package:parkr/widgets/loadingdialog.dart';
+
+import '../models/Tickets.dart';
 
 class PlatePage extends StatefulWidget {
   static const String title = 'Examining plates';
@@ -250,8 +253,22 @@ class _PlatePageState extends State<PlatePage> {
               children: [
                 ElevatedButton(
                     child: Text('Generate Ticket'),
-                    onPressed: !valid ? null : () {
-                      Gateway().administerTicket(registration.plate);
+                    onPressed: !valid ? null : () async {
+                      Tickets? tickets = await (loading(
+                        context,
+                        Future.delayed(const Duration(seconds: 2), () {
+                        return Gateway().administerTicket(registration.plate, 'invalid-pass');
+                      }),
+                      "Administering ticket...")) as Tickets?;
+                      if (tickets == null) {
+                        //show error dialog
+                        print("Successful ticket generation");
+                      }
+                      else {
+                        //show success dialog
+                        print("Ticket generation failed");
+                      }
+                      // Gateway().administerTicket(registration.plate);
                       Navigator.pop(context);
                     }
                 ),
