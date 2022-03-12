@@ -17,12 +17,15 @@ Object loading(BuildContext context, Future<Object> future, String text) async {
       return alert;
     },
   );
-  await future.then((Object o) {
+  Object o = await future.then((Object o) {
     Navigator.pop(context);
+    print("No error");
     return o;
   }).catchError((Object o) {
     Navigator.pop(context);
+    print("Error caught");
     return o;
   });
-  return null;
+  print("returning o");
+  return o;
 }

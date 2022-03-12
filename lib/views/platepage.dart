@@ -262,11 +262,11 @@ class _PlatePageState extends State<PlatePage> {
                       "Administering ticket...")) as Tickets?;
                       if (tickets == null) {
                         //show error dialog
-                        print("Successful ticket generation");
+                        print("Ticket generation failed");
                       }
                       else {
                         //show success dialog
-                        print("Ticket generation failed");
+                        print("Successful ticket generation");
                       }
                       // Gateway().administerTicket(registration.plate);
                       Navigator.pop(context);
