@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:parkr/analyzer.dart';
 import 'package:parkr/registration.dart';
+import 'package:parkr/user.dart';
 
 class PlatePage extends StatefulWidget {
   static const String title = 'Examining plates';
@@ -48,7 +49,7 @@ class _PlatePageState extends State<PlatePage> {
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
     final registration = arguments["reg"] as Registration;
-    final username = arguments["user"] as String;
+    final username = CurrentUser().getName();
     if(!init)
     {
       var result = isValid(registration);
@@ -67,203 +68,204 @@ class _PlatePageState extends State<PlatePage> {
       ),
       body: Container(
         decoration: BoxDecoration(
-            border: Border.all(width: 10, color: valid ? Colors.red : Colors.green)
+            border: Border.all(width: 6, color: valid ? Colors.red : Colors.green)
           ),
         padding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
-        child: Column(
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Column(
+        child:
+            Column(
+              children: <Widget>[
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      'Infraction Type',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20
-                      )
-                    ),
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Checkbox(
-                          value: _hasPass,
-                          onChanged: (bool? newValue) {
-                            setState(() { _hasPass = newValue!; });
-                          },
+                        Text(
+                          'Infraction Type',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20
+                          )
                         ),
-                        Text('Parked Without Pass')
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _hasPass,
+                              onChanged: (bool? newValue) {
+                                setState(() { _hasPass = newValue!; });
+                              },
+                            ),
+                            Text('Parked Without Pass')
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _invalidLot,
+                              onChanged: (bool? newValue) {
+                                setState(() { _invalidLot = newValue!; });
+                              },
+                            ),
+                            Text('Parked in Invalid Lot')
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _blocking,
+                              onChanged: (bool? newValue) {
+                                setState(() { _blocking = newValue!; });
+                              },
+                            ),
+                            Text('Blocking Pathway')
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _multiple,
+                              onChanged: (bool? newValue) {
+                                setState(() { _multiple = newValue!; });
+                              },
+                            ),
+                            Text('Occupying Multiple Slots')
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _alt,
+                              onChanged: (bool? newValue) {
+                                setState(() { _alt = newValue!; });
+                              },
+                            ),
+                            Text('Another Reason')
+                          ],
+                        ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _invalidLot,
-                          onChanged: (bool? newValue) {
-                            setState(() { _invalidLot = newValue!; });
-                          },
-                        ),
-                        Text('Parked in Invalid Lot')
-                      ],
+                    const VerticalDivider(),
+                    const VerticalDivider(),
+                    Expanded(
+                      child:
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 50),
+                                Text('Parking Officer'),
+                                Text(username!,
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                SizedBox(height: 50),
+                                Text('Infraction Date'),
+                                Text(DateString(DateTime.now()),
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                SizedBox(height: 50),
+                                Text('Infraction Location'),
+                                Text('Head Hall Lot 4',
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text('')
+                              ],
+                            )
+                          ],
+                        )
+                    )
+                  ],
+                ),
+                Expanded(
+                  child: SizedBox(height: 50),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text('Registration Information',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20
+                        )
                     ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _blocking,
-                          onChanged: (bool? newValue) {
-                            setState(() { _blocking = newValue!; });
-                          },
-                        ),
-                        Text('Blocking Pathway')
-                      ],
+                    RichText(
+                        text: TextSpan(
+                            style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(text: 'License Plate: '),
+                              TextSpan(text: registration.plate,
+                                  style: const TextStyle(fontWeight: FontWeight.bold))
+                            ]
+                        )
                     ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _multiple,
-                          onChanged: (bool? newValue) {
-                            setState(() { _multiple = newValue!; });
-                          },
-                        ),
-                        Text('Occupying Multiple Slots')
-                      ],
+                    RichText(
+                        text: TextSpan(
+                            style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(text: 'Registration Holder: '),
+                              TextSpan(text: registration.email,
+                                  style: const TextStyle(fontWeight: FontWeight.bold))
+                            ]
+                        )
                     ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _alt,
-                          onChanged: (bool? newValue) {
-                            setState(() { _alt = newValue!; });
-                          },
-                        ),
-                        Text('Another Reason')
-                      ],
+                    RichText(
+                        text: TextSpan(
+                            style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(text: 'Commencement: '),
+                              TextSpan(text: DateString(registration.start),
+                                  style: const TextStyle(fontWeight: FontWeight.bold))
+                            ]
+                        )
+                    ),
+                    RichText(
+                        text: TextSpan(
+                            style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(text: 'Expiration: '),
+                              TextSpan(text: DateString(registration.end),
+                                  style: const TextStyle(fontWeight: FontWeight.bold))
+                            ]
+                        )
                     ),
                   ],
                 ),
-                const VerticalDivider(),
-                const VerticalDivider(),
-                Expanded(
-                  child:
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 50),
-                            Text('Parking Officer'),
-                            Text(username,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            SizedBox(height: 50),
-                            Text('Infraction Date'),
-                            Text(DateString(DateTime.now()),
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            SizedBox(height: 50),
-                            Text('Infraction Location'),
-                            Text('Head Hall Lot 4',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text('')
-                          ],
-                        )
-                      ],
-                    )
-                )
-              ],
-            ),
-            Expanded(
-              child: SizedBox(height: 50),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text('Registration Information',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20
-                    )
-                ),
-                RichText(
-                    text: TextSpan(
-                        style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(text: 'License Plate: '),
-                          TextSpan(text: registration.plate,
-                              style: const TextStyle(fontWeight: FontWeight.bold))
-                        ]
-                    )
-                ),
-                RichText(
-                    text: TextSpan(
-                        style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(text: 'Registration Holder: '),
-                          TextSpan(text: registration.email,
-                              style: const TextStyle(fontWeight: FontWeight.bold))
-                        ]
-                    )
-                ),
-                RichText(
-                    text: TextSpan(
-                        style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(text: 'Commencement: '),
-                          TextSpan(text: DateString(registration.start),
-                              style: const TextStyle(fontWeight: FontWeight.bold))
-                        ]
-                    )
-                ),
-                RichText(
-                    text: TextSpan(
-                        style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(text: 'Expiration: '),
-                          TextSpan(text: DateString(registration.end),
-                              style: const TextStyle(fontWeight: FontWeight.bold))
-                        ]
-                    )
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                        child: Text('Generate Ticket'),
+                        onPressed: !valid ? null : () {
+                          // send ticket
+                          Navigator.pop(context);
+                        }
+                    ),
+                    ElevatedButton(
+                        child: Text('Back'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }
+                    ),
+                  ],
                 ),
               ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                    child: Text('Generate Ticket'),
-                    onPressed: !valid ? null : () {
-                      // send ticket
-                      Navigator.pop(context);
-                    }
-                ),
-                ElevatedButton(
-                    child: Text('Back'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }
-                ),
-              ],
-            ),
-          ],
-        ),
+        )
       ),
     );
   } // build

@@ -1,7 +1,13 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
+
+import '../gateway.dart';
+import '../user.dart';
+import 'loadingdialog.dart';
 
 class RegisterOrgForm extends StatefulWidget {
   const RegisterOrgForm({Key? key}) : super(key: key);
@@ -12,11 +18,110 @@ class RegisterOrgForm extends StatefulWidget {
   State<RegisterOrgForm> createState() => _RegisterOrgFormState();
 }
 
+
 class _RegisterOrgFormState extends State<RegisterOrgForm> {
   TextEditingController orgNameCtrl = TextEditingController();
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  Future<bool> signInUser() async {
+    try {
+      SignInResult result = await Amplify.Auth.signIn(
+        username: emailCtrl.text.trim(),
+        password: passCtrl.text.trim(),
+      );
+      if (result.isSignedIn) {
+        return true;
+      }
+    } on UserNotConfirmedException {
+      rethrow;
+    } on AuthException catch (e) {
+      print(e.message);
+    }
+
+    return false;
+  }
+
+  Future<Object> registerOrg(BuildContext context) async {
+    // Validate returns true if the form is valid, or false otherwise.
+    if (!_formKey.currentState!.validate()) {
+      return "";
+    }
+
+    // Register Organization
+    Gateway().addAdmin(orgNameCtrl.text + "-" + emailCtrl.text);
+
+    // process login
+    bool signedIn = false;
+    try {
+      signedIn = await signInUser();
+    } on UserNotConfirmedException {
+      String code = "";
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: const Text('Account Confirmation'),
+                content: SizedBox(
+                    height: 200,
+                    child: Column(children: [
+                      const Text('Enter your confirmation code'),
+                      TextField(
+                        style: const TextStyle(fontSize: 25),
+                        onChanged: (value) {
+                          code = value.trim();
+                        },
+                      )
+                    ])),
+                actions: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Confirm'),
+                    onPressed: () async {
+                      await Amplify.Auth.confirmSignUp(
+                          username: emailCtrl.text.trim(),
+                          confirmationCode: code);
+                      Navigator.of(context).pop();
+                      await registerOrg(_formKey.currentContext as BuildContext);
+                      final user = await CurrentUser().get();
+                      // TODO: Add gateway function to create org
+                      //await Gateway().addOrg();
+                    },
+                  ),
+                ]);
+          });
+      return "";
+    }
+    if (!signedIn) {
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: const Text('Failed to Create Org'),
+                content: const Text('The organization was not able to be created'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ]);
+          });
+    } else {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
+          arguments: {'user': emailCtrl.text.trim()});
+      await CurrentUser().get();
+    }
+    return "";
+  }
 
   //This is just a temporary form. We will need a way for organizations to
   // register themselves. Credit card info, parking lot geography, contact phone
@@ -27,7 +132,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
     return Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: Column(
+        child: SingleChildScrollView(
+          child: Column(
           children: <Widget>[
             const Logo(),
             VisibleTextField(
@@ -51,25 +157,23 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Validate returns true if the form is valid, or false otherwise.
                   if (_formKey.currentState!.validate()) {
                     // If the form is valid, display a snackbar. In the real world,
                     // you'd often call a server or save the information in a database.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Processing Data')),
-                    );
 
                     // TODO:
-                    // register the admin user
-                    // register the org
                     // immediatly present the confirmation dialog
+                    loading(context, registerOrg(context), "Registering Organization");
                   }
                 },
                 child: const Text('Create Organization'),
               ),
             ),
           ],
-        ));
+          )
+        )
+    );
   } // build
 }

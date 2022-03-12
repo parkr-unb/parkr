@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:parkr/gateway.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
@@ -10,6 +11,8 @@ import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/views/settingspage.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
+
+import '../user.dart';
 
 class HomePage extends StatefulWidget {
   final CameraDescription camera;
@@ -48,15 +51,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(ModalRoute.of(context)?.settings);
-    final username =
-        (ModalRoute.of(context)?.settings.arguments as Map)['user'] as String;
+    final username = CurrentUser().getName();
 
     return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
       return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text('Parkr Home - Welcome $username'),
+          title: Text('Home - Welcome $username'),
         ),
         body: Center(
           child: Column(
@@ -113,18 +114,17 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _enableExamination == false
                       ? null
                       : () async {
-                          await loading(
+                          Registration? reg = (await loading(
                               context,
                               Future.delayed(const Duration(seconds: 2), () {
-                                return "";
+                                return Registration.basic();
                               }),
-                              "Examining registration...");
+                              "Examining registration...")) as Registration?;
                           // STUB
                           // examine(plate_ctrl.text);
-                          Registration reg = Registration.basic();
-                          if (true) {
+                          if (reg != null) {
                             Navigator.pushNamed(context, "plate",
-                                arguments: {"reg": reg, "user": username});
+                                arguments: {"reg": reg});
                           } else {
                             showDialog(
                                 context: context,
@@ -150,6 +150,7 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      if(CurrentUser().isAdmin())
                       ElevatedButton(
                           child: const Text('Officers',
                               style: TextStyle(fontSize: 20.0)),

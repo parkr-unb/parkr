@@ -27,6 +27,8 @@ class _LoginFormState extends State<LoginForm> {
         password: passCtrl.text.trim(),
       );
       if (result.isSignedIn) {
+        await CurrentUser().get();
+        await CurrentUser().update();
         return true;
       }
     } on UserNotConfirmedException {
@@ -111,9 +113,7 @@ class _LoginFormState extends State<LoginForm> {
           });
     } else {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
-          arguments: {'user': emailCtrl.text.trim()});
-      await CurrentUser().get();
+      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false);
     }
   }
 

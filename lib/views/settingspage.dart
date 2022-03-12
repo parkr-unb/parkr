@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../user.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
@@ -35,8 +37,9 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Text('Change Settings'),
               onPressed: () {
 
-              },
-            )
+              }),
+            // TODO: GEOFENCING STUFF
+            if(CurrentUser().isAdmin()) Text('ADMIN SHIT'),
           ],
         ),
       ),
