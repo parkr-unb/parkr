@@ -21,9 +21,11 @@ class RegisterOrgForm extends StatefulWidget {
 
 class _RegisterOrgFormState extends State<RegisterOrgForm> {
   TextEditingController orgNameCtrl = TextEditingController();
+  TextEditingController nameCtrl = TextEditingController();
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
 
   Future<bool> signInUser() async {
     try {
@@ -42,15 +44,17 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
 
     return false;
   }
+  Future<Object?> registerAdmin(BuildContext context) async {
+    Map<CognitoUserAttributeKey, String> userAttributes = {
+      CognitoUserAttributeKey.name: nameCtrl.text.trim()
+      // additional attributes as needed
+    };
 
-  Future<Object> registerOrg(BuildContext context) async {
-    // Validate returns true if the form is valid, or false otherwise.
-    if (!_formKey.currentState!.validate()) {
-      return "";
-    }
-
-    // Register Organization
-    Gateway().addAdmin(orgNameCtrl.text + "-" + emailCtrl.text);
+    SignUpResult result = await Amplify.Auth.signUp(
+        username: emailCtrl.text.trim(),
+        password: passCtrl.text.trim(),
+        options: CognitoSignUpOptions(userAttributes: userAttributes)
+    );
 
     // process login
     bool signedIn = false;
@@ -88,13 +92,10 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                           username: emailCtrl.text.trim(),
                           confirmationCode: code);
                       Navigator.of(context).pop();
-                      await registerOrg(_formKey.currentContext as BuildContext);
-                      final user = await CurrentUser().get();
-                      // TODO: Add gateway function to create org
-                      //await Gateway().addOrg();
                     },
                   ),
-                ]);
+                ]
+            );
           });
       return "";
     }
@@ -103,8 +104,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-                title: const Text('Failed to Create Org'),
-                content: const Text('The organization was not able to be created'),
+                title: const Text('Failed to add Admin'),
+                content: const Text('The admin was not able to be created'),
                 actions: [
                   TextButton(
                     child: const Text('OK'),
@@ -113,13 +114,21 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     },
                   ),
                 ]);
-          });
-    } else {
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
-          arguments: {'user': emailCtrl.text.trim()});
-      await CurrentUser().get();
+          }
+      );
+      final user = await CurrentUser().get();
+      await Gateway().addAdmin(user.userId);
+      return "";
     }
+  }
+
+  Future<Object> registerOrg(BuildContext context) async {
+    // Validate returns true if the form is valid, or false otherwise.
+    if (!_formKey.currentState!.validate()) {
+      return "";
+    }
+
+    await Gateway().addOrganization(orgNameCtrl.text.trim());
     return "";
   }
 
@@ -141,6 +150,12 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                 label: 'Organization Name',
                 hint: 'Enter New Organization Name',
                 validatorText: 'Organization name is mandatory',
+            ),
+            VisibleTextField(
+              controller: nameCtrl,
+              label: 'Full Name',
+              hint: 'Enter Organization Administrator\'s Name',
+              validatorText: 'Name is mandatory',
             ),
             VisibleTextField(
                 controller: emailCtrl,
@@ -165,7 +180,11 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
 
                     // TODO:
                     // immediatly present the confirmation dialog
-                    loading(context, registerOrg(context), "Registering Organization");
+                    await loading(context, registerAdmin(context), "Registering Admin");
+                    await loading(context, registerOrg(context), "Registering Organization");
+
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, "home", (_) => false);
                   }
                 },
                 child: const Text('Create Organization'),

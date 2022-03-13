@@ -63,6 +63,21 @@ class Gateway {
       rethrow;
     }
   }
+  Future<Organization?> addOrganization(String orgId) async {
+    try {
+      final org = Organization(id: orgId);
+      final request = ModelMutations.create(org);
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data == null) {
+        print('errors: ' + response.errors.toString());
+      }
+      return response.data;
+    } on ApiException catch (e) {
+      print('Mutation failed: $e');
+      rethrow;
+    }
+  }
   Future<Officer?> getOfficerByID(String id) async {
     try {
       final request = ModelQueries.get(Officer.classType, id);

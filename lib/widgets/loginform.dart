@@ -149,8 +149,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamedAndRemoveUntil(
-                        context, "home", (_) => false,
-                        arguments: {'user': 'DEBUG'});
+                        context, "home", (_) => false);
                   },
                   child: const Text('Debug Skip Login'),
                 ),
