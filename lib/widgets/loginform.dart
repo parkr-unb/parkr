@@ -22,6 +22,7 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<bool> signInUser() async {
     try {
+      await Amplify.Auth.signOut();
       SignInResult result = await Amplify.Auth.signIn(
         username: emailCtrl.text.trim(),
         password: passCtrl.text.trim(),
@@ -138,6 +139,7 @@ class _LoginFormState extends State<LoginForm> {
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: ElevatedButton(
                 onPressed: () {
+                  Amplify.Auth.signOut();
                   login(context);
                 },
                 child: const Text('Login'),

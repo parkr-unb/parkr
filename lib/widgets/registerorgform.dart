@@ -29,6 +29,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
 
   Future<bool> signInUser() async {
     try {
+      await Amplify.Auth.signOut();
       SignInResult result = await Amplify.Auth.signIn(
         username: emailCtrl.text.trim(),
         password: passCtrl.text.trim(),
@@ -118,6 +119,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
       );
       final user = await CurrentUser().get();
       await Gateway().addAdmin(user.userId);
+      await CurrentUser().update();
       return "";
     }
   }

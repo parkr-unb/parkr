@@ -27,7 +27,9 @@ class CurrentUser {
         var rawName = element.value;
         var commaIdx = rawName.indexOf(',');
         var firstName = rawName.substring(commaIdx + 1);
-        var lastName = rawName.substring(0, commaIdx);
+        var lastName = "";
+        if(commaIdx != -1)
+          lastName = rawName.substring(0, commaIdx);
         _name = firstName + " " + lastName;
       }
     }

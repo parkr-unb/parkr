@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/widgets/loginform.dart';
 import 'package:parkr/widgets/registerorgform.dart';
