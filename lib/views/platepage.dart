@@ -5,6 +5,9 @@ import 'package:parkr/analyzer.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
+import 'package:parkr/widgets/successdialog.dart';
+import 'package:parkr/widgets/failuredialog.dart';
+
 
 import '../models/Tickets.dart';
 
@@ -261,11 +264,21 @@ class _PlatePageState extends State<PlatePage> {
                       }),
                       "Administering ticket...")) as Tickets?;
                       if (tickets == null) {
-                        //show error dialog
+                        await (fail(
+                            context,
+                            Future.delayed(const Duration(seconds: 2), () {
+                              return "Failure";
+                            }),
+                            "An error has occured."));
                         print("Ticket generation failed");
                       }
                       else {
-                        //show success dialog
+                        await (success(
+                            context,
+                            Future.delayed(const Duration(seconds: 2), () {
+                              return "Success";
+                            }),
+                            "Success!"));
                         print("Successful ticket generation");
                       }
                       // Gateway().administerTicket(registration.plate);
