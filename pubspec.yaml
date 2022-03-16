@@ -43,6 +43,13 @@ dependencies:
   path_provider: ^2.0.9
   http: ^0.13.4
   flutter_keyboard_visibility: ^5.2.0
+  amplify_authenticator: ^0.1.0-rc.6
+  # camera: ^0.9.4+14
+  camera:
+    git:
+      url: https://github.com/camsim99/plugins.git
+      path: packages/camera/camera
+      ref: issue_89578_dev
 
 dev_dependencies:
   flutter_test:
