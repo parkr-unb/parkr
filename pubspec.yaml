@@ -37,6 +37,12 @@ dependencies:
   amplify_flutter: ^0.4.0
   amplify_auth_cognito: ^0.4.0
   amplify_analytics_pinpoint: ^0.4.0
+  amplify_api: ^0.4.0
+  camera: ^0.9.4+14
+  io: ^1.0.3
+  path_provider: ^2.0.9
+  http: ^0.13.4
+  flutter_keyboard_visibility: ^5.2.0
   amplify_authenticator: ^0.1.0-rc.6
   # camera: ^0.9.4+14
   camera:
@@ -61,6 +67,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - assets/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

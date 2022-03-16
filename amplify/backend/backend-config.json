@@ -1,24 +1,29 @@
 {
   "function": {
-    "parkr2c0d94f5CustomMessage": {
+    "parkr1b7193ffCustomMessage": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "parkr2c0d94f5PreSignup": {
+    "parkr1b7193ffPostConfirmation": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "parkr1b7193ffPreSignup": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
   },
   "auth": {
-    "parkr2c0d94f5": {
+    "parkr1b7193ff": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "parkr2c0d94f5CustomMessage",
+          "resourceName": "parkr1b7193ffCustomMessage",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",
@@ -27,7 +32,16 @@
         },
         {
           "category": "function",
-          "resourceName": "parkr2c0d94f5PreSignup",
+          "resourceName": "parkr1b7193ffPostConfirmation",
+          "triggerProvider": "Cognito",
+          "attributes": [
+            "Arn",
+            "Name"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "parkr1b7193ffPreSignup",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",
@@ -56,6 +70,41 @@
         "verificationMechanisms": [
           "EMAIL"
         ]
+      }
+    },
+    "userPoolGroups": {
+      "service": "Cognito-UserPool-Groups",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "parkr1b7193ff",
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ]
+        }
+      ]
+    }
+  },
+  "api": {
+    "parkrGql": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 365,
+              "apiKeyExpirationDate": "2023-03-10T23:56:41.841Z",
+              "description": ""
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
       }
     }
   }

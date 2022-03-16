@@ -19,4 +19,19 @@ samples, guidance on mobile development, and a full API reference.
 
 > Work in progress - just tentative now
 
-Get dependencies specified in *pubspec.yaml*: `flutter pub get`
+1. Install the amplify cli:
+   
+    ```bash
+    # npm install -g @aws-amplify/cli
+    ```
+
+2. Pull all of the backend configuration through the Amplify service:
+   
+    ```bash
+    amplify pull --appId d2hizxojn9njyk --envName dev
+    ```
+
+    - Select 'Yes' when it asks if you will work on the backend. This will pull all of the cloudformation and lambda scripts.
+    - You will need AWS creds, too. Ask Justen for them, they are tied to his account & credit card.
+
+3. Get dependencies specified in *pubspec.yaml*: `flutter pub get`

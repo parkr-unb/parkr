@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:parkr/views/registerofficerdialog.dart';
+import 'package:parkr/gateway.dart';
+import 'package:parkr/widgets/registerofficerdialog.dart';
+import 'package:parkr/models/Officer.dart';
 
 class ManageOfficersPage extends StatefulWidget {
   const ManageOfficersPage({Key? key}) : super(key: key);
@@ -9,29 +11,17 @@ class ManageOfficersPage extends StatefulWidget {
 }
 
 class _ManageOfficersPageState extends State<ManageOfficersPage> {
-  List<Widget> _fetchOfficers() {
+  Future<List<Widget>> _fetchOfficers() async {
     // Place holder widget
-    return <Widget>[
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer"),
-      const Text("officer")
-    ];
+    final dbOfficers = await Gateway().listOfficers();
+    if (dbOfficers == null) {
+      return [];
+    }
+    return dbOfficers
+        .where((officer) => officer != null)
+        .map((officer) => (officer as Officer)) // from Officer?
+        .map((officer) => Text(officer.id + " : " + officer.role))
+        .toList();
   }
 
   @override
@@ -45,22 +35,34 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-              Expanded(
-                  child: ListView.separated(
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                padding: const EdgeInsets.all(8),
-                itemCount: officers.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    height: 50,
-                    color: Colors.amber,
-                    child: Center(child: officers[index]),
-                  );
+              FutureBuilder<List<Widget>>(
+                future: _fetchOfficers(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Widget>> snapshot) {
+                  if(snapshot.hasError) {
+                    print(snapshot.error);
+                    return const Text("An Error Occurred Fetching Your Officers");
+                  }
+                  final officers =
+                      snapshot.hasData ? snapshot.data as List<Widget> : [];
+                  return Expanded(
+                      child: ListView.separated(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    padding: const EdgeInsets.all(8),
+                    itemCount: officers.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        height: 50,
+                        color: Colors.amber,
+                        child: Center(child: officers[index]),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                  ));
                 },
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
-              )),
+              ),
               const Divider(thickness: 3),
               ElevatedButton(
                   child: const Text('New Officer'),
