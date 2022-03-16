@@ -287,6 +287,12 @@ class _PlatePageState extends State<PlatePage> {
                       Navigator.pop(context);
                     }
                   ),
+                  ElevatedButton(
+                      child: Text('Back'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }
+                  ),
                 ],
               ),
             ],
