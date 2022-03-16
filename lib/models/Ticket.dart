@@ -25,20 +25,10 @@ import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the Ticket type in your schema. */
 @immutable
-class Ticket extends Model {
-  static const classType = const _TicketModelType();
-  final String id;
+class Ticket {
   final TemporalDateTime? _createdAt;
-  final TemporalDateTime? _updatedAt;
+  final String? _type;
 
-  @override
-  getInstanceType() => classType;
-  
-  @override
-  String getId() {
-    return id;
-  }
-  
   TemporalDateTime get createdAt {
     try {
       return _createdAt!;
@@ -52,16 +42,25 @@ class Ticket extends Model {
     }
   }
   
-  TemporalDateTime? get updatedAt {
-    return _updatedAt;
+  String get type {
+    try {
+      return _type!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  const Ticket._internal({required this.id, required createdAt, updatedAt}): _createdAt = createdAt, _updatedAt = updatedAt;
+  const Ticket._internal({required createdAt, required type}): _createdAt = createdAt, _type = type;
   
-  factory Ticket({String? id, required TemporalDateTime createdAt}) {
+  factory Ticket({required TemporalDateTime createdAt, required String type}) {
     return Ticket._internal(
-      id: id == null ? UUID.getUUID() : id,
-      createdAt: createdAt);
+      createdAt: createdAt,
+      type: type);
   }
   
   bool equals(Object other) {
@@ -72,8 +71,8 @@ class Ticket extends Model {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Ticket &&
-      id == other.id &&
-      _createdAt == other._createdAt;
+      _createdAt == other._createdAt &&
+      _type == other._type;
   }
   
   @override
@@ -84,57 +83,41 @@ class Ticket extends Model {
     var buffer = new StringBuffer();
     
     buffer.write("Ticket {");
-    buffer.write("id=" + "$id" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("type=" + "$_type");
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Ticket copyWith({String? id, TemporalDateTime? createdAt}) {
+  Ticket copyWith({TemporalDateTime? createdAt, String? type}) {
     return Ticket._internal(
-      id: id ?? this.id,
-      createdAt: createdAt ?? this.createdAt);
+      createdAt: createdAt ?? this.createdAt,
+      type: type ?? this.type);
   }
   
   Ticket.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
+    : _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
+      _type = json['type'];
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'createdAt': _createdAt?.format(), 'type': _type
   };
 
-  static final QueryField ID = QueryField(fieldName: "ticket.id");
-  static final QueryField CREATEDAT = QueryField(fieldName: "createdAt");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Ticket";
     modelSchemaDefinition.pluralName = "Tickets";
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Ticket.CREATEDAT,
+    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+      fieldName: 'createdAt',
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
-      fieldName: 'updatedAt',
-      isRequired: false,
-      isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+      fieldName: 'type',
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
   });
-}
-
-class _TicketModelType extends ModelType<Ticket> {
-  const _TicketModelType();
-  
-  @override
-  Ticket fromJson(Map<String, dynamic> jsonData) {
-    return Ticket.fromJson(jsonData);
-  }
 }
