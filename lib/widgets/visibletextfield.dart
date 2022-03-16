@@ -20,7 +20,7 @@ class _VisibleTextFieldState extends State<VisibleTextField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextFormField(
           controller: widget.controller,
           decoration: InputDecoration(
