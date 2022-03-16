@@ -2,8 +2,15 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:parkr/analyzer.dart';
+import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/user.dart';
+import 'package:parkr/widgets/loadingdialog.dart';
+import 'package:parkr/widgets/successdialog.dart';
+import 'package:parkr/widgets/failuredialog.dart';
+
+
+import '../models/Tickets.dart';
 
 class PlatePage extends StatefulWidget {
   static const String title = 'Examining plates';
@@ -62,7 +69,7 @@ class _PlatePageState extends State<PlatePage> {
 
     }
     bool valid = (_hasPass || _invalidLot || _blocking || _blocking || _multiple || _alt);
-    return Scaffold(
+  return Scaffold(
       appBar: AppBar(
         title: const Text(PlatePage.title),
       ),
@@ -244,27 +251,51 @@ class _PlatePageState extends State<PlatePage> {
                         )
                     ),
                   ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                        child: Text('Generate Ticket'),
-                        onPressed: !valid ? null : () {
-                          // send ticket
-                          Navigator.pop(context);
-                        }
-                    ),
-                    ElevatedButton(
-                        child: Text('Back'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                ElevatedButton(
+                    child: Text('Generate Ticket'),
+                    onPressed: !valid ? null : () async {
+                      Tickets? tickets = await (loading(
+                        context,
+                        Future.delayed(const Duration(seconds: 2), () {
+                        return Gateway().administerTicket(registration.plate, 'invalid-pass');
+                      }),
+                      "Administering ticket...")) as Tickets?;
+                      if (tickets == null) {
+                        await (fail(
+                            context,
+                            Future.delayed(const Duration(seconds: 2), () {
+                              return "Failure";
+                            }),
+                            "An error has occured."));
+                        print("Ticket generation failed");
+                      }
+                      else {
+                        await (success(
+                            context,
+                            Future.delayed(const Duration(seconds: 2), () {
+                              return "Success";
+                            }),
+                            "Success!"));
+                        print("Successful ticket generation");
+                      }
+                      // Gateway().administerTicket(registration.plate);
+                      Navigator.pop(context);
+                    }
+                  ),
+                  ElevatedButton(
+                      child: Text('Back'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }
+                  ),
+                ],
+              ),
+            ],
         )
       ),
     );
