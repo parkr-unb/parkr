@@ -1,6 +1,7 @@
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:parkr/models/ModelProvider.dart';
+import 'package:parkr/user.dart';
 
 class Gateway {
   static final Gateway _instance = Gateway._privateConstructor();
@@ -73,6 +74,53 @@ class Gateway {
       print('Mutation failed: $e');
       rethrow;
     }
+  }
+
+  Future<Officer?> addAdmin(String userId) async {
+    try {
+      final admin = Officer(id: userId, role: "admin");
+      final request = ModelMutations.create(admin);
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data == null) {
+        print('errors: ' + response.errors.toString());
+      }
+      return response.data;
+    } on ApiException catch (e) {
+      print('Mutation failed: $e');
+      rethrow;
+    }
+  }
+  Future<Organization?> addOrganization(String orgId) async {
+    try {
+      final org = Organization(id: orgId);
+      final request = ModelMutations.create(org);
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data == null) {
+        print('errors: ' + response.errors.toString());
+      }
+      return response.data;
+    } on ApiException catch (e) {
+      print('Mutation failed: $e');
+      rethrow;
+    }
+  }
+  Future<Officer?> getOfficerByID(String id) async {
+    try {
+      final request = ModelQueries.get(Officer.classType, id);
+      final response = await Amplify.API.query(request: request).response;
+      Officer? officer = response.data;
+      if (officer == null) {
+        print('errors: ' + response.errors.toString());
+        return null;
+      }
+      print("Query: " + officer.toString());
+      return officer;
+    } on ApiException catch (e) {
+      print('Query failed: $e');
+    }
+    return null;
   }
 
   Future<List<Officer?>?> listOfficers() async {

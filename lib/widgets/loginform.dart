@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/user.dart';
+import 'package:parkr/widgets/obscuredtextfield.dart';
+import 'package:parkr/widgets/visibletextfield.dart';
+import 'package:parkr/widgets/logo.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -16,15 +19,17 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isObscure = true;
 
   Future<bool> signInUser() async {
     try {
+      await Amplify.Auth.signOut();
       SignInResult result = await Amplify.Auth.signIn(
         username: emailCtrl.text.trim(),
         password: passCtrl.text.trim(),
       );
       if (result.isSignedIn) {
+        await CurrentUser().get();
+        await CurrentUser().update();
         return true;
       }
     } on UserNotConfirmedException {
@@ -109,9 +114,7 @@ class _LoginFormState extends State<LoginForm> {
           });
     } else {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false,
-          arguments: {'user': emailCtrl.text.trim()});
-      await CurrentUser().get();
+      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false);
     }
   }
 
@@ -125,50 +128,18 @@ class _LoginFormState extends State<LoginForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const SizedBox(
-              height: 10,
+            const Logo(),
+            VisibleTextField(
+              controller: emailCtrl,
+            ),
+            ObscuredTextField(
+              controller: passCtrl,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: TextFormField(
-                  controller: emailCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'Email', hintText: 'Enter Valid Email'),
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return "Email is mandatory";
-                    }
-                    return null;
-                  }),
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: TextFormField(
-                    controller: passCtrl,
-                    obscureText: _isObscure,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isObscure = !_isObscure;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return "Password is mandatory";
-                      }
-                      return null;
-                    })),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: ElevatedButton(
                 onPressed: () {
+                  Amplify.Auth.signOut();
                   login(context);
                 },
                 child: const Text('Login'),
@@ -176,12 +147,11 @@ class _LoginFormState extends State<LoginForm> {
             ),
             if (kDebugMode)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamedAndRemoveUntil(
-                        context, "home", (_) => false,
-                        arguments: {'user': 'DEBUG'});
+                        context, "home", (_) => false);
                   },
                   child: const Text('Debug Skip Login'),
                 ),
