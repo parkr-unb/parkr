@@ -80,9 +80,9 @@ class _HomePageState extends State<HomePage> {
                                 await _cameraFuture;
                                 _camera.takePicture().then((XFile img) async {
                                   String plate = (await loading(context, getPlate(img), "Reading plate")) as String;
+                                  plateCtrl.text = plate;
                                   if(plate.isNotEmpty)
                                   {
-                                    plateCtrl.text = plate;
                                     setState(() {
                                       _enableExamination = true;
                                     });
