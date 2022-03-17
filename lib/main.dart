@@ -7,6 +7,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_api/amplify_api.dart';
 
 import 'package:parkr/amplifyconfiguration.dart';
+import 'package:parkr/gateway.dart';
 import 'package:parkr/views/homepage.dart';
 import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/models/ModelProvider.dart';
@@ -69,9 +70,7 @@ class _ParkrAppState extends State<ParkrApp> {
   } // build
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+Future<void> setupAmplify() async {
   try {
     await Amplify.addPlugin(AmplifyAPI(modelProvider: ModelProvider.instance));
     await Amplify.addPlugin(AmplifyAuthCognito());
@@ -80,13 +79,36 @@ void main() async {
     print(
         "Tried to reconfigure Amplify; this can occur when your app restarts on Android. $e");
   }
+}
 
-  late CameraDescription camera;
+late CameraDescription camera;
+
+Future<void> setupCamera() async {
   try {
     final cameras = await availableCameras();
+    if(cameras == null) {
+      print("Tried to initialize cameras but failed");
+    }
     camera = cameras.first;
   } on Exception catch (e) {
     print("Tried to initialize camera but failed");
+  }
+}
+
+void setupAppKeys() async {
+  try {
+    await Gateway().queryAppKeys();
+  } on Exception catch (e) {
+    print("Failed to acquire app keys: $e");
+  }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Future.wait([setupAmplify(), setupCamera(), ]);
+  } on Exception catch (e) {
+    print("Failed setup the application: $e");
   }
 
   runApp(ParkrApp(camera: camera));
