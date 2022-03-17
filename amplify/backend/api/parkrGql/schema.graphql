@@ -45,3 +45,8 @@ type Organization @model {
     domainAllow: [String!]
     officers: [Officer!] @hasMany
 }
+
+type AppKeys @model {
+    id: ID!
+    plateRecognizer: String!
+}
