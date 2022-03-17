@@ -208,15 +208,24 @@ class _HomePageState extends State<HomePage> {
     var uri = Uri.parse('https://api.platerecognizer.com/v1/plate-reader/');
     var request = new http.MultipartRequest("POST", uri);
     request.files.add(http.MultipartFile.fromBytes('upload', await img.readAsBytes(), filename: "plate.jpeg"));
+    var keys = await Gateway().queryAppKeys();
+    if(keys == null || keys.plateRecognizer == null)
+    {
+      print("Failed to retrieve auth token");
+      return "";
+    }
+    request.headers['Authorization'] = "Token " + keys.plateRecognizer;
     request.headers['accept'] = 'application/json';
     request.headers['content-type'] = 'multipart/form-data';
     var responseBytes = await (await request.send()).stream.toBytes();
-    var response = json.decode(utf8.decode(responseBytes));
-    try {
+    Map<String, dynamic> response = json.decode(utf8.decode(responseBytes));
+
+    if(response['results'].isNotEmpty)
+    {
       print("Plate: " + response['results'][0]['candidates'][0]['plate']);
       return response['results'][0]['candidates'][0]['plate'];
     }
-    on Exception catch (E) {
+    else{
       return "";
     }
   }
