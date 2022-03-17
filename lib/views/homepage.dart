@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -79,10 +80,12 @@ class _HomePageState extends State<HomePage> {
                               try {
                                 await _cameraFuture;
                                 _camera.takePicture().then((XFile img) async {
-                                  String plate = (await loading(context, getPlate(img), "Reading plate")) as String;
+                                  String plate = (await loading(
+                                      context,
+                                      getPlate(img),
+                                      "Reading plate")) as String;
                                   plateCtrl.text = plate;
-                                  if(plate.isNotEmpty)
-                                  {
+                                  if (plate.isNotEmpty) {
                                     setState(() {
                                       _enableExamination = true;
                                     });
@@ -107,10 +110,22 @@ class _HomePageState extends State<HomePage> {
               ),
               const Spacer(),
               TextFormField(
+                  textAlign: TextAlign.center,
+                  //keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                  ],
+                  style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 5,
+                      debugLabel: 'blackMountainView displayLarge'),
                   controller: plateCtrl,
                   decoration: const InputDecoration(
+                    labelStyle: TextStyle(letterSpacing: 1, fontSize: 25),
+                    hintStyle: TextStyle(letterSpacing: 1, fontSize: 18),
                     icon: Icon(Icons.confirmation_number),
-                    hintText: 'What license place would you like to examine?',
+                    hintText: 'License plate to examine',
                     labelText: 'License Plate Number *',
                   ),
                   onChanged: (String? value) {
