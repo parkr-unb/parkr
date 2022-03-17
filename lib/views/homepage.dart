@@ -160,18 +160,18 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if(CurrentUser().isAdmin())
-                      ElevatedButton(
-                          child: const Text('Officers',
-                              style: TextStyle(fontSize: 20.0)),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManageOfficersPage()),
-                            );
-                          }),
+                      if (CurrentUser().isAdmin())
+                        ElevatedButton(
+                            child: const Text('Officers',
+                                style: TextStyle(fontSize: 20.0)),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ManageOfficersPage()),
+                              );
+                            }),
                       const VerticalDivider(),
                       ElevatedButton(
                           child: const Text('Logout',
@@ -207,10 +207,11 @@ class _HomePageState extends State<HomePage> {
   Future<String> getPlate(XFile img) async {
     var uri = Uri.parse('https://api.platerecognizer.com/v1/plate-reader/');
     var request = new http.MultipartRequest("POST", uri);
-    request.files.add(http.MultipartFile.fromBytes('upload', await img.readAsBytes(), filename: "plate.jpeg"));
+    request.files.add(http.MultipartFile.fromBytes(
+        'upload', await img.readAsBytes(),
+        filename: "plate.jpeg"));
     var keys = await Gateway().queryAppKeys();
-    if(keys == null || keys.plateRecognizer == null)
-    {
+    if (keys == null || keys.plateRecognizer == null) {
       print("Failed to retrieve auth token");
       return "";
     }
@@ -220,12 +221,10 @@ class _HomePageState extends State<HomePage> {
     var responseBytes = await (await request.send()).stream.toBytes();
     Map<String, dynamic> response = json.decode(utf8.decode(responseBytes));
 
-    if(response['results'].isNotEmpty)
-    {
+    if (response['results'].isNotEmpty) {
       print("Plate: " + response['results'][0]['candidates'][0]['plate']);
       return response['results'][0]['candidates'][0]['plate'];
-    }
-    else{
+    } else {
       return "";
     }
   }
