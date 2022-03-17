@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +80,16 @@ class _HomePageState extends State<HomePage> {
                               try {
                                 await _cameraFuture;
                                 _camera.takePicture().then((XFile img) async {
-                                  String plate = await getPlate(img);
+                                  String plate = (await loading(
+                                      context,
+                                      getPlate(img),
+                                      "Reading plate")) as String;
+                                  plateCtrl.text = plate;
+                                  if (plate.isNotEmpty) {
+                                    setState(() {
+                                      _enableExamination = true;
+                                    });
+                                  }
                                 });
                               } catch (e) {
                                 print("Failed to capture photo");
@@ -97,10 +110,22 @@ class _HomePageState extends State<HomePage> {
               ),
               const Spacer(),
               TextFormField(
+                  textAlign: TextAlign.center,
+                  //keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                  ],
+                  style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 5,
+                      debugLabel: 'blackMountainView displayLarge'),
                   controller: plateCtrl,
                   decoration: const InputDecoration(
+                    labelStyle: TextStyle(letterSpacing: 1, fontSize: 25),
+                    hintStyle: TextStyle(letterSpacing: 1, fontSize: 18),
                     icon: Icon(Icons.confirmation_number),
-                    hintText: 'What license place would you like to examine?',
+                    hintText: 'License plate to examine',
                     labelText: 'License Plate Number *',
                   ),
                   onChanged: (String? value) {
@@ -150,18 +175,18 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if(CurrentUser().isAdmin())
-                      ElevatedButton(
-                          child: const Text('Officers',
-                              style: TextStyle(fontSize: 20.0)),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManageOfficersPage()),
-                            );
-                          }),
+                      if (CurrentUser().isAdmin())
+                        ElevatedButton(
+                            child: const Text('Officers',
+                                style: TextStyle(fontSize: 20.0)),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ManageOfficersPage()),
+                              );
+                            }),
                       const VerticalDivider(),
                       ElevatedButton(
                           child: const Text('Logout',
@@ -195,19 +220,27 @@ class _HomePageState extends State<HomePage> {
   } // build
 
   Future<String> getPlate(XFile img) async {
-    final directory = await getTemporaryDirectory();
-    final path = directory.path;
-    img.saveTo('$path/plate.jpg');
+    var uri = Uri.parse('https://api.platerecognizer.com/v1/plate-reader/');
+    var request = new http.MultipartRequest("POST", uri);
+    request.files.add(http.MultipartFile.fromBytes(
+        'upload', await img.readAsBytes(),
+        filename: "plate.jpeg"));
+    var keys = await Gateway().queryAppKeys();
+    if (keys == null || keys.plateRecognizer == null) {
+      print("Failed to retrieve auth token");
+      return "";
+    }
+    request.headers['Authorization'] = "Token " + keys.plateRecognizer;
+    request.headers['accept'] = 'application/json';
+    request.headers['content-type'] = 'multipart/form-data';
+    var responseBytes = await (await request.send()).stream.toBytes();
+    Map<String, dynamic> response = json.decode(utf8.decode(responseBytes));
 
-    var url = Uri.parse('api.platerecognizer.com/v1/plate-reader/');
-    var formData = [];
-
-    var response = await http.post(url,
-        headers: {'accept': 'application/json', 'Authorization': '***'},
-        body: {'upload': '@$path/plate.jpg', 'regions': 'ca'});
-
-    print(response.body);
-
-    return "";
+    if (response['results'].isNotEmpty) {
+      print("Plate: " + response['results'][0]['candidates'][0]['plate']);
+      return response['results'][0]['candidates'][0]['plate'];
+    } else {
+      return "";
+    }
   }
 }
