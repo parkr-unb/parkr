@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:parkr/analyzer.dart';
 import 'package:parkr/gateway.dart';
+import 'package:parkr/analyzerResult.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
@@ -52,23 +53,31 @@ class _PlatePageState extends State<PlatePage> {
   bool _multiple = false;
   bool _alt = false;
   bool init = false;
+  bool valid = false;
+
+
+  setAnalyzerResult(String license) async {
+    if (!init) {
+      AnalyzerResult result = await isValid(license);
+      print("HasPass:" + result.hasPass.toString());
+      _hasPass = result.hasPass;
+      _invalidLot = result.invalidLot;
+      _blocking = result.blocking;
+      _multiple = result.multiple;
+      _alt = result.alt;
+      init = true;
+    }
+    valid = (_hasPass || !_invalidLot || !_blocking || !_multiple || !_alt);
+  }
+
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
     final registration = arguments["reg"] as Registration;
     final username = CurrentUser().getName();
-    if(!init)
-    {
-      var result = isValid(registration);
-      _hasPass = result['haspass'];
-      _invalidLot = result['invalidLot'];
-      _blocking = result['blocking'];
-      _multiple = result['multiple'];
-      _alt = result['alt'];
-      init = true;
 
-    }
-    bool valid = (_hasPass || _invalidLot || _blocking || _blocking || _multiple || _alt);
+    setAnalyzerResult(registration.plate);
+
   return Scaffold(
       appBar: AppBar(
         title: const Text(PlatePage.title),

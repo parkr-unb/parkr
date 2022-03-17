@@ -174,7 +174,7 @@ class Gateway {
         termStart:
             TemporalDateTime(DateTime.parse("2022-02-10T20:03:33.604760000Z")),
         termEnd:
-            TemporalDateTime(DateTime.parse("2022-02-10T20:03:33.604760000Z")),
+            TemporalDateTime(DateTime.parse("2023-02-10T20:03:33.604760000Z")),
         passType: 'student');
     final List<ParkingPermit> passes = List.filled(1, pass, growable: true);
     try {
@@ -201,8 +201,10 @@ class Gateway {
   }
 
   Future<ParkingPermits?> queryParkingPermits(String license) async {
+    final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
+    print(licenseOrg);
     try {
-      final request = ModelQueries.get(ParkingPermits.classType, license);
+      final request = ModelQueries.get(ParkingPermits.classType, licenseOrg);
       final response = await Amplify.API.query(request: request).response;
       ParkingPermits? passes = response.data;
       if (passes == null) {

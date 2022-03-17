@@ -40,7 +40,7 @@ class CurrentUser {
     return _user as AuthUser;
   }
   String? getName() {
-    return _name;
+    return _name ?? "Yevgen";
   }
   bool isAdmin() {
     return _officer?.role == "admin";
