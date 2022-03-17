@@ -1,0 +1,41 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-parkr-dev-131845-authRole",
+      "UnauthRoleArn": "arn:aws:iam::127065734148:role/amplify-parkr-dev-131845-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::127065734148:role/amplify-parkr-dev-131845-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-parkr-dev-131845-deployment",
+      "UnauthRoleName": "amplify-parkr-dev-131845-unauthRole",
+      "StackName": "amplify-parkr-dev-131845",
+      "StackId": "arn:aws:cloudformation:us-east-1:127065734148:stack/amplify-parkr-dev-131845/fb755c00-9fcc-11ec-85c7-0ab04c42fc51",
+      "AmplifyAppId": "d3ksjoakngsv1t",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-parkr-dev-131845-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "parkr1b7193ff": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "parkr1b7193ffCustomMessage": {
+          "REDIRECTURL": "",
+          "EMAILSUBJECT": "Verify Your Parkr Account",
+          "EMAILMESSAGE": "Thank you for joining Parkr! Please verify your Parkr account by entering the following confirmation code on your next sign-in",
+          "deploymentBucketName": "amplify-parkr-dev-131845-deployment",
+          "s3Key": "amplify-builds/parkr1b7193ffCustomMessage-4a41615051526e2f615a-build.zip"
+        },
+        "parkr1b7193ffPostConfirmation": {
+          "GROUP": "officers",
+          "deploymentBucketName": "amplify-parkr-dev-131845-deployment",
+          "s3Key": "amplify-builds/parkr1b7193ffPostConfirmation-784c4d78704b6e4c7675-build.zip"
+        },
+        "parkr1b7193ffPreSignup": {
+          "DOMAINALLOWLIST": "unb.ca",
+          "deploymentBucketName": "amplify-parkr-dev-131845-deployment",
+          "s3Key": "amplify-builds/parkr1b7193ffPreSignup-4e506a45376b70555950-build.zip"
+        }
+      }
+    }
+  }
+}

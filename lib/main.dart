@@ -1,32 +1,93 @@
+import 'dart:async';
+
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_api/amplify_api.dart';
+
+import 'package:parkr/amplifyconfiguration.dart';
+import 'package:parkr/views/homepage.dart';
 import 'package:parkr/views/welcomepage.dart';
+import 'package:parkr/models/ModelProvider.dart';
+import 'package:parkr/views/platepage.dart';
 
-class ParkrApp extends StatelessWidget {
-  const ParkrApp({Key? key}) : super(key: key);
+class ParkrApp extends StatefulWidget {
+  final CameraDescription camera;
 
-  // This widget is the root of your application.
+  const ParkrApp({Key? key, required this.camera}) : super(key: key);
+
+  @override
+  State<ParkrApp> createState() => _ParkrAppState();
+}
+
+class _ParkrAppState extends State<ParkrApp> {
   @override
   Widget build(BuildContext context) {
+    // navigate straight to home page if already signed in
+    Widget startPage = const WelcomePage();
+    try {
+      Amplify.Auth.fetchAuthSession()
+          .timeout(const Duration(seconds: 5))
+          .then((session) {
+        if (session.isSignedIn) {
+          startPage = HomePage(camera: widget.camera);
+        }
+      });
+    } on TimeoutException {
+      // just continue, and let the user sign in, as usual
+      print('Poor network quality while fetching user session timed out');
+    } on Exception catch (e) {
+      print(e);
+      rethrow;
+    }
+
     return MaterialApp(
       title: 'Parkr',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.red,
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.red,
+          backgroundColor: Colors.white,
+        ),
+      ).copyWith(
+        indicatorColor: Colors.red,
       ),
-      home: const WelcomePage(),
+      darkTheme: ThemeData.from(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.red,
+          backgroundColor: Colors.black,
+          brightness: Brightness.dark,
+        ),
+      ),
+      home: startPage,
+      routes: {
+        "plate": (BuildContext context) => const PlatePage(),
+        "home": (BuildContext context) => HomePage(camera: widget.camera),
+        "welcome": (BuildContext context) => const WelcomePage(),
+      },
     );
+  } // build
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Amplify.addPlugin(AmplifyAPI(modelProvider: ModelProvider.instance));
+    await Amplify.addPlugin(AmplifyAuthCognito());
+    await Amplify.configure(amplifyconfig); // from amplifyconfiguration.dart
+  } on Exception catch (e) {
+    print(
+        "Tried to reconfigure Amplify; this can occur when your app restarts on Android. $e");
   }
-}
 
-void main() {
-  runApp(const ParkrApp());
-}
+  late CameraDescription camera;
+  try {
+    final cameras = await availableCameras();
+    camera = cameras.first;
+  } on Exception catch (e) {
+    print("Tried to initialize camera but failed");
+  }
 
+  runApp(ParkrApp(camera: camera));
+}

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.parkr.parkr">
+    package="com.example.parkr">
    <application
         android:label="parkr"
         android:name="${applicationName}"
