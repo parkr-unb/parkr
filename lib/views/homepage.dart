@@ -221,12 +221,12 @@ class _HomePageState extends State<HomePage> {
 
   Future<String> getPlate(XFile img) async {
     var uri = Uri.parse('https://api.platerecognizer.com/v1/plate-reader/');
-    var request = new http.MultipartRequest("POST", uri);
+    var request = http.MultipartRequest("POST", uri);
     request.files.add(http.MultipartFile.fromBytes(
         'upload', await img.readAsBytes(),
         filename: "plate.jpeg"));
     var keys = await Gateway().queryAppKeys();
-    if (keys == null || keys.plateRecognizer == null) {
+    if (keys == null) {
       print("Failed to retrieve auth token");
       return "";
     }
