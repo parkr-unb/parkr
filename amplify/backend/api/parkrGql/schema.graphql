@@ -50,3 +50,8 @@ type AppKeys @model {
     id: ID!
     plateRecognizer: String!
 }
+
+# custom mutations
+type Mutation {
+    emailParkingTicket(emailAddress: AWSEmail!, emailBody: String!): Boolean
+}
