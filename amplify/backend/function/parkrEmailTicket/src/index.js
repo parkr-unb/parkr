@@ -29,15 +29,14 @@ async function sendParkrEmail(destinationEmailAddress, emailBody) {
 
     // Create the promise and SES service object
     var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
-    await sendPromise
-        .then(data => messageId = data.MessageId)
+    const sentData = await sendPromise
         .catch(err => {
             console.error(err, err.stack);
             error = err
         });
 
     return {
-        messageId: messageId,
+        messageId: sentData.MessageId,
         error: error
     }
 }
@@ -49,7 +48,6 @@ async function sendParkrEmail(destinationEmailAddress, emailBody) {
 exports.handler = async (event) => {
     console.log(`EVENT: ${JSON.stringify(event)}`);
     var emailBody = `A parking infraction has occurred to the vehicle associated with this email address.
-
 Please find your parking ticket information below.
 
 ${event.arguments.emailBody}
@@ -59,9 +57,5 @@ ${event.arguments.emailBody}
 Courtesy of Parkr`
 
     const result = await sendParkrEmail(event.arguments.emailAddress, emailBody)
-    return {
-        messageId: result.messageId,
-        message: null,
-        error: result.error
-    };
+    return result;
 };
