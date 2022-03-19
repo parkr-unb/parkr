@@ -51,7 +51,12 @@ type AppKeys @model {
     plateRecognizer: String!
 }
 
+type EmailTicketResponse {
+    message: String
+    error: String
+}
+
 # custom mutations
 type Mutation {
-    emailParkingTicket(emailAddress: AWSEmail!, emailBody: String!): Boolean
+    emailTicket(emailAddress: AWSEmail!, emailBody: String!): EmailTicketResponse
 }

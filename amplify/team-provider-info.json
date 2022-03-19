@@ -34,6 +34,10 @@
           "DOMAINALLOWLIST": "unb.ca",
           "deploymentBucketName": "amplify-parkr-dev-131845-deployment",
           "s3Key": "amplify-builds/parkr1b7193ffPreSignup-4e506a45376b70555950-build.zip"
+        },
+        "parkrEmailTicket": {
+          "deploymentBucketName": "amplify-parkr-dev-131845-deployment",
+          "s3Key": "amplify-builds/parkrEmailTicket-4b4b446341477258614a-build.zip"
         }
       }
     }
