@@ -52,6 +52,7 @@ type AppKeys @model {
 }
 
 type EmailTicketResponse {
+    messageId: ID
     message: String
     error: String
 }
