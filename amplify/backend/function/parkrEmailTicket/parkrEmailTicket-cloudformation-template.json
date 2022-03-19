@@ -160,6 +160,25 @@
                   }
                 ]
               }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ses:SendEmail"
+              ],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:ses:${region}:${account}:identity/*",
+                  {
+                    "region": {
+                      "Ref": "AWS::Region"
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    }
+                  }
+                ]
+              }
             }
           ]
         }
