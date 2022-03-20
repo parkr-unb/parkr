@@ -37,7 +37,7 @@
         },
         "parkrEmailTicket": {
           "deploymentBucketName": "amplify-parkr-dev-131845-deployment",
-          "s3Key": "amplify-builds/parkrEmailTicket-744e466d4d4178327769-build.zip"
+          "s3Key": "amplify-builds/parkrEmailTicket-494539722f3552757a44-build.zip"
         }
       }
     }

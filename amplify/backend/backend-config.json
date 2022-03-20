@@ -8,7 +8,16 @@
     "parkr1b7193ffPostConfirmation": {
       "build": true,
       "providerPlugin": "awscloudformation",
-      "service": "Lambda"
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "parkr1b7193ff",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ]
     },
     "parkr1b7193ffPreSignup": {
       "build": true,

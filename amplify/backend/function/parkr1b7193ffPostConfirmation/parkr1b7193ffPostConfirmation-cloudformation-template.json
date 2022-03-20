@@ -199,13 +199,16 @@
                 },
                 {
                   "Fn::Sub": [
-                    "arn:aws:cognito-idp:${region}:${account}:userpool/us-east-1_fPDi3YOgE",
+                    "arn:aws:cognito-idp:${region}:${account}:userpool/${poolId}",
                     {
                       "region": {
                         "Ref": "AWS::Region"
                       },
                       "account": {
                         "Ref": "AWS::AccountId"
+                      },
+                      "poolId": {
+                        "Ref": "UserPoolId"
                       }
                     }
                   ]
