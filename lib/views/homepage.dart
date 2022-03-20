@@ -16,6 +16,8 @@ import 'package:parkr/registration.dart';
 import 'package:parkr/views/settingspage.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
 
+import '../analyzer.dart';
+import '../analyzerResult.dart';
 import '../user.dart';
 
 class HomePage extends StatefulWidget {
@@ -139,10 +141,12 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _enableExamination == false
                       ? null
                       : () async {
+
                           Registration? reg = (await loading(
                               context,
-                              Future.delayed(const Duration(seconds: 2), () {
-                                return Registration.basic();
+                              Future.delayed(const Duration(seconds: 2), () async {
+                                Registration result = await isValid(plateCtrl.text);
+                                return result;
                               }),
                               "Examining registration...")) as Registration?;
                           // STUB

@@ -1,8 +1,11 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
+
 class Registration {
   final String plate;
   final String email;
-  final DateTime start;
-  final DateTime end;
+  final TemporalDateTime? start;
+  final TemporalDateTime? end;
+  final bool verified;
 
-  Registration.basic() : plate = "123", email = "y@bil.com", start = DateTime(2000,6,6), end = DateTime(2001,6,6);
+  Registration(this.plate, this.email, this.start, this.end, this.verified);
 }

@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/analyzer.dart';
 import 'package:parkr/gateway.dart';
@@ -27,7 +28,7 @@ DateString(DateTime date)
   String day = "";
   switch(date.month) {
     case 0: day += "January"; break;
-    case 1: day += "Febuary"; break;
+    case 1: day += "February"; break;
     case 2: day += "March"; break;
     case 3: day += "April"; break;
     case 4: day += "May"; break;
@@ -55,36 +56,21 @@ class _PlatePageState extends State<PlatePage> {
   bool init = false;
   bool valid = false;
 
-
-  setAnalyzerResult(String license) async {
-    if (!init) {
-      AnalyzerResult result = await isValid(license);
-      print("HasPass:" + result.hasPass.toString());
-      _hasPass = result.hasPass;
-      _invalidLot = result.invalidLot;
-      _blocking = result.blocking;
-      _multiple = result.multiple;
-      _alt = result.alt;
-      init = true;
-    }
-    valid = (_hasPass || !_invalidLot || !_blocking || !_multiple || !_alt);
-  }
-
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
     final registration = arguments["reg"] as Registration;
     final username = CurrentUser().getName();
+    _hasPass = registration.verified;
+    valid = (_hasPass && !_invalidLot && !_blocking && !_multiple && !_alt);
 
-    setAnalyzerResult(registration.plate);
-
-  return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text(PlatePage.title),
       ),
       body: Container(
         decoration: BoxDecoration(
-            border: Border.all(width: 6, color: valid ? Colors.red : Colors.green)
+            border: Border.all(width: 6, color: valid ? Colors.green : Colors.red)
           ),
         padding: EdgeInsets.zero,
         alignment: Alignment.centerLeft,
@@ -109,9 +95,11 @@ class _PlatePageState extends State<PlatePage> {
                         Row(
                           children: [
                             Checkbox(
-                              value: _hasPass,
+                              value: !_hasPass,
                               onChanged: (bool? newValue) {
-                                setState(() { _hasPass = newValue!; });
+                                setState(() {
+                                  null;
+                                });
                               },
                             ),
                             Text('Parked Without Pass')
@@ -241,33 +229,33 @@ class _PlatePageState extends State<PlatePage> {
                             ),
                             children: <TextSpan>[
                               TextSpan(text: 'Commencement: '),
-                              TextSpan(text: DateString(registration.start),
-                                  style: const TextStyle(fontWeight: FontWeight.bold))
-                            ]
-                        )
-                    ),
-                    RichText(
-                        text: TextSpan(
-                            style: const TextStyle(
+                              TextSpan(text: registration.start != TemporalDateTime(DateTime(0,0,0,0,0,0,0,0)) ? DateString(DateTime.parse(registration.start.toString())) : 'N/A',
+                                style: const TextStyle(fontWeight: FontWeight.bold))
+                                ]
+                                )
+                                ),
+                                RichText(
+                                text: TextSpan(
+                                style: const TextStyle(
                                 fontSize: 14.0,
                                 color: Colors.black
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(text: 'Expiration: '),
-                              TextSpan(text: DateString(registration.end),
+                                ),
+                                children: <TextSpan>[
+                                TextSpan(text: 'Expiration: '),
+                                TextSpan(text: registration.end != TemporalDateTime(DateTime(0,0,0,0,0,0,0,0)) ? DateString(DateTime.parse(registration.end.toString())) : 'N/A',
                                   style: const TextStyle(fontWeight: FontWeight.bold))
-                            ]
-                        )
-                    ),
+                                ]
+                                )
+                                ),
                   ],
-                  ),
+                                ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                 ElevatedButton(
                     child: Text('Generate Ticket'),
-                    onPressed: !valid ? null : () async {
+                    onPressed: valid ? null : () async {
                       Tickets? tickets = await (loading(
                         context,
                         Future.delayed(const Duration(seconds: 2), () {

@@ -6,17 +6,27 @@ import 'package:parkr/models/ParkingPermits.dart';
 import 'package:parkr/models/ParkingPermit.dart';
 
 
-Future<AnalyzerResult> isValid(String license) async
+Future<Registration> isValid(String license) async
 {
   ParkingPermits? permits = await Gateway().queryParkingPermits(license);
 
   for (var p in permits?.permits ?? []) {
     if (analyze(p) == 1)
       {
-        return AnalyzerResult(true, false, false, false, false);
+        return Registration(license, permits?.emailAddress ?? '', p.termStart, p.termEnd, true);
       }
   }
-  return AnalyzerResult(false, false, false, false, false);
+  if (permits != null) {
+    if (permits.permits != null) {
+      if (permits.permits?.isNotEmpty ?? false) {
+        return Registration(
+          license, permits.emailAddress, permits.permits?.last.termStart,
+            permits.permits?.last.termEnd, false);
+      }
+    }
+  }
+  return Registration(license, 'N/A', TemporalDateTime(DateTime(0,0,0,0,0,0,0,0)), TemporalDateTime(DateTime(0,0,0,0,0,0,0,0)), false);
+
 }
 
 int analyze(ParkingPermit permit)
