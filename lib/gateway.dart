@@ -1,9 +1,8 @@
-import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:parkr/models/ModelProvider.dart';
-import 'package:parkr/user.dart';
 
 class Gateway {
   static final Gateway _instance = Gateway._privateConstructor();
@@ -12,6 +11,34 @@ class Gateway {
 
   factory Gateway() {
     return _instance;
+  }
+
+  Future<EmailTicketResponse?> emailTicket(
+      String emailAddress, String emailBody) async {
+    final graphqlDocument = '''
+    mutation SendEmailMutation($emailAddress:AWSEmail!, $emailBody:String!) {
+      emailTicket(emailAddress: $emailAddress, emailBody: $emailBody) {
+        messageId
+        error
+        message
+      }
+    }''';
+
+    final sendEmailRequest = GraphQLRequest<String>(
+        document: graphqlDocument,
+        variables: <String, String>{
+          'emailAddress': emailAddress,
+          'emailBody': emailBody
+        });
+
+    final response =
+        await Amplify.API.query(request: sendEmailRequest).response;
+    String? data = response.data;
+    if (data != null) {
+      Map<String, dynamic> jsonData = json.decode(data);
+      return EmailTicketResponse.fromJson(jsonData);
+    }
+    return null;
   }
 
   Future<Tickets?> administerTicket(String license, String ticketType) async {
