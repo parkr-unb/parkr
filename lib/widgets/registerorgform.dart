@@ -87,16 +87,18 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      // TODO: use result to check for error
-                      await Amplify.Auth.confirmSignUp(
+                      SignUpResult res = await Amplify.Auth.confirmSignUp(
                           username: emailCtrl.text.trim(),
                           confirmationCode: code);
+                      if(res.isSignUpComplete)
+                      {
+                        signedIn = true;
+                      }
                       Navigator.of(context).pop();
                     },
                   ),
                 ]);
           });
-      return "";
     }
     if (!signedIn) {
       await showDialog(
@@ -113,13 +115,13 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     },
                   ),
                 ]);
-          });
-      final user = await CurrentUser().get();
-      await Gateway().addAdmin(user.userId);
-      await CurrentUser().update();
+          }
+      );
       return "";
     }
-    return "";
+    await CurrentUser().update();
+    final user = await CurrentUser().get();
+    await Gateway().addAdmin(user.userId);
   }
 
   Future<Object> registerOrg(BuildContext context) async {

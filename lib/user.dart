@@ -5,7 +5,7 @@ import 'gateway.dart';
 import 'models/Officer.dart';
 
 class CurrentUser {
-  static final CurrentUser _instance = CurrentUser._privateConstructor();
+  static CurrentUser _instance = CurrentUser._privateConstructor();
   static AuthUser? _user;
   String? _name;
   Officer? _officer;
@@ -15,13 +15,18 @@ class CurrentUser {
   factory CurrentUser() {
     return _instance;
   }
+  void clear() {
+    _instance = CurrentUser._privateConstructor();
+  }
 
   Future<void> update() async {
     _officer ??= await Gateway().getOfficerByID((await get()).userId);
 
     var res = await Amplify.Auth.fetchUserAttributes();
-    for (var element in res) {
-      if (_name == null && element.userAttributeKey.key == "name") {
+    for(var element in res)
+    {
+      if(element.userAttributeKey.key == "name")
+      {
         var rawName = element.value;
         var commaIdx = rawName.indexOf(',');
         var firstName = rawName.substring(commaIdx + 1);

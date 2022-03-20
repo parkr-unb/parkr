@@ -192,6 +192,7 @@ class _HomePageState extends State<HomePage> {
                               style: TextStyle(fontSize: 20.0)),
                           onPressed: () {
                             Amplify.Auth.signOut();
+                            CurrentUser().clear();
 
                             // completely wipe navigation stack and replace with welcome
                             Navigator.pushNamedAndRemoveUntil(
