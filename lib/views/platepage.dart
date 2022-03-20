@@ -1,11 +1,7 @@
-import 'dart:collection';
-
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:parkr/analyzer.dart';
 import 'package:parkr/gateway.dart';
-import 'package:parkr/analyzerResult.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';

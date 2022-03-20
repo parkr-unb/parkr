@@ -1,5 +1,4 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:parkr/analyzerResult.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/models/ParkingPermits.dart';

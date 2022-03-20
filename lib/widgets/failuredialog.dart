@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // https://stackoverflow.com/questions/51415236/show-circular-progress-dialog-in-login-screen-in-flutter-how-to-implement-progr
-Object fail(BuildContext context, Future<Object> future, String text) async {
+Future<Object> fail(BuildContext context, Future<Object> future, String text) async {
   AlertDialog alert = AlertDialog(
     content: Row(
       children: [
