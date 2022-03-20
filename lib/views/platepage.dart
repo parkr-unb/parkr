@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/analyzer.dart';
 import 'package:parkr/gateway.dart';
@@ -298,9 +299,14 @@ class _PlatePageState extends State<PlatePage> {
                               return "Success";
                             }),
                             "Success!"));
-                        print("Successful ticket generation");
+                        if (kDebugMode) {
+                          print("Successful ticket generation");
+                        }
+                        // if (registration.email != 'N/A') {
+                        //   //TODO: Make email body an actual email
+                        //   Gateway().emailTicket(registration.email, generateTicketType());
+                        // }
                       }
-                      // Gateway().administerTicket(registration.plate);
                       Navigator.pop(context);
                     }
                   ),
