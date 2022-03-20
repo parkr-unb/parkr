@@ -56,6 +56,26 @@ class _PlatePageState extends State<PlatePage> {
   bool init = false;
   bool valid = false;
 
+  String generateTicketType() {
+    var ticketString = 'You were ticketed for the following infractions: ';
+    if (!_hasPass) {
+      ticketString += 'Invalid Pass, ';
+    }
+    if (_invalidLot) {
+      ticketString += 'Invalid Lot, ';
+    }
+    if (_blocking) {
+      ticketString += 'Obstruction, ';
+    }
+    if (_multiple) {
+      ticketString += 'Occupying multiple spots, ';
+    }
+    if (_alt) {
+      ticketString += 'Other (contact administration), ';
+    }
+    return ticketString.substring(0,ticketString.length -2);
+  }
+
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
@@ -259,7 +279,7 @@ class _PlatePageState extends State<PlatePage> {
                       Tickets? tickets = await (loading(
                         context,
                         Future.delayed(const Duration(seconds: 2), () {
-                        return Gateway().administerTicket(registration.plate, 'invalid-pass');
+                        return Gateway().administerTicket(registration.plate, generateTicketType());
                       }),
                       "Administering ticket...")) as Tickets?;
                       if (tickets == null) {
@@ -268,7 +288,7 @@ class _PlatePageState extends State<PlatePage> {
                             Future.delayed(const Duration(seconds: 2), () {
                               return "Failure";
                             }),
-                            "An error has occured."));
+                            "An error has occurred."));
                         print("Ticket generation failed");
                       }
                       else {
