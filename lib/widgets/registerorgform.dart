@@ -103,28 +103,12 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
           });
     }
     if (!signedIn) {
-      await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: const Text('Failed to add Admin'),
-                content: const Text('The admin was not able to be created'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ]);
-          }
-      );
       return null;
     }
     await CurrentUser().update();
     final user = await CurrentUser().get();
     await Gateway().addAdmin(user.userId);
-    return "";
+    return "Success";
   }
 
   Future<Object> registerOrg(BuildContext context) async {
