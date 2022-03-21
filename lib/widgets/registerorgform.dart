@@ -119,11 +119,12 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                 ]);
           }
       );
-      return "";
+      return null;
     }
     await CurrentUser().update();
     final user = await CurrentUser().get();
     await Gateway().addAdmin(user.userId);
+    return "";
   }
 
   Future<Object> registerOrg(BuildContext context) async {

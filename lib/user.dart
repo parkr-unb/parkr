@@ -51,9 +51,11 @@ class CurrentUser {
   String? getName() {
     return _name ?? "Yevgen";
   }
-  void set admin(bool auth) {
-    admin = auth;
+
+  set admin(bool auth) {
+    _admin = auth;
   }
+
   bool isAdmin() {
     return _admin;
   }
