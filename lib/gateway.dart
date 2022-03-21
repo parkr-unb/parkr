@@ -16,9 +16,9 @@ class Gateway {
 
   Future<EmailTicketResponse?> emailTicket(
       String emailAddress, String emailBody) async {
-    final graphqlDocument = '''
-    mutation SendEmailMutation($emailAddress:AWSEmail!, $emailBody:String!) {
-      emailTicket(emailAddress: $emailAddress, emailBody: $emailBody) {
+    const graphqlDocument = '''
+    mutation SendEmailMutation(\$emailAddress:AWSEmail!, \$emailBody:String!) {
+      emailTicket(emailAddress: \$emailAddress, emailBody: \$emailBody) {
         messageId
         error
         message
@@ -33,10 +33,9 @@ class Gateway {
         });
 
     final response =
-        await Amplify.API.query(request: sendEmailRequest).response;
-    String? data = response.data;
-    if (data != null) {
-      Map<String, dynamic> jsonData = json.decode(data);
+        await Amplify.API.mutate(request: sendEmailRequest).response;
+    if (response.data != null) {
+      Map<String, dynamic> jsonData = json.decode(response.data as String);
       return EmailTicketResponse.fromJson(jsonData);
     }
     return null;
@@ -66,7 +65,8 @@ class Gateway {
             await Amplify.API.mutate(request: createRequest).response;
         if (createResponse.data == null) {
           if (kDebugMode) {
-            print('errors (createResponse): ' + createResponse.errors.toString());
+            print(
+                'errors (createResponse): ' + createResponse.errors.toString());
           }
         }
         return createResponse.data;
@@ -80,8 +80,8 @@ class Gateway {
           await Amplify.API.mutate(request: mutationRequest).response;
       if (mutationResponse.data == null) {
         if (kDebugMode) {
-          print(
-            'errors (mutationResponse): ' + mutationResponse.errors.toString());
+          print('errors (mutationResponse): ' +
+              mutationResponse.errors.toString());
         }
       }
       return mutationResponse.data;

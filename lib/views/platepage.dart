@@ -19,40 +19,40 @@ class PlatePage extends StatefulWidget {
 dateToString(DateTime date) {
   String day = "";
   switch (date.month) {
-    case 0:
+    case 1:
       day += "January";
       break;
-    case 1:
+    case 2:
       day += "February";
       break;
-    case 2:
+    case 3:
       day += "March";
       break;
-    case 3:
+    case 4:
       day += "April";
       break;
-    case 4:
+    case 5:
       day += "May";
       break;
-    case 5:
+    case 6:
       day += "June";
       break;
-    case 6:
+    case 7:
       day += "July";
       break;
-    case 7:
+    case 8:
       day += "August";
       break;
-    case 8:
+    case 9:
       day += "September";
       break;
-    case 9:
+    case 10:
       day += "October";
       break;
-    case 10:
+    case 11:
       day += "November";
       break;
-    case 11:
+    case 12:
       day += "December";
       break;
   }
@@ -72,8 +72,9 @@ class _PlatePageState extends State<PlatePage> {
   bool init = false;
   bool valid = false;
 
-  String generateTicketType() {
-    var ticketString = 'You were ticketed for the following infractions: ';
+  String generateTicketType(String licensePlate) {
+    var ticketString =
+        'The vehicle with license plate $licensePlate was ticketed for the following infractions: ';
     if (!_hasPass) {
       ticketString += 'Invalid Pass, ';
     }
@@ -236,7 +237,7 @@ class _PlatePageState extends State<PlatePage> {
                           style: const TextStyle(
                               fontSize: 14.0, color: Colors.black),
                           children: <TextSpan>[
-                        TextSpan(text: 'License Plate: '),
+                        const TextSpan(text: 'License Plate: '),
                         TextSpan(
                             text: registration.plate,
                             style: const TextStyle(fontWeight: FontWeight.bold))
@@ -246,7 +247,7 @@ class _PlatePageState extends State<PlatePage> {
                           style: const TextStyle(
                               fontSize: 14.0, color: Colors.black),
                           children: <TextSpan>[
-                        TextSpan(text: 'Registration Holder: '),
+                        const TextSpan(text: 'Registration Holder: '),
                         TextSpan(
                             text: registration.email,
                             style: const TextStyle(fontWeight: FontWeight.bold))
@@ -256,7 +257,7 @@ class _PlatePageState extends State<PlatePage> {
                           style: const TextStyle(
                               fontSize: 14.0, color: Colors.black),
                           children: <TextSpan>[
-                        TextSpan(text: 'Commencement: '),
+                        const TextSpan(text: 'Commencement: '),
                         TextSpan(
                             text: registration.start !=
                                     TemporalDateTime(
@@ -271,7 +272,7 @@ class _PlatePageState extends State<PlatePage> {
                           style: const TextStyle(
                               fontSize: 14.0, color: Colors.black),
                           children: <TextSpan>[
-                        TextSpan(text: 'Expiration: '),
+                        const TextSpan(text: 'Expiration: '),
                         TextSpan(
                             text: registration.end !=
                                     TemporalDateTime(
@@ -292,18 +293,30 @@ class _PlatePageState extends State<PlatePage> {
                       onPressed: valid
                           ? null
                           : () async {
-                              var administerTicket = Gateway().administerTicket(
-                                  registration.plate, generateTicketType());
-                              Tickets? ticket = await loadingDialog(
+                              Future<Tickets?> administerTicket() async {
+                                if (registration.email != 'N/A') {
+                                  //TODO: Make email body an actual email
+                                  final emailResp = await Gateway().emailTicket(
+                                      registration.email,
+                                      generateTicketType(registration.plate));
+                                  if (emailResp != null &&
+                                      emailResp.error != null) {
+                                    print(
+                                        "Failure submitting ticket: ${emailResp.error}");
+                                    return null;
+                                  }
+                                }
+                                return await Gateway().administerTicket(
+                                    registration.plate,
+                                    generateTicketType(registration.plate));
+                              }
+
+                              Tickets? tickets = await loadingDialog(
                                   context,
-                                  administerTicket,
+                                  administerTicket(),
                                   "Administering ticket...",
                                   "Success",
                                   "Failed to administer ticket") as Tickets?;
-                              // if (registration.email != 'N/A') {
-                              //   //TODO: Make email body an actual email
-                              //   Gateway().emailTicket(registration.email, generateTicketType());
-                              // }
                               Navigator.pop(context);
                             }),
                   ElevatedButton(
