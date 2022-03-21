@@ -32,6 +32,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
         password: passCtrl.text.trim(),
       );
       if (result.isSignedIn) {
+        await CurrentUser().get();
+        await CurrentUser().update();
         return true;
       }
     } on UserNotConfirmedException {
@@ -87,39 +89,26 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      // TODO: use result to check for error
-                      await Amplify.Auth.confirmSignUp(
+                      SignUpResult res = await Amplify.Auth.confirmSignUp(
                           username: emailCtrl.text.trim(),
                           confirmationCode: code);
+                      if(res.isSignUpComplete)
+                      {
+                        signedIn = await signInUser();
+                      }
                       Navigator.of(context).pop();
                     },
                   ),
                 ]);
           });
-      return "";
     }
     if (!signedIn) {
-      await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: const Text('Failed to add Admin'),
-                content: const Text('The admin was not able to be created'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ]);
-          });
-      final user = await CurrentUser().get();
-      await Gateway().addAdmin(user.userId);
-      await CurrentUser().update();
-      return "";
+      return null;
     }
-    return "";
+    await CurrentUser().update();
+    final user = await CurrentUser().get();
+    await Gateway().addAdmin(user.userId);
+    return "Success";
   }
 
   Future<Object> registerOrg(BuildContext context) async {
@@ -190,6 +179,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                         "Registering Organization...",
                         "Your organization is registered",
                         "Failed to register organization");
+
+                    CurrentUser().admin = true;
 
                     Navigator.pushNamedAndRemoveUntil(
                         context, "home", (_) => false);

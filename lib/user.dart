@@ -5,23 +5,32 @@ import 'gateway.dart';
 import 'models/Officer.dart';
 
 class CurrentUser {
-  static final CurrentUser _instance = CurrentUser._privateConstructor();
+  static CurrentUser _instance = CurrentUser._privateConstructor();
   static AuthUser? _user;
   String? _name;
   Officer? _officer;
+  bool _admin = false;
 
   CurrentUser._privateConstructor();
 
   factory CurrentUser() {
     return _instance;
   }
+  void clear() {
+    _instance = CurrentUser._privateConstructor();
+  }
 
   Future<void> update() async {
     _officer ??= await Gateway().getOfficerByID((await get()).userId);
+    if(_officer != null) {
+      admin = _officer?.role == "admin";
+    }
 
     var res = await Amplify.Auth.fetchUserAttributes();
-    for (var element in res) {
-      if (_name == null && element.userAttributeKey.key == "name") {
+    for(var element in res)
+    {
+      if(element.userAttributeKey.key == "name")
+      {
         var rawName = element.value;
         var commaIdx = rawName.indexOf(',');
         var firstName = rawName.substring(commaIdx + 1);
@@ -43,8 +52,12 @@ class CurrentUser {
     return _name ?? "Yevgen";
   }
 
+  set admin(bool auth) {
+    _admin = auth;
+  }
+
   bool isAdmin() {
-    return _officer?.role == "admin";
+    return _admin;
   }
 
   String? getOrg() {
