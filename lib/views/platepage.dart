@@ -16,7 +16,7 @@ class PlatePage extends StatefulWidget {
   State<PlatePage> createState() => _PlatePageState();
 }
 
-DateString(DateTime date) {
+dateToString(DateTime date) {
   String day = "";
   switch (date.month) {
     case 0:
@@ -207,7 +207,7 @@ class _PlatePageState extends State<PlatePage> {
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 50),
                           const Text('Infraction Date'),
-                          Text(DateString(DateTime.now()),
+                          Text(dateToString(DateTime.now()),
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 50),
@@ -261,7 +261,7 @@ class _PlatePageState extends State<PlatePage> {
                             text: registration.start !=
                                     TemporalDateTime(
                                         DateTime(0, 0, 0, 0, 0, 0, 0, 0))
-                                ? DateString(DateTime.parse(
+                                ? dateToString(DateTime.parse(
                                     registration.start.toString()))
                                 : 'N/A',
                             style: const TextStyle(fontWeight: FontWeight.bold))
@@ -276,7 +276,7 @@ class _PlatePageState extends State<PlatePage> {
                             text: registration.end !=
                                     TemporalDateTime(
                                         DateTime(0, 0, 0, 0, 0, 0, 0, 0))
-                                ? DateString(
+                                ? dateToString(
                                     DateTime.parse(registration.end.toString()))
                                 : 'N/A',
                             style: const TextStyle(fontWeight: FontWeight.bold))
