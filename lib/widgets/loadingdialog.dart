@@ -1,25 +1,89 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-// https://stackoverflow.com/questions/51415236/show-circular-progress-dialog-in-login-screen-in-flutter-how-to-implement-progr
-Future<Object> loading(BuildContext context, Future<Object?> future, String text) async {
-  AlertDialog alert = AlertDialog(
+Future<void> _displayDialog(BuildContext ctx, AlertDialog? dialog,
+    {delay = const Duration(seconds: 0)}) async {
+  if (dialog != null) {
+    showDialog(
+      barrierDismissible: false,
+      context: ctx,
+      builder: (BuildContext context) {
+        return dialog;
+      },
+    );
+    await Future.delayed(delay);
+  }
+}
+
+Future<void> _displayClosingDialog(BuildContext ctx, AlertDialog? dialog,
+    {delay = const Duration(seconds: 0)}) async {
+  if (dialog != null) {
+    await _displayDialog(ctx, dialog, delay: delay);
+    Navigator.pop(ctx);
+  }
+}
+
+Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
+    String loadingText, String? successText, String? failureText,
+    {resultDialogDelay = const Duration(seconds: 2)}) async {
+  AlertDialog loadingDialog = AlertDialog(
     content: Row(
       children: [
         const CircularProgressIndicator(),
-        Container(margin: const EdgeInsets.only(left: 7), child: Text(text)),
+        Container(
+            margin: const EdgeInsets.only(left: 7), child: Text(loadingText)),
       ],
     ),
   );
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-  return future.then((result) {
-    Navigator.pop(context);
-    Object val = result ?? "";
-    return val;
-  });
+
+  AlertDialog? successDialog;
+  if (successText != null) {
+    successDialog = AlertDialog(
+      content: Row(
+        children: [
+          const Icon(Icons.check, color: Colors.green, size: 35.0),
+          Container(
+              margin: const EdgeInsets.only(left: 3), child: Text(successText)),
+        ],
+      ),
+    );
+  }
+
+  AlertDialog? failureDialog;
+  if (failureText != null) {
+    failureDialog = AlertDialog(
+      content: Row(
+        children: [
+          const Icon(Icons.error, color: Colors.red, size: 35.0),
+          Container(
+              margin: const EdgeInsets.only(left: 3), child: Text(failureText)),
+        ],
+      ),
+    );
+  }
+
+  // start loading dialog
+  await _displayDialog(context, loadingDialog);
+
+  // execute provided future
+  Object? result;
+  try {
+    result = await future;
+  } catch (e) {
+    print(e);
+    result = null;
+  }
+  Navigator.pop(context);
+
+  // handle future result
+  AlertDialog? dialog = successDialog;
+  String? debugText = successText;
+  if (result == null) {
+    dialog = failureDialog;
+    debugText = failureText;
+  }
+
+  if (kDebugMode && debugText != null) print(debugText);
+  await _displayClosingDialog(context, dialog, delay: resultDialogDelay);
+  return result;
 }
