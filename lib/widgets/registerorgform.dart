@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
-
-import '../gateway.dart';
-import '../user.dart';
-import 'loadingdialog.dart';
+import 'package:parkr/gateway.dart';
+import 'package:parkr/user.dart';
+import 'package:parkr/widgets/loadingdialog.dart';
 
 class RegisterOrgForm extends StatefulWidget {
   const RegisterOrgForm({Key? key}) : super(key: key);
@@ -18,14 +17,12 @@ class RegisterOrgForm extends StatefulWidget {
   State<RegisterOrgForm> createState() => _RegisterOrgFormState();
 }
 
-
 class _RegisterOrgFormState extends State<RegisterOrgForm> {
   TextEditingController orgNameCtrl = TextEditingController();
   TextEditingController nameCtrl = TextEditingController();
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
 
   Future<bool> signInUser() async {
     try {
@@ -45,6 +42,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
 
     return false;
   }
+
+  // TODO: Chris, why are you returning empty strings here??
   Future<Object?> registerAdmin(BuildContext context) async {
     Map<CognitoUserAttributeKey, String> userAttributes = {
       CognitoUserAttributeKey.name: nameCtrl.text.trim()
@@ -54,8 +53,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
     SignUpResult result = await Amplify.Auth.signUp(
         username: emailCtrl.text.trim(),
         password: passCtrl.text.trim(),
-        options: CognitoSignUpOptions(userAttributes: userAttributes)
-    );
+        options: CognitoSignUpOptions(userAttributes: userAttributes));
 
     // process login
     bool signedIn = false;
@@ -89,14 +87,14 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
+                      // TODO: use result to check for error
                       await Amplify.Auth.confirmSignUp(
                           username: emailCtrl.text.trim(),
                           confirmationCode: code);
                       Navigator.of(context).pop();
                     },
                   ),
-                ]
-            );
+                ]);
           });
       return "";
     }
@@ -115,13 +113,13 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     },
                   ),
                 ]);
-          }
-      );
+          });
       final user = await CurrentUser().get();
       await Gateway().addAdmin(user.userId);
       await CurrentUser().update();
       return "";
     }
+    return "";
   }
 
   Future<Object> registerOrg(BuildContext context) async {
@@ -144,14 +142,14 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SingleChildScrollView(
-          child: Column(
+            child: Column(
           children: <Widget>[
             const Logo(),
             VisibleTextField(
-                controller: orgNameCtrl,
-                label: 'Organization Name',
-                hint: 'Enter New Organization Name',
-                validatorText: 'Organization name is mandatory',
+              controller: orgNameCtrl,
+              label: 'Organization Name',
+              hint: 'Enter New Organization Name',
+              validatorText: 'Organization name is mandatory',
             ),
             VisibleTextField(
               controller: nameCtrl,
@@ -160,16 +158,16 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
               validatorText: 'Name is mandatory',
             ),
             VisibleTextField(
-                controller: emailCtrl,
-                label: 'Admin Email',
-                hint: 'Enter Organization Administrator\'s Email',
-                validatorText: 'Admin email is mandatory',
+              controller: emailCtrl,
+              label: 'Admin Email',
+              hint: 'Enter Organization Administrator\'s Email',
+              validatorText: 'Admin email is mandatory',
             ),
             ObscuredTextField(
-                controller: passCtrl,
-                label: 'Admin Password',
-                hint: 'Enter the Organization Administrator\'s Password',
-                validatorText: 'Admin password is mandatory',
+              controller: passCtrl,
+              label: 'Admin Password',
+              hint: 'Enter the Organization Administrator\'s Password',
+              validatorText: 'Admin password is mandatory',
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -180,10 +178,18 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     // If the form is valid, display a snackbar. In the real world,
                     // you'd often call a server or save the information in a database.
 
-                    // TODO:
-                    // immediatly present the confirmation dialog
-                    await loading(context, registerAdmin(context), "Registering Admin");
-                    await loading(context, registerOrg(context), "Registering Organization");
+                    await loadingDialog(
+                        context,
+                        registerAdmin(context),
+                        "Registering Admin...",
+                        null,
+                        "Failed to register organization manager");
+                    await loadingDialog(
+                        context,
+                        registerOrg(context),
+                        "Registering Organization...",
+                        "Your organization is registered",
+                        "Failed to register organization");
 
                     Navigator.pushNamedAndRemoveUntil(
                         context, "home", (_) => false);
@@ -193,8 +199,6 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
               ),
             ),
           ],
-          )
-        )
-    );
+        )));
   } // build
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:parkr/models/ModelProvider.dart';
 
 class Gateway {
@@ -15,9 +16,9 @@ class Gateway {
 
   Future<EmailTicketResponse?> emailTicket(
       String emailAddress, String emailBody) async {
-    final graphqlDocument = '''
-    mutation SendEmailMutation($emailAddress:AWSEmail!, $emailBody:String!) {
-      emailTicket(emailAddress: $emailAddress, emailBody: $emailBody) {
+    const graphqlDocument = '''
+    mutation SendEmailMutation(\$emailAddress:AWSEmail!, \$emailBody:String!) {
+      emailTicket(emailAddress: \$emailAddress, emailBody: \$emailBody) {
         messageId
         error
         message
@@ -32,10 +33,9 @@ class Gateway {
         });
 
     final response =
-        await Amplify.API.query(request: sendEmailRequest).response;
-    String? data = response.data;
-    if (data != null) {
-      Map<String, dynamic> jsonData = json.decode(data);
+        await Amplify.API.mutate(request: sendEmailRequest).response;
+    if (response.data != null) {
+      Map<String, dynamic> jsonData = json.decode(response.data as String);
       return EmailTicketResponse.fromJson(jsonData);
     }
     return null;
@@ -51,7 +51,9 @@ class Gateway {
       Tickets? tickets = response.data;
       if (tickets == null) {
         // No tickets associated with license plate, create a row
-        print('errors (response): ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors (response): ' + response.errors.toString());
+        }
         final Ticket newTicket =
             Ticket(createdAt: TemporalDateTime.now(), type: ticketType);
         final List<Ticket> newTicketList =
@@ -62,7 +64,10 @@ class Gateway {
         final createResponse =
             await Amplify.API.mutate(request: createRequest).response;
         if (createResponse.data == null) {
-          print('errors (createResponse): ' + createResponse.errors.toString());
+          if (kDebugMode) {
+            print(
+                'errors (createResponse): ' + createResponse.errors.toString());
+          }
         }
         return createResponse.data;
       }
@@ -74,12 +79,16 @@ class Gateway {
       final mutationResponse =
           await Amplify.API.mutate(request: mutationRequest).response;
       if (mutationResponse.data == null) {
-        print(
-            'errors (mutationResponse): ' + mutationResponse.errors.toString());
+        if (kDebugMode) {
+          print('errors (mutationResponse): ' +
+              mutationResponse.errors.toString());
+        }
       }
       return mutationResponse.data;
     } on ApiException catch (e) {
-      print('Mutation failed: $e');
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
       rethrow;
     }
   }
@@ -92,11 +101,15 @@ class Gateway {
       final response = await Amplify.API.mutate(request: request).response;
 
       if (response.data == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
       }
       return response.data;
     } on ApiException catch (e) {
-      print('Mutation failed: $e');
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
       rethrow;
     }
   }
@@ -108,11 +121,15 @@ class Gateway {
       final response = await Amplify.API.mutate(request: request).response;
 
       if (response.data == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
       }
       return response.data;
     } on ApiException catch (e) {
-      print('Mutation failed: $e');
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
       rethrow;
     }
   }
@@ -124,11 +141,15 @@ class Gateway {
       final response = await Amplify.API.mutate(request: request).response;
 
       if (response.data == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
       }
       return response.data;
     } on ApiException catch (e) {
-      print('Mutation failed: $e');
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
       rethrow;
     }
   }
@@ -139,13 +160,19 @@ class Gateway {
       final response = await Amplify.API.query(request: request).response;
       Officer? officer = response.data;
       if (officer == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
         return null;
       }
-      print("Query: " + officer.toString());
+      if (kDebugMode) {
+        print("Query: " + officer.toString());
+      }
       return officer;
     } on ApiException catch (e) {
-      print('Query failed: $e');
+      if (kDebugMode) {
+        print('Query failed: $e');
+      }
     }
     return null;
   }
@@ -155,13 +182,17 @@ class Gateway {
       final request = ModelQueries.list(Officer.classType);
       final response = await Amplify.API.query(request: request).response;
       if (response.data == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
         return null;
       } else {
         return response.data?.items;
       }
     } on ApiException catch (e) {
-      print('Query failed: $e');
+      if (kDebugMode) {
+        print('Query failed: $e');
+      }
       rethrow;
     }
   }
@@ -174,7 +205,7 @@ class Gateway {
         termStart:
             TemporalDateTime(DateTime.parse("2022-02-10T20:03:33.604760000Z")),
         termEnd:
-            TemporalDateTime(DateTime.parse("2022-02-10T20:03:33.604760000Z")),
+            TemporalDateTime(DateTime.parse("2023-02-10T20:03:33.604760000Z")),
         passType: 'student');
     final List<ParkingPermit> passes = List.filled(1, pass, growable: true);
     try {
@@ -189,30 +220,46 @@ class Gateway {
 
       ParkingPermits? created = response.data;
       if (created == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
         return null;
       }
-      print('Mutation result: ' + created.toString());
+      if (kDebugMode) {
+        print('Mutation result: ' + created.toString());
+      }
       return created;
     } on ApiException catch (e) {
-      print('Mutation failed: $e');
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
     }
     return null;
   }
 
   Future<ParkingPermits?> queryParkingPermits(String license) async {
+    final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
+    if (kDebugMode) {
+      print(licenseOrg);
+    }
     try {
-      final request = ModelQueries.get(ParkingPermits.classType, license);
+      final request = ModelQueries.get(ParkingPermits.classType, licenseOrg);
       final response = await Amplify.API.query(request: request).response;
       ParkingPermits? passes = response.data;
       if (passes == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
         return null;
       }
-      print("Query: " + (passes.permits?.elementAt(0)?.toString() ?? ''));
+      if (kDebugMode) {
+        print("Query: " + (passes.permits?.elementAt(0).toString() ?? ''));
+      }
       return passes;
     } on ApiException catch (e) {
-      print('Query failed: $e');
+      if (kDebugMode) {
+        print('Query failed: $e');
+      }
     }
     return null;
   }
@@ -228,13 +275,17 @@ class Gateway {
       final response = await Amplify.API.query(request: request).response;
       AppKeys? appKeys = response.data;
       if (appKeys == null) {
-        print('errors: ' + response.errors.toString());
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
         return null;
       }
       cachedKeys = appKeys;
       return appKeys;
     } on ApiException catch (e) {
-      print('Query failed: $e');
+      if (kDebugMode) {
+        print('Query failed: $e');
+      }
     }
     return null;
   }

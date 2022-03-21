@@ -1,22 +1,19 @@
 import 'dart:convert';
 
-import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:parkr/gateway.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 import 'package:parkr/views/manageofficerspage.dart';
-import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/views/settingspage.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
-
-import '../user.dart';
+import 'package:parkr/analyzer.dart';
+import 'package:parkr/user.dart';
 
 class HomePage extends StatefulWidget {
   final CameraDescription camera;
@@ -79,18 +76,19 @@ class _HomePageState extends State<HomePage> {
                             onTap: () async {
                               try {
                                 await _cameraFuture;
-                                _camera.takePicture().then((XFile img) async {
-                                  String plate = (await loading(
-                                      context,
-                                      getPlate(img),
-                                      "Reading plate")) as String;
-                                  plateCtrl.text = plate;
-                                  if (plate.isNotEmpty) {
-                                    setState(() {
-                                      _enableExamination = true;
-                                    });
-                                  }
-                                });
+                                XFile img = await _camera.takePicture();
+                                final plate = await loadingDialog(
+                                    context,
+                                    getPlate(img),
+                                    "Reading plate...",
+                                    null,
+                                    null) as String?;
+                                plateCtrl.text = plate ?? "";
+                                if (plateCtrl.text.isNotEmpty) {
+                                  setState(() {
+                                    _enableExamination = true;
+                                  });
+                                }
                               } catch (e) {
                                 print("Failed to capture photo");
                                 print(e);
@@ -139,12 +137,12 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _enableExamination == false
                       ? null
                       : () async {
-                          Registration? reg = (await loading(
+                          final reg = await loadingDialog(
                               context,
-                              Future.delayed(const Duration(seconds: 2), () {
-                                return Registration.basic();
-                              }),
-                              "Examining registration...")) as Registration?;
+                              isValid(plateCtrl.text),
+                              "Examining registration...",
+                              null,
+                              null) as Registration?;
                           // STUB
                           // examine(plate_ctrl.text);
                           if (reg != null) {
@@ -155,13 +153,14 @@ class _HomePageState extends State<HomePage> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                      title: Text('Plate not found in system'),
+                                      title: const Text(
+                                          'Plate not found in system'),
                                       content: Text(
                                           'Please administer a paper ticket to plate - ' +
                                               plateCtrl.text),
                                       actions: [
                                         TextButton(
-                                          child: Text('OK'),
+                                          child: const Text('OK'),
                                           onPressed: () {
                                             Navigator.of(context).pop();
                                           },
