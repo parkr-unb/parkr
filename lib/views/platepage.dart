@@ -1,5 +1,4 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
@@ -134,7 +133,7 @@ class _PlatePageState extends State<PlatePage> {
                               });
                             },
                           ),
-                          Text('Parked Without Pass')
+                          const Text('Parked Without Pass')
                         ],
                       ),
                       Row(
@@ -147,7 +146,7 @@ class _PlatePageState extends State<PlatePage> {
                               });
                             },
                           ),
-                          Text('Parked in Invalid Lot')
+                          const Text('Parked in Invalid Lot')
                         ],
                       ),
                       Row(
@@ -160,7 +159,7 @@ class _PlatePageState extends State<PlatePage> {
                               });
                             },
                           ),
-                          Text('Blocking Pathway')
+                          const Text('Blocking Pathway')
                         ],
                       ),
                       Row(
@@ -173,7 +172,7 @@ class _PlatePageState extends State<PlatePage> {
                               });
                             },
                           ),
-                          Text('Occupying Multiple Slots')
+                          const Text('Occupying Multiple Slots')
                         ],
                       ),
                       Row(
@@ -186,7 +185,7 @@ class _PlatePageState extends State<PlatePage> {
                               });
                             },
                           ),
-                          Text('Another Reason')
+                          const Text('Another Reason')
                         ],
                       ),
                     ],

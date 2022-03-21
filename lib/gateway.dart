@@ -253,7 +253,7 @@ class Gateway {
         return null;
       }
       if (kDebugMode) {
-        print("Query: " + (passes.permits?.elementAt(0)?.toString() ?? ''));
+        print("Query: " + (passes.permits?.elementAt(0).toString() ?? ''));
       }
       return passes;
     } on ApiException catch (e) {

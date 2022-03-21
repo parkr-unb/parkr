@@ -86,12 +86,9 @@ late CameraDescription camera;
 Future<void> setupCamera() async {
   try {
     final cameras = await availableCameras();
-    if(cameras == null) {
-      print("Tried to initialize cameras but failed");
-    }
     camera = cameras.first;
   } on Exception catch (e) {
-    print("Tried to initialize camera but failed");
+    print("Tried to initialize camera but failed: $e");
   }
 }
 
