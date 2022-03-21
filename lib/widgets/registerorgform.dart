@@ -32,6 +32,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
         password: passCtrl.text.trim(),
       );
       if (result.isSignedIn) {
+        await CurrentUser().get();
+        await CurrentUser().update();
         return true;
       }
     } on UserNotConfirmedException {
@@ -92,7 +94,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                           confirmationCode: code);
                       if(res.isSignUpComplete)
                       {
-                        signedIn = true;
+                        signedIn = await signInUser();
                       }
                       Navigator.of(context).pop();
                     },
@@ -192,6 +194,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                         "Registering Organization...",
                         "Your organization is registered",
                         "Failed to register organization");
+
+                    CurrentUser().admin = true;
 
                     Navigator.pushNamedAndRemoveUntil(
                         context, "home", (_) => false);

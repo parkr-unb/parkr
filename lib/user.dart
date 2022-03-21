@@ -9,6 +9,7 @@ class CurrentUser {
   static AuthUser? _user;
   String? _name;
   Officer? _officer;
+  bool _admin = false;
 
   CurrentUser._privateConstructor();
 
@@ -21,6 +22,9 @@ class CurrentUser {
 
   Future<void> update() async {
     _officer ??= await Gateway().getOfficerByID((await get()).userId);
+    if(_officer != null) {
+      admin = _officer?.role == "admin";
+    }
 
     var res = await Amplify.Auth.fetchUserAttributes();
     for(var element in res)
@@ -47,9 +51,11 @@ class CurrentUser {
   String? getName() {
     return _name ?? "Yevgen";
   }
-
+  void set admin(bool auth) {
+    admin = auth;
+  }
   bool isAdmin() {
-    return _officer?.role == "admin";
+    return _admin;
   }
 
   String? getOrg() {
