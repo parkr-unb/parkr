@@ -5,8 +5,6 @@ import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
-import 'package:parkr/widgets/successdialog.dart';
-import 'package:parkr/widgets/failuredialog.dart';
 import 'package:parkr/models/Tickets.dart';
 
 class PlatePage extends StatefulWidget {
