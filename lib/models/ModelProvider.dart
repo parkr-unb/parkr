@@ -20,13 +20,17 @@
 // ignore_for_file: public_member_api_docs, file_names, unnecessary_new, prefer_if_null_operators, prefer_const_constructors, slash_for_doc_comments, annotate_overrides, non_constant_identifier_names, unnecessary_string_interpolations, prefer_adjacent_string_concatenation, unnecessary_const, dead_code
 
 import 'package:amplify_core/amplify_core.dart';
+import 'AppKeys.dart';
 import 'Officer.dart';
 import 'Organization.dart';
 import 'ParkingPermits.dart';
 import 'Tickets.dart';
+import 'EmailTicketResponse.dart';
 import 'ParkingPermit.dart';
 import 'Ticket.dart';
 
+export 'AppKeys.dart';
+export 'EmailTicketResponse.dart';
 export 'Officer.dart';
 export 'Organization.dart';
 export 'ParkingPermit.dart';
@@ -36,17 +40,19 @@ export 'Tickets.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "0f932d9345012720078cab2217143b58";
+  String version = "0d24f385fcfe7f0e06e495d5cf590611";
   @override
-  List<ModelSchema> modelSchemas = [Officer.schema, Organization.schema, ParkingPermits.schema, Tickets.schema];
+  List<ModelSchema> modelSchemas = [AppKeys.schema, Officer.schema, Organization.schema, ParkingPermits.schema, Tickets.schema];
   static final ModelProvider _instance = ModelProvider();
   @override
-  List<ModelSchema> customTypeSchemas = [ParkingPermit.schema, Ticket.schema];
+  List<ModelSchema> customTypeSchemas = [EmailTicketResponse.schema, ParkingPermit.schema, Ticket.schema];
 
   static ModelProvider get instance => _instance;
   
   ModelType getModelTypeByModelName(String modelName) {
     switch(modelName) {
+      case "AppKeys":
+        return AppKeys.classType;
       case "Officer":
         return Officer.classType;
       case "Organization":

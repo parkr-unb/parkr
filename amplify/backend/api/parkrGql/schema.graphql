@@ -45,3 +45,19 @@ type Organization @model {
     domainAllow: [String!]
     officers: [Officer!] @hasMany
 }
+
+type AppKeys @model {
+    id: ID!
+    plateRecognizer: String!
+}
+
+type EmailTicketResponse {
+    messageId: ID
+    message: String
+    error: String
+}
+
+# custom mutations
+type Mutation {
+    emailTicket(emailAddress: AWSEmail!, emailBody: String!): EmailTicketResponse
+}

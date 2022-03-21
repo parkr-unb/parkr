@@ -38,7 +38,6 @@ dependencies:
   amplify_auth_cognito: ^0.4.0
   amplify_analytics_pinpoint: ^0.4.0
   amplify_api: ^0.4.0
-  camera: ^0.9.4+14
   io: ^1.0.3
   path_provider: ^2.0.9
   http: ^0.13.4

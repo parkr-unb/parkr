@@ -20,16 +20,15 @@ class CurrentUser {
     _officer ??= await Gateway().getOfficerByID((await get()).userId);
 
     var res = await Amplify.Auth.fetchUserAttributes();
-    for(var element in res)
-    {
-      if(_name == null && element.userAttributeKey.key == "name")
-      {
+    for (var element in res) {
+      if (_name == null && element.userAttributeKey.key == "name") {
         var rawName = element.value;
         var commaIdx = rawName.indexOf(',');
         var firstName = rawName.substring(commaIdx + 1);
         var lastName = "";
-        if(commaIdx != -1)
+        if (commaIdx != -1) {
           lastName = rawName.substring(0, commaIdx);
+        }
         _name = firstName + " " + lastName;
       }
     }
@@ -39,14 +38,17 @@ class CurrentUser {
     _user ??= await Amplify.Auth.getCurrentUser();
     return _user as AuthUser;
   }
+
   String? getName() {
-    return _name;
+    return _name ?? "Yevgen";
   }
+
   bool isAdmin() {
     return _officer?.role == "admin";
   }
+
   String? getOrg() {
-    if(_officer != null && _officer?.organization != null) {
+    if (_officer != null && _officer?.organization != null) {
       return _officer?.organization?.getId();
     }
     return "";

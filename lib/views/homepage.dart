@@ -1,18 +1,19 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:parkr/gateway.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 import 'package:parkr/views/manageofficerspage.dart';
-import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/views/settingspage.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
-
-import '../user.dart';
+import 'package:parkr/analyzer.dart';
+import 'package:parkr/user.dart';
 
 class HomePage extends StatefulWidget {
   final CameraDescription camera;
@@ -75,9 +76,19 @@ class _HomePageState extends State<HomePage> {
                             onTap: () async {
                               try {
                                 await _cameraFuture;
-                                _camera.takePicture().then((XFile img) async {
-                                  String plate = await getPlate(img);
-                                });
+                                XFile img = await _camera.takePicture();
+                                final plate = await loadingDialog(
+                                    context,
+                                    getPlate(img),
+                                    "Reading plate...",
+                                    null,
+                                    null) as String?;
+                                plateCtrl.text = plate ?? "";
+                                if (plateCtrl.text.isNotEmpty) {
+                                  setState(() {
+                                    _enableExamination = true;
+                                  });
+                                }
                               } catch (e) {
                                 print("Failed to capture photo");
                                 print(e);
@@ -97,10 +108,22 @@ class _HomePageState extends State<HomePage> {
               ),
               const Spacer(),
               TextFormField(
+                  textAlign: TextAlign.center,
+                  //keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                  ],
+                  style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 5,
+                      debugLabel: 'blackMountainView displayLarge'),
                   controller: plateCtrl,
                   decoration: const InputDecoration(
+                    labelStyle: TextStyle(letterSpacing: 1, fontSize: 25),
+                    hintStyle: TextStyle(letterSpacing: 1, fontSize: 18),
                     icon: Icon(Icons.confirmation_number),
-                    hintText: 'What license place would you like to examine?',
+                    hintText: 'License plate to examine',
                     labelText: 'License Plate Number *',
                   ),
                   onChanged: (String? value) {
@@ -114,12 +137,12 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _enableExamination == false
                       ? null
                       : () async {
-                          Registration? reg = (await loading(
+                          final reg = await loadingDialog(
                               context,
-                              Future.delayed(const Duration(seconds: 2), () {
-                                return Registration.basic();
-                              }),
-                              "Examining registration...")) as Registration?;
+                              isValid(plateCtrl.text),
+                              "Examining registration...",
+                              null,
+                              null) as Registration?;
                           // STUB
                           // examine(plate_ctrl.text);
                           if (reg != null) {
@@ -130,13 +153,14 @@ class _HomePageState extends State<HomePage> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                      title: Text('Plate not found in system'),
+                                      title: const Text(
+                                          'Plate not found in system'),
                                       content: Text(
                                           'Please administer a paper ticket to plate - ' +
                                               plateCtrl.text),
                                       actions: [
                                         TextButton(
-                                          child: Text('OK'),
+                                          child: const Text('OK'),
                                           onPressed: () {
                                             Navigator.of(context).pop();
                                           },
@@ -150,18 +174,18 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if(CurrentUser().isAdmin())
-                      ElevatedButton(
-                          child: const Text('Officers',
-                              style: TextStyle(fontSize: 20.0)),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManageOfficersPage()),
-                            );
-                          }),
+                      if (CurrentUser().isAdmin())
+                        ElevatedButton(
+                            child: const Text('Officers',
+                                style: TextStyle(fontSize: 20.0)),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ManageOfficersPage()),
+                              );
+                            }),
                       const VerticalDivider(),
                       ElevatedButton(
                           child: const Text('Logout',
@@ -195,19 +219,27 @@ class _HomePageState extends State<HomePage> {
   } // build
 
   Future<String> getPlate(XFile img) async {
-    final directory = await getTemporaryDirectory();
-    final path = directory.path;
-    img.saveTo('$path/plate.jpg');
+    var uri = Uri.parse('https://api.platerecognizer.com/v1/plate-reader/');
+    var request = http.MultipartRequest("POST", uri);
+    request.files.add(http.MultipartFile.fromBytes(
+        'upload', await img.readAsBytes(),
+        filename: "plate.jpeg"));
+    var keys = await Gateway().queryAppKeys();
+    if (keys == null) {
+      print("Failed to retrieve auth token");
+      return "";
+    }
+    request.headers['Authorization'] = "Token " + keys.plateRecognizer;
+    request.headers['accept'] = 'application/json';
+    request.headers['content-type'] = 'multipart/form-data';
+    var responseBytes = await (await request.send()).stream.toBytes();
+    Map<String, dynamic> response = json.decode(utf8.decode(responseBytes));
 
-    var url = Uri.parse('api.platerecognizer.com/v1/plate-reader/');
-    var formData = [];
-
-    var response = await http.post(url,
-        headers: {'accept': 'application/json', 'Authorization': '***'},
-        body: {'upload': '@$path/plate.jpg', 'regions': 'ca'});
-
-    print(response.body);
-
-    return "";
+    if (response['results'].isNotEmpty) {
+      print("Plate: " + response['results'][0]['candidates'][0]['plate']);
+      return response['results'][0]['candidates'][0]['plate'];
+    } else {
+      return "";
+    }
   }
 }

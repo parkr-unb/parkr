@@ -1,4 +1,3 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/widgets/loginform.dart';
 import 'package:parkr/widgets/registerorgform.dart';
@@ -18,7 +17,7 @@ class _WelcomePageState extends State<WelcomePage> {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
-          appBar: PreferredSize(preferredSize: Size.fromHeight(100.0), child: AppBar(
+          appBar: PreferredSize(preferredSize: const Size.fromHeight(100.0), child: AppBar(
               title: const Text(WelcomePage.title),
               bottom: const TabBar(tabs: [
                 Tab(icon: Icon(Icons.account_box), text: "Login"),
