@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/user.dart';
+import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
@@ -27,11 +28,7 @@ class _LoginFormState extends State<LoginForm> {
       return null;
     }
 
-    const processingBar = SnackBar(content: Text('Processing Data'));
-    ScaffoldMessenger.of(context).showSnackBar(processingBar);
-
     // process login
-
     bool signedIn = false;
     try {
       signedIn = await signInUser(emailCtrl.text, passCtrl.text);
@@ -106,9 +103,14 @@ class _LoginFormState extends State<LoginForm> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Amplify.Auth.signOut();
-                    login(context);
+                    await loadingDialog(
+                        context,
+                        login(context),
+                        "Logging In...",
+                        null,
+                        "Failed to log ${emailCtrl.text} in");
                   },
                   child: const Text('Login'),
                 ),

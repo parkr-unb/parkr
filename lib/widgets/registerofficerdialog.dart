@@ -90,11 +90,6 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
           child: const Text('OK'),
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              // If the form is valid, display a snackbar. In the real world,
-              // you'd often call a server or save the information in a database.
-              const processingBar = SnackBar(content: Text('Processing Data'));
-              ScaffoldMessenger.of(context).showSnackBar(processingBar);
-
               // process login
               if (await loadingDialog(
                       context,

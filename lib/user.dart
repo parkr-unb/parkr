@@ -55,6 +55,8 @@ Future<bool> signInUser(String email, String password) async {
       await CurrentUser().update();
       return true;
     }
+  } on UserNotFoundException {
+    throw DisplayableException("Invalid Email or Password");
   } on UserNotConfirmedException {
     rethrow;
   } on AuthException catch (e) {
