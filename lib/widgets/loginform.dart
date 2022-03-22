@@ -9,6 +9,8 @@ import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 
+import 'loadingdialog.dart';
+
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
 
@@ -42,10 +44,10 @@ class _LoginFormState extends State<LoginForm> {
     return false;
   }
 
-  Future<void> login(BuildContext context) async {
+  Future<Object?> login(BuildContext context) async {
     // Validate returns true if the form is valid, or false otherwise.
     if (!_formKey.currentState!.validate()) {
-      return;
+      return null;
     }
 
     const processingBar = SnackBar(content: Text('Processing Data'));
@@ -58,7 +60,7 @@ class _LoginFormState extends State<LoginForm> {
       signedIn = await signInUser();
     } on UserNotConfirmedException {
       String code = "";
-      showDialog(
+      await showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -84,39 +86,30 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      await Amplify.Auth.confirmSignUp(
+                      SignUpResult res = await Amplify.Auth.confirmSignUp(
                           username: emailCtrl.text.trim(),
                           confirmationCode: code);
-                      Navigator.of(context).pop();
-                      await login(_formKey.currentContext as BuildContext);
-                      final user = await CurrentUser().get();
-                      await Gateway().addOfficer(user.userId);
-                    },
-                  ),
-                ]);
-          });
-      return;
-    }
-    if (!signedIn) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: const Text('Failed to Log in'),
-                content: const Text('Invalid Username and/or Password'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () {
+                      if (res.isSignUpComplete) {
+                        signedIn = await signInUser();
+                      }
                       Navigator.of(context).pop();
                     },
                   ),
                 ]);
-          });
-    } else {
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false);
+          }
+      );
+      if(signedIn)
+      {
+        await CurrentUser().update();
+        final user = await CurrentUser().get();
+        await Gateway().addOfficer(user.userId);
+      }
     }
+    if(!signedIn)
+    {
+      return null;
+    }
+    return "Success";
   }
 
   @override
