@@ -24,6 +24,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+// https://stackoverflow.com/questions/49238908/flutter-textfield-value-always-uppercase-debounce
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
+      TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
+
 class _HomePageState extends State<HomePage> {
   TextEditingController plateCtrl = TextEditingController();
   bool typing = false;
@@ -70,7 +82,9 @@ class _HomePageState extends State<HomePage> {
                 future: _cameraFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
-                    final size = MediaQuery.of(context).size;
+                    final size = MediaQuery
+                        .of(context)
+                        .size;
                     return Expanded(
                         child: GestureDetector(
                             onTap: () async {
@@ -112,6 +126,7 @@ class _HomePageState extends State<HomePage> {
                   //keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                    UpperCaseTextFormatter()
                   ],
                   style: const TextStyle(
                       fontSize: 25,
@@ -137,38 +152,38 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _enableExamination == false
                       ? null
                       : () async {
-                          final reg = await loadingDialog(
-                              context,
-                              isValid(plateCtrl.text),
-                              "Examining registration...",
-                              null,
-                              null) as Registration?;
-                          // STUB
-                          // examine(plate_ctrl.text);
-                          if (reg != null) {
-                            Navigator.pushNamed(context, "plate",
-                                arguments: {"reg": reg});
-                          } else {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                      title: const Text(
-                                          'Plate not found in system'),
-                                      content: Text(
-                                          'Please administer a paper ticket to plate - ' +
-                                              plateCtrl.text),
-                                      actions: [
-                                        TextButton(
-                                          child: const Text('OK'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ]);
-                                });
-                          }
-                        }),
+                    final reg = await loadingDialog(
+                        context,
+                        isValid(plateCtrl.text),
+                        "Examining registration...",
+                        null,
+                        null) as Registration?;
+                    // STUB
+                    // examine(plate_ctrl.text);
+                    if (reg != null) {
+                      Navigator.pushNamed(context, "plate",
+                          arguments: {"reg": reg});
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                                title: const Text(
+                                    'Plate not found in system'),
+                                content: Text(
+                                    'Please administer a paper ticket to plate - ' +
+                                        plateCtrl.text),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ]);
+                          });
+                    }
+                  }),
               if (!isKeyboardVisible)
                 Expanded(
                   child: Row(
@@ -183,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const ManageOfficersPage()),
+                                    const ManageOfficersPage()),
                               );
                             }),
                       const VerticalDivider(),
@@ -238,7 +253,9 @@ class _HomePageState extends State<HomePage> {
 
     if (response['results'].isNotEmpty) {
       print("Plate: " + response['results'][0]['candidates'][0]['plate']);
-      return response['results'][0]['candidates'][0]['plate'];
+      return response['results'][0]['candidates'][0]['plate']
+          .toString()
+          .toUpperCase();
     } else {
       return "";
     }
