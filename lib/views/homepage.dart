@@ -83,6 +83,8 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     final size = MediaQuery.of(context).size;
+                    var scaler = size.aspectRatio / _camera.value.aspectRatio;
+                    if(scaler < 1) scaler = 1/scaler;
                     return GestureDetector(
                       onTap: () async {
                         try {
@@ -93,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                               getPlate(img),
                               "Reading plate...",
                               null,
-                              null) as String?;
+                              "Could not read plate") as String?;
                           plateCtrl.text = plate ?? "";
                           if (plateCtrl.text.isNotEmpty) {
                             setState(() {
@@ -106,9 +108,11 @@ class _HomePageState extends State<HomePage> {
                         }
                       },
                       child: Transform.scale(
-                        scale: 2.8,
-                        child: CameraPreview(_camera)
-                      ),
+                        scale: scaler,
+                        child: Center(
+                          child: CameraPreview(_camera),
+                        ),
+                      )
                     );
                   } else {
                     return const Center(child: CircularProgressIndicator());
@@ -234,7 +238,7 @@ class _HomePageState extends State<HomePage> {
     });
   } // build
 
-  Future<String> getPlate(XFile img) async {
+  Future<String?> getPlate(XFile img) async {
     var uri = Uri.parse('https://api.platerecognizer.com/v1/plate-reader/');
     var request = http.MultipartRequest("POST", uri);
     request.files.add(http.MultipartFile.fromBytes(
@@ -257,7 +261,7 @@ class _HomePageState extends State<HomePage> {
           .toString()
           .toUpperCase();
     } else {
-      return "";
+      return null;
     }
   }
 }
