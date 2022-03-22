@@ -39,7 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
               }),
             // TODO: GEOFENCING STUFF
-            if(kDebugMode || CurrentUser().isAdmin()) const Text('ADMIN SHIT'),
+            if(kDebugMode || CurrentUser().isAdmin()) const Text('Under Construction'),
           ],
         ),
       ),

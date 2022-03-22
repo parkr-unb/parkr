@@ -34,7 +34,7 @@ Future<void> registerOfficer(
         "An officer with the provided email already exists");
   } on InvalidParameterException catch (e) {
     // e message from cognito is directly displayable
-    throw DisplayableException(e.toString());
+    throw DisplayableException(e.message);
   } on AuthException catch (e) {
     final msgParts = e.message.split(':');
     final ignoreIdx = msgParts.length - 1;
