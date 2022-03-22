@@ -1,8 +1,6 @@
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:parkr/displayable_exception.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
+import 'package:parkr/user.dart';
 
 class RegisterOfficerDialog extends StatefulWidget {
   const RegisterOfficerDialog({Key? key}) : super(key: key);
@@ -17,44 +15,6 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  // returns error message or empty string on success
-  Future<void> registerOfficer() async {
-    final email = emailCtrl.text.trim();
-    final splitEmail = email.split("@");
-    if (splitEmail.length != 2) {
-      throw DisplayableException("Email must contain a single '@'");
-    }
-
-    final fullName = lastNameCtrl.text.trim() + ',' + firstNameCtrl.text.trim();
-    try {
-      Map<CognitoUserAttributeKey, String> userAttributes = {
-        CognitoUserAttributeKey.name: fullName
-        // additional attributes as needed
-      };
-
-      SignUpResult result = await Amplify.Auth.signUp(
-          username: emailCtrl.text.trim(),
-          password: passCtrl.text.trim(),
-          options: CognitoSignUpOptions(userAttributes: userAttributes));
-      if (!result.isSignUpComplete) {
-        throw DisplayableException("Register Operation did not complete");
-      }
-    } on InvalidPasswordException {
-      throw DisplayableException("Password must be at least 8 characters");
-    } on UsernameExistsException {
-      throw DisplayableException(
-          "An officer with the provided email already exists");
-    } on InvalidParameterException catch (e) {
-      // e message from cognito is directly displayable
-      throw DisplayableException(e.toString());
-    } on AuthException catch (e) {
-      final msgParts = e.message.split(':');
-      final ignoreIdx = msgParts.length - 1;
-      final presentableMsg = msgParts.sublist(ignoreIdx).join(':').trim();
-      throw DisplayableException(presentableMsg);
-    }
-  }
 
   List<Widget> buildTextFields() {
     final textFields = <Widget>[
@@ -138,7 +98,8 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
               // process login
               if (await loadingDialog(
                       context,
-                      registerOfficer(),
+                      registerOfficer(emailCtrl.text, firstNameCtrl.text,
+                          lastNameCtrl.text, passCtrl.text),
                       "Registering Officer...",
                       "${firstNameCtrl.text} is Registered",
                       "") !=

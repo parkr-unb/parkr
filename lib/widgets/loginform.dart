@@ -9,8 +9,6 @@ import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 
-import 'loadingdialog.dart';
-
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
 
@@ -22,27 +20,6 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  Future<bool> signInUser() async {
-    try {
-      await Amplify.Auth.signOut();
-      SignInResult result = await Amplify.Auth.signIn(
-        username: emailCtrl.text.trim(),
-        password: passCtrl.text.trim(),
-      );
-      if (result.isSignedIn) {
-        await CurrentUser().get();
-        await CurrentUser().update();
-        return true;
-      }
-    } on UserNotConfirmedException {
-      rethrow;
-    } on AuthException catch (e) {
-      print(e.message);
-    }
-
-    return false;
-  }
 
   Future<Object?> login(BuildContext context) async {
     // Validate returns true if the form is valid, or false otherwise.
@@ -57,7 +34,7 @@ class _LoginFormState extends State<LoginForm> {
 
     bool signedIn = false;
     try {
-      signedIn = await signInUser();
+      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -86,27 +63,23 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      SignUpResult res = await Amplify.Auth.confirmSignUp(
-                          username: emailCtrl.text.trim(),
-                          confirmationCode: code);
+                      final res = await confirmUser(emailCtrl.text, code);
                       if (res.isSignUpComplete) {
-                        signedIn = await signInUser();
+                        signedIn =
+                            await signInUser(emailCtrl.text, passCtrl.text);
                       }
                       Navigator.of(context).pop();
                     },
                   ),
                 ]);
-          }
-      );
-      if(signedIn)
-      {
+          });
+      if (signedIn) {
         await CurrentUser().update();
         final user = await CurrentUser().get();
         await Gateway().addOfficer(user.userId);
       }
     }
-    if(!signedIn)
-    {
+    if (!signedIn) {
       return null;
     }
     return "Success";

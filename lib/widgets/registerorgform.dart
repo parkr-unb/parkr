@@ -1,5 +1,4 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
@@ -20,51 +19,19 @@ class RegisterOrgForm extends StatefulWidget {
 
 class _RegisterOrgFormState extends State<RegisterOrgForm> {
   TextEditingController orgNameCtrl = TextEditingController();
-  TextEditingController nameCtrl = TextEditingController();
+  TextEditingController firstNameCtrl = TextEditingController();
+  TextEditingController lastNameCtrl = TextEditingController();
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  Future<bool> signInUser() async {
-    try {
-      await Amplify.Auth.signOut();
-      SignInResult result = await Amplify.Auth.signIn(
-        username: emailCtrl.text.trim(),
-        password: passCtrl.text.trim(),
-      );
-      if (result.isSignedIn) {
-        await CurrentUser().get();
-        await CurrentUser().update();
-        return true;
-      }
-    } on UserNotConfirmedException {
-      rethrow;
-    } on AuthException catch (e) {
-      print(e.message);
-    }
-
-    return false;
-  }
-
-  // TODO: this provides no error message or reason. Create nice message, like registerOfficer()
   Future<Object?> registerAdmin(BuildContext context) async {
-    Map<CognitoUserAttributeKey, String> userAttributes = {
-      CognitoUserAttributeKey.name: nameCtrl.text.trim()
-      // additional attributes as needed
-    };
-
-    SignUpResult result = await Amplify.Auth.signUp(
-        username: emailCtrl.text.trim(),
-        password: passCtrl.text.trim(),
-        options: CognitoSignUpOptions(userAttributes: userAttributes));
-    if (!result.isSignUpComplete) {
-      return null;
-    }
+    await registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
 
     // process login
     bool signedIn = false;
     try {
-      signedIn = await signInUser();
+      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -93,11 +60,9 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      SignUpResult res = await Amplify.Auth.confirmSignUp(
-                          username: emailCtrl.text.trim(),
-                          confirmationCode: code);
+                      final res = await confirmUser(emailCtrl.text, code);
                       if (res.isSignUpComplete) {
-                        signedIn = await signInUser();
+                        signedIn = await signInUser(emailCtrl.text, passCtrl.text);
                       }
                       Navigator.of(context).pop();
                     },
@@ -145,9 +110,15 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                 validatorText: 'Organization name is mandatory',
               ),
               VisibleTextField(
-                controller: nameCtrl,
-                label: 'Full Name',
-                hint: 'Enter Organization Administrator\'s Name',
+                controller: firstNameCtrl,
+                label: 'First Name',
+                hint: 'Enter Organization Admin\'s First Name',
+                validatorText: 'Name is mandatory',
+              ),
+              VisibleTextField(
+                controller: lastNameCtrl,
+                label: 'Last Name',
+                hint: 'Enter Organization Admin\'s Last Name',
                 validatorText: 'Name is mandatory',
               ),
               VisibleTextField(
