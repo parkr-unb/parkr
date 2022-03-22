@@ -25,7 +25,6 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-// https://stackoverflow.com/questions/49238908/flutter-textfield-value-always-uppercase-debounce
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(

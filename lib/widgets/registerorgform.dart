@@ -92,7 +92,6 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   //This is just a temporary form. We will need a way for organizations to
   // register themselves. Credit card info, parking lot geography, contact phone
   // number, etc. may be needed
-  // maybe a scrollable form?
   @override
   Widget build(BuildContext context) {
     return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
