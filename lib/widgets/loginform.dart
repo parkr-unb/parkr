@@ -105,12 +105,16 @@ class _LoginFormState extends State<LoginForm> {
                 child: ElevatedButton(
                   onPressed: () async {
                     Amplify.Auth.signOut();
-                    await loadingDialog(
-                        context,
-                        login(context),
-                        "Logging In...",
-                        null,
-                        "Failed to log ${emailCtrl.text} in");
+                    if (await loadingDialog(
+                            context,
+                            login(context),
+                            "Logging In...",
+                            null,
+                            "Failed to log ${emailCtrl.text} in") !=
+                        null) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "home", (_) => false);
+                    }
                   },
                   child: const Text('Login'),
                 ),
