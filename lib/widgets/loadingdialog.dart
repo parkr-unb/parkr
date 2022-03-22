@@ -27,6 +27,7 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
     String loadingText, String? successText, String? failureText,
     {resultDialogDelay = const Duration(seconds: 2)}) async {
   AlertDialog loadingDialog = AlertDialog(
+    scrollable: true,
     content: Row(
       children: [
         const CircularProgressIndicator(),
@@ -39,6 +40,7 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
   AlertDialog? successDialog;
   if (successText != null) {
     successDialog = AlertDialog(
+      scrollable: true,
       content: Row(
         children: [
           const Icon(Icons.check, color: Colors.green, size: 35.0),
@@ -52,6 +54,7 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
   AlertDialog? failureDialog;
   if (failureText != null) {
     failureDialog = AlertDialog(
+      scrollable: true,
       content: Row(
         children: [
           const Icon(Icons.error, color: Colors.red, size: 35.0),
