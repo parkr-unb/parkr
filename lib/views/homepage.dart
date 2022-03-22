@@ -27,8 +27,8 @@ class HomePage extends StatefulWidget {
 // https://stackoverflow.com/questions/49238908/flutter-textfield-value-always-uppercase-debounce
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
-      TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,
@@ -82,9 +82,7 @@ class _HomePageState extends State<HomePage> {
                 future: _cameraFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
-                    final size = MediaQuery
-                        .of(context)
-                        .size;
+                    final size = MediaQuery.of(context).size;
                     return Expanded(
                         child: GestureDetector(
                             onTap: () async {
@@ -121,69 +119,73 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               const Spacer(),
-              TextFormField(
-                  textAlign: TextAlign.center,
-                  //keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
-                    UpperCaseTextFormatter()
-                  ],
-                  style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 5,
-                      debugLabel: 'blackMountainView displayLarge'),
-                  controller: plateCtrl,
-                  decoration: const InputDecoration(
-                    labelStyle: TextStyle(letterSpacing: 1, fontSize: 25),
-                    hintStyle: TextStyle(letterSpacing: 1, fontSize: 18),
-                    icon: Icon(Icons.confirmation_number),
-                    hintText: 'License plate to examine',
-                    labelText: 'License Plate Number *',
-                  ),
-                  onChanged: (String? value) {
-                    setState(() {
-                      _enableExamination = value != null && value.isNotEmpty;
-                    });
-                  }),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(0,0,40,0),
+                  child: TextFormField(
+                      textAlign: TextAlign.center,
+                      //keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9]')),
+                        UpperCaseTextFormatter()
+                      ],
+                      style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 5,
+                          debugLabel: 'blackMountainView displayLarge'),
+                      controller: plateCtrl,
+                      decoration: const InputDecoration(
+                        labelStyle: TextStyle(letterSpacing: 1, fontSize: 25),
+                        hintStyle: TextStyle(letterSpacing: 1, fontSize: 18),
+                        icon: Icon(Icons.confirmation_number),
+                        hintText: 'License plate to examine',
+                        labelText: 'License Plate Number *',
+                      ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _enableExamination =
+                              value != null && value.isNotEmpty;
+                        });
+                      })),
               ElevatedButton(
                   child: const Text('Examine Registration',
                       style: TextStyle(fontSize: 20.0)),
                   onPressed: _enableExamination == false
                       ? null
                       : () async {
-                    final reg = await loadingDialog(
-                        context,
-                        isValid(plateCtrl.text),
-                        "Examining registration...",
-                        null,
-                        null) as Registration?;
-                    // STUB
-                    // examine(plate_ctrl.text);
-                    if (reg != null) {
-                      Navigator.pushNamed(context, "plate",
-                          arguments: {"reg": reg});
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                                title: const Text(
-                                    'Plate not found in system'),
-                                content: Text(
-                                    'Please administer a paper ticket to plate - ' +
-                                        plateCtrl.text),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ]);
-                          });
-                    }
-                  }),
+                          final reg = await loadingDialog(
+                              context,
+                              isValid(plateCtrl.text),
+                              "Examining registration...",
+                              null,
+                              null) as Registration?;
+                          // STUB
+                          // examine(plate_ctrl.text);
+                          if (reg != null) {
+                            Navigator.pushNamed(context, "plate",
+                                arguments: {"reg": reg});
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                      title: const Text(
+                                          'Plate not found in system'),
+                                      content: Text(
+                                          'Please administer a paper ticket to plate - ' +
+                                              plateCtrl.text),
+                                      actions: [
+                                        TextButton(
+                                          child: const Text('OK'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ]);
+                                });
+                          }
+                        }),
               if (!isKeyboardVisible)
                 Expanded(
                   child: Row(
@@ -198,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const ManageOfficersPage()),
+                                        const ManageOfficersPage()),
                               );
                             }),
                       const VerticalDivider(),
