@@ -28,12 +28,8 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
     {resultDialogDelay = const Duration(seconds: 2)}) async {
   AlertDialog loadingDialog = AlertDialog(
     scrollable: true,
-    content: Row(
-      children: [
-        const CircularProgressIndicator(),
-        Container(
-            margin: const EdgeInsets.only(left: 7), child: Text(loadingText)),
-      ],
+    content: Column(
+      children: [const CircularProgressIndicator(), Text(loadingText)],
     ),
   );
 
@@ -41,11 +37,10 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
   if (successText != null) {
     successDialog = AlertDialog(
       scrollable: true,
-      content: Row(
+      content: Column(
         children: [
           const Icon(Icons.check, color: Colors.green, size: 35.0),
-          Container(
-              margin: const EdgeInsets.only(left: 3), child: Text(successText)),
+          Text(successText)
         ],
       ),
     );
@@ -55,11 +50,10 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
   if (failureText != null) {
     failureDialog = AlertDialog(
       scrollable: true,
-      content: Row(
+      content: Column(
         children: [
           const Icon(Icons.error, color: Colors.red, size: 35.0),
-          Container(
-              margin: const EdgeInsets.only(left: 3), child: Text(failureText)),
+          Text(failureText)
         ],
       ),
     );
