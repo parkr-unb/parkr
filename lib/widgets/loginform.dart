@@ -123,9 +123,7 @@ class _LoginFormState extends State<LoginForm> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              if (!isKeyboardVisible) const Logo(),
-              if (isKeyboardVisible)
-                const LogoSymbol(top: 10.0, left: 100, right: 100, bottom: 20),
+              Logo(keyboard: isKeyboardVisible),
               VisibleTextField(
                 controller: emailCtrl,
               ),

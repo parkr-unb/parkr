@@ -190,8 +190,7 @@ class _PlatePageState extends State<PlatePage> {
                       ),
                     ],
                   ),
-                  const VerticalDivider(),
-                  const VerticalDivider(),
+                  const Expanded(child: VerticalDivider()),
                   Expanded(
                       child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,

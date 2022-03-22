@@ -137,9 +137,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
           child: SingleChildScrollView(
               child: Column(
             children: <Widget>[
-              if (!isKeyboardVisible) const Logo(),
-              if (isKeyboardVisible)
-                const LogoSymbol(top: 10.0, left: 100, right: 100, bottom: 20),
+              Logo(keyboard: isKeyboardVisible),
               VisibleTextField(
                 controller: orgNameCtrl,
                 label: 'Organization Name',
