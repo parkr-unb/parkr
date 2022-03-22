@@ -28,16 +28,5 @@ class _Logo extends State<Logo> {
           child: Image.asset('assets/transparent_parkr_logo.png')),
       crossFadeState: widget.keyboard ? CrossFadeState.showFirst : CrossFadeState.showSecond,
     );
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 50),
-      child: widget.keyboard ?
-        Container(child: Padding(
-            padding: EdgeInsets.fromLTRB(100, 10, 100, 20),
-            child: Image.asset('assets/transparent_parkr_symbol.png'))
-        ) :
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 100.0, horizontal: 20),
-          child: Image.asset('assets/transparent_parkr_logo.png'))
-    );
   }
 }
