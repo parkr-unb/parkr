@@ -2,13 +2,13 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/user.dart';
+import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
-
-import 'loadingdialog.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -22,41 +22,16 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  Future<bool> signInUser() async {
-    try {
-      await Amplify.Auth.signOut();
-      SignInResult result = await Amplify.Auth.signIn(
-        username: emailCtrl.text.trim(),
-        password: passCtrl.text.trim(),
-      );
-      if (result.isSignedIn) {
-        await CurrentUser().get();
-        await CurrentUser().update();
-        return true;
-      }
-    } on UserNotConfirmedException {
-      rethrow;
-    } on AuthException catch (e) {
-      print(e.message);
-    }
-
-    return false;
-  }
-
   Future<Object?> login(BuildContext context) async {
     // Validate returns true if the form is valid, or false otherwise.
     if (!_formKey.currentState!.validate()) {
       return null;
     }
 
-    const processingBar = SnackBar(content: Text('Processing Data'));
-    ScaffoldMessenger.of(context).showSnackBar(processingBar);
-
     // process login
-
     bool signedIn = false;
     try {
-      signedIn = await signInUser();
+      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -85,27 +60,23 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      SignUpResult res = await Amplify.Auth.confirmSignUp(
-                          username: emailCtrl.text.trim(),
-                          confirmationCode: code);
+                      final res = await confirmUser(emailCtrl.text, code);
                       if (res.isSignUpComplete) {
-                        signedIn = await signInUser();
+                        signedIn =
+                            await signInUser(emailCtrl.text, passCtrl.text);
                       }
                       Navigator.of(context).pop();
                     },
                   ),
                 ]);
-          }
-      );
-      if(signedIn)
-      {
+          });
+      if (signedIn) {
         await CurrentUser().update();
         final user = await CurrentUser().get();
         await Gateway().addOfficer(user.userId);
       }
     }
-    if(!signedIn)
-    {
+    if (!signedIn) {
       return null;
     }
     return "Success";
@@ -113,15 +84,16 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: SingleChildScrollView(
-          child: Column(
+    return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+      return Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: SingleChildScrollView(
+              child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              const Logo(),
+              Logo(keyboard: isKeyboardVisible),
               VisibleTextField(
                 controller: emailCtrl,
               ),
@@ -132,34 +104,35 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () async {
-                    var result = await loadingDialog(
-                        context,
-                        login(context),
-                        "Logging in",
-                        null,
-                        "Failed to log in");
-                    if(result != null) {
-                      Navigator.pushNamedAndRemoveUntil(context, "home", (_) => false);
+                    Amplify.Auth.signOut();
+                    if (await loadingDialog(
+                            context,
+                            login(context),
+                            "Logging In...",
+                            null,
+                            "Failed to log ${emailCtrl.text} in") !=
+                        null) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "home", (_) => false);
                     }
                   },
                   child: const Text('Login'),
-                )
+                ),
               ),
               if (kDebugMode)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, "home", (_) => false);
-                      },
-                  child: const Text('Debug Skip Login'),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "home", (_) => false);
+                    },
+                    child: const Text('Debug Skip Login'),
                   ),
                 ),
-              ],
-            ),
-          )
-        );
+            ],
+          )));
+    });
   } // build
 
 }

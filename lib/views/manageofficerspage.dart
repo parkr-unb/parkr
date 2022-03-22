@@ -39,9 +39,10 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 future: _fetchOfficers(),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Widget>> snapshot) {
-                  if(snapshot.hasError) {
+                  if (snapshot.hasError) {
                     print(snapshot.error);
-                    return const Text("An Error Occurred Fetching Your Officers");
+                    return const Text(
+                        "An Error Occurred Fetching Your Officers");
                   }
                   final officers =
                       snapshot.hasData ? snapshot.data as List<Widget> : [];
