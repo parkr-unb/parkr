@@ -7,7 +7,7 @@ class Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 100.0, horizontal: 20),
-        child: Image.asset('assets/parkr_logo.png'),
+        child: Image.asset('assets/transparent_parkr_logo.png'),
     );
   } // build
 }
