@@ -1,7 +1,9 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:parkr/displayable_exception.dart';
 import 'package:parkr/gateway.dart';
+import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/models/Officer.dart';
 
 Future<void> registerOfficer(
@@ -52,7 +54,6 @@ Future<bool> signInUser(String email, String password) async {
     );
     if (result.isSignedIn) {
       await CurrentUser().get();
-      await CurrentUser().update();
       return true;
     }
   } on UserNotFoundException {
@@ -88,8 +89,9 @@ class CurrentUser {
     _instance = CurrentUser._privateConstructor();
   }
 
-  Future<void> update() async {
-    _officer ??= await Gateway().getOfficerByID((await get()).userId);
+  Future<void> update({String? userId}) async {
+    userId ??= (await get()).userId;
+    _officer ??= await Gateway().getOfficerByID(userId);
     if (_officer != null) {
       admin = _officer?.role == "admin";
     }
@@ -110,12 +112,29 @@ class CurrentUser {
   }
 
   Future<AuthUser> get() async {
-    _user ??= await Amplify.Auth.getCurrentUser();
+    if (_user == null) {
+      _user = await Amplify.Auth.getCurrentUser();
+      await update(userId: _user?.userId);
+    }
     return _user as AuthUser;
   }
 
-  String? getName() {
-    return _name ?? "Yevgen";
+  String getFullName() {
+    return _name ?? "Biletskiy,Yevgen";
+  }
+
+  String getFirstName() {
+    final nameSections = getFullName().split(',');
+    if (nameSections.length == 1 && kDebugMode) {
+      print(
+          "YOU NEED TO UPDATE YOUR USER TO HAVE A LAST,FIRST NAME IN COGNITO");
+      return "NO_FIRSTNAME";
+    }
+    return nameSections[1];
+  }
+
+  String getLastName() {
+    return getFullName().split(',')[0];
   }
 
   set admin(bool auth) {
@@ -126,10 +145,7 @@ class CurrentUser {
     return _admin;
   }
 
-  String? getOrg() {
-    if (_officer != null && _officer?.organization != null) {
-      return _officer?.organization?.getId();
-    }
-    return "";
+  String getOrg() {
+    return _officer?.organization?.getId() ?? "";
   }
 }

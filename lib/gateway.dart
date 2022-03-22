@@ -4,6 +4,7 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:parkr/models/ModelProvider.dart';
+import 'package:parkr/user.dart';
 
 class Gateway {
   static final Gateway _instance = Gateway._privateConstructor();
@@ -93,10 +94,9 @@ class Gateway {
     }
   }
 
-  // provide the userId created by cognito
-  Future<Officer?> addOfficer(String userId) async {
+  Future<Officer?> _addOfficer(String userId, String role) async {
     try {
-      final officer = Officer(id: userId, role: "officer");
+      final officer = Officer(id: userId, role: role, name: CurrentUser().getFullName());
       final request = ModelMutations.create(officer);
       final response = await Amplify.API.mutate(request: request).response;
 
@@ -114,12 +114,18 @@ class Gateway {
     }
   }
 
-  Future<Officer?> addAdmin(String userId) async {
-    try {
-      final admin = Officer(id: userId, role: "admin");
-      final request = ModelMutations.create(admin);
-      final response = await Amplify.API.mutate(request: request).response;
+  Future<Officer?> addOfficer(String userId) async {
+    return await _addOfficer(userId, "officer");
+  }
 
+  Future<Officer?> addAdmin(String userId) async {
+    return await _addOfficer(userId, "admin");
+  }
+
+  Future<Officer?> removeOfficer(String userId) async {
+    try {
+      final request = ModelMutations.deleteById(Officer.classType, userId);
+      final response = await Amplify.API.mutate(request: request).response;
       if (response.data == null) {
         if (kDebugMode) {
           print('errors: ' + response.errors.toString());

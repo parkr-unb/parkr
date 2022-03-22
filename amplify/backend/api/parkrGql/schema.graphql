@@ -36,6 +36,7 @@ type Officer @model {
     # id is userId from Cognito
     id: ID!
     role: String!
+    name: String!
     organization: Organization @belongsTo
 }
 
