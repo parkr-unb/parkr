@@ -2,6 +2,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/user.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
@@ -120,44 +121,48 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: SingleChildScrollView(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            const Logo(),
-            VisibleTextField(
-              controller: emailCtrl,
-            ),
-            ObscuredTextField(
-              controller: passCtrl,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Amplify.Auth.signOut();
-                  login(context);
-                },
-                child: const Text('Login'),
+    return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+      return Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: SingleChildScrollView(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              if (!isKeyboardVisible) const Logo(),
+              if (isKeyboardVisible)
+                const LogoSymbol(top: 10.0, left: 100, right: 100, bottom: 20),
+              VisibleTextField(
+                controller: emailCtrl,
               ),
-            ),
-            if (kDebugMode)
+              ObscuredTextField(
+                controller: passCtrl,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, "home", (_) => false);
+                    Amplify.Auth.signOut();
+                    login(context);
                   },
-                  child: const Text('Debug Skip Login'),
+                  child: const Text('Login'),
                 ),
               ),
-          ],
-        )));
+              if (kDebugMode)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "home", (_) => false);
+                    },
+                    child: const Text('Debug Skip Login'),
+                  ),
+                ),
+            ],
+          )));
+    });
   } // build
 
 }
