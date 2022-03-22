@@ -123,7 +123,6 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.fromLTRB(0,0,40,0),
                   child: TextFormField(
                       textAlign: TextAlign.center,
-                      //keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(
                             RegExp(r'[a-zA-Z0-9]')),
