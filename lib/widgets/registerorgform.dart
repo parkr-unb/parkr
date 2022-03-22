@@ -46,7 +46,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
     return false;
   }
 
-  // TODO: Chris, why are you returning empty strings here??
+  // TODO: this provides no error message or reason. Create nice message, like registerOfficer()
   Future<Object?> registerAdmin(BuildContext context) async {
     Map<CognitoUserAttributeKey, String> userAttributes = {
       CognitoUserAttributeKey.name: nameCtrl.text.trim()
@@ -57,6 +57,9 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
         username: emailCtrl.text.trim(),
         password: passCtrl.text.trim(),
         options: CognitoSignUpOptions(userAttributes: userAttributes));
+    if (!result.isSignUpComplete) {
+      return null;
+    }
 
     // process login
     bool signedIn = false;
@@ -167,21 +170,25 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   onPressed: () async {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
-                      // If the form is valid, display a snackbar. In the real world,
-                      // you'd often call a server or save the information in a database.
+                      if (await loadingDialog(
+                              context,
+                              registerAdmin(context),
+                              "Registering Admin...",
+                              null,
+                              "Failed to register organization manager") ==
+                          null) {
+                        return;
+                      }
 
-                      await loadingDialog(
-                          context,
-                          registerAdmin(context),
-                          "Registering Admin...",
-                          null,
-                          "Failed to register organization manager");
-                      await loadingDialog(
-                          context,
-                          registerOrg(context),
-                          "Registering Organization...",
-                          "Your organization is registered",
-                          "Failed to register organization");
+                      if (await loadingDialog(
+                              context,
+                              registerOrg(context),
+                              "Registering Organization...",
+                              "Your organization is registered",
+                              "Failed to register organization") ==
+                          null) {
+                        return;
+                      }
 
                       CurrentUser().admin = true;
 
