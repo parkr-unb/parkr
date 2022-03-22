@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/displayable_exception.dart';
 
 Future<void> _displayDialog(BuildContext ctx, AlertDialog? dialog,
     {delay = const Duration(seconds: 0)}) async {
@@ -23,9 +24,22 @@ Future<void> _displayClosingDialog(BuildContext ctx, AlertDialog? dialog,
   }
 }
 
+AlertDialog createFailureDialog(String text) {
+  return AlertDialog(
+    scrollable: true,
+    content: Column(
+      children: [
+        const Icon(Icons.error, color: Colors.red, size: 35.0),
+        Text(text)
+      ],
+    ),
+  );
+}
+
 Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
     String loadingText, String? successText, String? failureText,
-    {resultDialogDelay = const Duration(seconds: 2)}) async {
+    {resultDialogDelay = const Duration(seconds: 2),
+    useExceptionText = true}) async {
   AlertDialog loadingDialog = AlertDialog(
     scrollable: true,
     content: Column(
@@ -48,15 +62,7 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
 
   AlertDialog? failureDialog;
   if (failureText != null) {
-    failureDialog = AlertDialog(
-      scrollable: true,
-      content: Column(
-        children: [
-          const Icon(Icons.error, color: Colors.red, size: 35.0),
-          Text(failureText)
-        ],
-      ),
-    );
+    failureDialog = createFailureDialog(failureText);
   }
 
   // start loading dialog
@@ -66,9 +72,11 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
   Object? result;
   try {
     result = await future;
+  } on DisplayableException catch (e) {
+    failureDialog = createFailureDialog(e.toString());
   } catch (e) {
     print(e);
-    result = null;
+    rethrow;
   }
   Navigator.pop(context);
 

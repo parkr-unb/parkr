@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -192,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (CurrentUser().isAdmin())
+                      if (kDebugMode || CurrentUser().isAdmin())
                         ElevatedButton(
                             child: const Text('Officers',
                                 style: TextStyle(fontSize: 20.0)),
