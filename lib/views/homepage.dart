@@ -236,8 +236,6 @@ class _HomePageState extends State<HomePage> {
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond),
               if (!isKeyboardVisible) const Spacer(flex: 2)
-              // if (!isKeyboardVisible)
-              //   const LimitedBox(maxHeight: 50, child: Spacer())
             ],
           ),
         ),
