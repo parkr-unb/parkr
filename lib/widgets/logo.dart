@@ -10,12 +10,8 @@ class Logo extends StatefulWidget {
   _Logo createState() => _Logo();
 }
 class _Logo extends State<Logo> {
-  bool prevKeyboard = false;
-
   @override
   Widget build(BuildContext context) {
-    prevKeyboard = widget.keyboard;
-
     return AnimatedCrossFade(
       duration: const Duration(milliseconds: 250),
       firstChild:

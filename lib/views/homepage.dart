@@ -78,46 +78,43 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               const Spacer(),
-              FutureBuilder(
+              Expanded(child: FutureBuilder(
                 future: _cameraFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     final size = MediaQuery.of(context).size;
-                    return Expanded(
-                        child: GestureDetector(
-                            onTap: () async {
-                              try {
-                                await _cameraFuture;
-                                XFile img = await _camera.takePicture();
-                                final plate = await loadingDialog(
-                                    context,
-                                    getPlate(img),
-                                    "Reading plate...",
-                                    null,
-                                    null) as String?;
-                                plateCtrl.text = plate ?? "";
-                                if (plateCtrl.text.isNotEmpty) {
-                                  setState(() {
-                                    _enableExamination = true;
-                                  });
-                                }
-                              } catch (e) {
-                                print("Failed to capture photo");
-                                print(e);
-                              }
-                            },
-                            child: Transform.scale(
-                                scale: ((_camera.value.aspectRatio /
-                                    size.aspectRatio)),
-                                child: Center(
-                                    child: AspectRatio(
-                                        aspectRatio: _camera.value.aspectRatio,
-                                        child: CameraPreview(_camera))))));
+                    return GestureDetector(
+                      onTap: () async {
+                        try {
+                          await _cameraFuture;
+                          XFile img = await _camera.takePicture();
+                          final plate = await loadingDialog(
+                              context,
+                              getPlate(img),
+                              "Reading plate...",
+                              null,
+                              null) as String?;
+                          plateCtrl.text = plate ?? "";
+                          if (plateCtrl.text.isNotEmpty) {
+                            setState(() {
+                              _enableExamination = true;
+                            });
+                          }
+                        } catch (e) {
+                          print("Failed to capture photo");
+                          print(e);
+                        }
+                      },
+                      child: Transform.scale(
+                        scale: 2.8,
+                        child: CameraPreview(_camera)
+                      ),
+                    );
                   } else {
                     return const Center(child: CircularProgressIndicator());
                   }
                 },
-              ),
+              )),
               const Spacer(),
               Padding(
                   padding: const EdgeInsets.fromLTRB(0,0,40,0),
@@ -185,9 +182,10 @@ class _HomePageState extends State<HomePage> {
                                 });
                           }
                         }),
-              if (!isKeyboardVisible)
-                Expanded(
-                  child: Row(
+            AnimatedCrossFade(
+              duration: const Duration(milliseconds: 250),
+              firstChild:
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (CurrentUser().isAdmin())
@@ -199,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const ManageOfficersPage()),
+                                    const ManageOfficersPage()),
                               );
                             }),
                       const VerticalDivider(),
@@ -227,7 +225,8 @@ class _HomePageState extends State<HomePage> {
                           })
                     ],
                   ),
-                )
+              secondChild: SizedBox(),
+              crossFadeState: !isKeyboardVisible ? CrossFadeState.showFirst : CrossFadeState.showSecond)
             ],
           ),
         ),
