@@ -125,9 +125,11 @@ class CurrentUser {
 
   String getFirstName() {
     final nameSections = getFullName().split(',');
-    if (nameSections.length == 1 && kDebugMode) {
-      print(
-          "YOU NEED TO UPDATE YOUR USER TO HAVE A LAST,FIRST NAME IN COGNITO");
+    if (nameSections.length == 1) {
+      if (kDebugMode) {
+        print(
+            "YOU NEED TO UPDATE YOUR USER TO HAVE A LAST,FIRST NAME IN COGNITO");
+      }
       return "NO_FIRSTNAME";
     }
     return nameSections[1];
