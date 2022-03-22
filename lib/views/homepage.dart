@@ -78,51 +78,53 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              const Spacer(),
-              Expanded(child: FutureBuilder(
-                future: _cameraFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    final size = MediaQuery.of(context).size;
-                    var scaler = size.aspectRatio / _camera.value.aspectRatio;
-                    if(scaler < 1) scaler = 1/scaler;
-                    return GestureDetector(
-                      onTap: () async {
-                        try {
-                          await _cameraFuture;
-                          XFile img = await _camera.takePicture();
-                          final plate = await loadingDialog(
-                              context,
-                              getPlate(img),
-                              "Reading plate...",
-                              null,
-                              "Could not read plate") as String?;
-                          plateCtrl.text = plate ?? "";
-                          if (plateCtrl.text.isNotEmpty) {
-                            setState(() {
-                              _enableExamination = true;
-                            });
-                          }
-                        } catch (e) {
-                          print("Failed to capture photo");
-                          print(e);
-                        }
-                      },
-                      child: Transform.scale(
-                        scale: scaler,
-                        child: Center(
-                          child: CameraPreview(_camera),
-                        ),
-                      )
-                    );
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
-              )),
-              const Spacer(),
+              const Spacer(flex: 23),
+              Expanded(
+                  flex: 25,
+                  child: FutureBuilder(
+                    future: _cameraFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        final size = MediaQuery.of(context).size;
+                        var scaler =
+                            size.aspectRatio / _camera.value.aspectRatio;
+                        if (scaler < 1) scaler = 1 / scaler;
+                        return GestureDetector(
+                            onTap: () async {
+                              try {
+                                await _cameraFuture;
+                                XFile img = await _camera.takePicture();
+                                final plate = await loadingDialog(
+                                    context,
+                                    getPlate(img),
+                                    "Reading plate...",
+                                    null,
+                                    "Could not read plate") as String?;
+                                plateCtrl.text = plate ?? "";
+                                if (plateCtrl.text.isNotEmpty) {
+                                  setState(() {
+                                    _enableExamination = true;
+                                  });
+                                }
+                              } catch (e) {
+                                print("Failed to capture photo");
+                                print(e);
+                              }
+                            },
+                            child: Transform.scale(
+                              scale: scaler,
+                              child: Center(
+                                child: CameraPreview(_camera),
+                              ),
+                            ));
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  )),
+              const Spacer(flex: 20),
               Padding(
-                  padding: const EdgeInsets.fromLTRB(0,0,40,0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
                   child: TextFormField(
                       textAlign: TextAlign.center,
                       inputFormatters: <TextInputFormatter>[
@@ -187,10 +189,10 @@ class _HomePageState extends State<HomePage> {
                                 });
                           }
                         }),
-            AnimatedCrossFade(
-              duration: const Duration(milliseconds: 250),
-              firstChild:
-                  Row(
+              if (!isKeyboardVisible) const Spacer(flex: 5),
+              AnimatedCrossFade(
+                  duration: const Duration(milliseconds: 250),
+                  firstChild: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (kDebugMode || CurrentUser().isAdmin())
@@ -202,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const ManageOfficersPage()),
+                                        const ManageOfficersPage()),
                               );
                             }),
                       const VerticalDivider(),
@@ -230,8 +232,13 @@ class _HomePageState extends State<HomePage> {
                           })
                     ],
                   ),
-              secondChild: SizedBox(),
-              crossFadeState: !isKeyboardVisible ? CrossFadeState.showFirst : CrossFadeState.showSecond)
+                  secondChild: const SizedBox(),
+                  crossFadeState: !isKeyboardVisible
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond),
+              if (!isKeyboardVisible) const Spacer(flex: 2)
+              // if (!isKeyboardVisible)
+              //   const LimitedBox(maxHeight: 50, child: Spacer())
             ],
           ),
         ),
