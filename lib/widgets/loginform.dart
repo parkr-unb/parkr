@@ -43,10 +43,8 @@ class _LoginFormState extends State<LoginForm> {
                     child: Column(children: [
                       const Text('Enter your confirmation code'),
                       TextField(
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 25),
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.only(bottom: 200 / 2)),
                         onChanged: (value) {
                           code = value.trim();
                         },
@@ -62,7 +60,7 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      Navigator.of(context).pop();
+                      //Navigator.of(context).pop();
                       final res = await loadingDialog(
                           context,
                           confirmUser(emailCtrl.text, code),

@@ -74,7 +74,16 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                       snapshot.hasData ? snapshot.data as List<Officer> : [];
 
                   if (officers.isEmpty) {
-                    return const Expanded(child: Text("No Officers"));
+                    return Expanded(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                          Text("No Officers",
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold))
+                        ]));
                   }
 
                   return Expanded(
@@ -113,15 +122,17 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 },
               ),
               const Divider(thickness: 3),
-              ElevatedButton(
-                  child: const Text('New Officer'),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const RegisterOfficerDialog();
-                        });
-                  }),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  child: ElevatedButton(
+                      child: const Text('New Officer'),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const RegisterOfficerDialog();
+                            });
+                      })),
             ])));
   } // build
 
