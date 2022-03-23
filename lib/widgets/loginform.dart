@@ -44,6 +44,9 @@ class _LoginFormState extends State<LoginForm> {
                       const Text('Enter your confirmation code'),
                       TextField(
                         style: const TextStyle(fontSize: 25),
+                        decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.only(bottom: 200 / 2)),
                         onChanged: (value) {
                           code = value.trim();
                         },
@@ -59,12 +62,23 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      final res = await confirmUser(emailCtrl.text, code);
-                      if (res.isSignUpComplete) {
-                        signedIn =
-                            await signInUser(emailCtrl.text, passCtrl.text);
-                      }
                       Navigator.of(context).pop();
+                      final res = await loadingDialog(
+                          context,
+                          confirmUser(emailCtrl.text, code),
+                          "Confirming User...",
+                          null,
+                          "Failed to confirm user") as SignUpResult?;
+                      if (res != null && res.isSignUpComplete) {
+                        signedIn = await loadingDialog(
+                                    context,
+                                    signInUser(emailCtrl.text, passCtrl.text),
+                                    "Signing In...",
+                                    null,
+                                    "Parkr experienced an error signing you in. Please try again.")
+                                as bool? ??
+                            false;
+                      }
                     },
                   ),
                 ]);

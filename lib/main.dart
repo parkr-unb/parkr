@@ -23,12 +23,11 @@ class ParkrApp extends StatefulWidget {
 }
 
 class _ParkrAppState extends State<ParkrApp> {
-  @override
-  Widget build(BuildContext context) {
+  Future<Widget> _buildStartPage(BuildContext context) async {
     // navigate straight to home page if already signed in
     Widget startPage = const WelcomePage();
     try {
-      Amplify.Auth.fetchAuthSession()
+      await Amplify.Auth.fetchAuthSession()
           .timeout(const Duration(seconds: 5))
           .then((session) {
         if (session.isSignedIn) {
@@ -43,6 +42,11 @@ class _ParkrAppState extends State<ParkrApp> {
       rethrow;
     }
 
+    return startPage;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Parkr',
       theme: ThemeData.from(
@@ -60,7 +64,17 @@ class _ParkrAppState extends State<ParkrApp> {
           brightness: Brightness.dark,
         ),
       ),
-      home: startPage,
+      home: FutureBuilder<Widget>(
+          future: _buildStartPage(context),
+          builder: (BuildContext ctx, AsyncSnapshot<Widget> snapshot) {
+            if (snapshot.hasError) {
+              print(snapshot.error);
+              return const Text(
+                  "An internal Parkr error occurred. Please reload the application.");
+            }
+            return snapshot.hasData ? snapshot.data as Widget : const Text(
+                "Jesus Loves You");
+          }),
       routes: {
         "plate": (BuildContext context) => const PlatePage(),
         "home": (BuildContext context) => HomePage(camera: widget.camera),
@@ -103,7 +117,10 @@ void setupAppKeys() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await Future.wait([setupAmplify(), setupCamera(), ]);
+    await Future.wait([
+      setupAmplify(),
+      setupCamera(),
+    ]);
   } on Exception catch (e) {
     print("Failed setup the application: $e");
   }
