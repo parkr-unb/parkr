@@ -103,7 +103,6 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () async {
-                    Amplify.Auth.signOut();
                     if (await loadingDialog(
                             context,
                             login(context),
