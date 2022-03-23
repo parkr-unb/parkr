@@ -30,7 +30,13 @@ class _LoginFormState extends State<LoginForm> {
     // process login
     bool signedIn = false;
     try {
-      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
+      signedIn = (await loadingDialog(
+              context,
+              signInUser(emailCtrl.text, passCtrl.text),
+              "Logging In...",
+              null,
+              "Failed to log ${emailCtrl.text} in") as bool?) ??
+          false;
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -60,14 +66,15 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      //Navigator.of(context).pop();
                       final res = await loadingDialog(
                           context,
                           confirmUser(emailCtrl.text, code),
                           "Confirming User...",
                           null,
                           "Failed to confirm user") as SignUpResult?;
-                      if (res != null && res.isSignUpComplete) {
+                      if (res == null) {
+                        signedIn = false;
+                      } else if (res.isSignUpComplete) {
                         signedIn = await loadingDialog(
                                     context,
                                     signInUser(emailCtrl.text, passCtrl.text),
@@ -76,6 +83,7 @@ class _LoginFormState extends State<LoginForm> {
                                     "Parkr experienced an error signing you in. Please try again.")
                                 as bool? ??
                             false;
+                        Navigator.of(context).pop();
                       }
                     },
                   ),
@@ -114,15 +122,11 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (await loadingDialog(
-                            context,
-                            login(context),
-                            "Logging In...",
-                            null,
-                            "Failed to log ${emailCtrl.text} in") !=
-                        null) {
+                    if (await login(context) != null) {
                       Navigator.pushNamedAndRemoveUntil(
                           context, "home", (_) => false);
+                    } else {
+                      print("LITERALLY FUCK YOU");
                     }
                   },
                   child: const Text('Login'),
