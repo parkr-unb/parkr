@@ -26,7 +26,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   final _formKey = GlobalKey<FormState>();
 
   Future<Object?> registerAdmin(BuildContext context) async {
-    await registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
+    await registerOfficer(
+        emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
 
     // process login
     bool signedIn = false;
@@ -62,7 +63,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     onPressed: () async {
                       final res = await confirmUser(emailCtrl.text, code);
                       if (res.isSignUpComplete) {
-                        signedIn = await signInUser(emailCtrl.text, passCtrl.text);
+                        signedIn =
+                            await signInUser(emailCtrl.text, passCtrl.text);
                       }
                       Navigator.of(context).pop();
                     },
@@ -73,7 +75,6 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
     if (!signedIn) {
       return null;
     }
-    await CurrentUser().update();
     final user = await CurrentUser().get();
     await Gateway().addAdmin(user.userId);
     return "Success";

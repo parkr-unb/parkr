@@ -40,7 +40,7 @@ export 'Tickets.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "0d24f385fcfe7f0e06e495d5cf590611";
+  String version = "32b035e98cb036189277c1d28e925fda";
   @override
   List<ModelSchema> modelSchemas = [AppKeys.schema, Officer.schema, Organization.schema, ParkingPermits.schema, Tickets.schema];
   static final ModelProvider _instance = ModelProvider();

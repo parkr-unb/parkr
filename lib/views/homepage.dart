@@ -64,14 +64,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final username = CurrentUser().getName();
+    final username = CurrentUser().getFirstName();
 
     return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
       return Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text('Home - Welcome $username'),
-        ),
+            automaticallyImplyLeading: false,
+            title: Row(children: [
+              Text('Welcome, $username'),
+              const Spacer(),
+              const Text('Home'),
+            ])),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -113,15 +116,20 @@ class _HomePageState extends State<HomePage> {
                             child: Transform.scale(
                               scale: scaler,
                               child: Center(
+                                  child: Container(
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 1.0, color: Colors.red),
+                                ),
                                 child: CameraPreview(_camera),
-                              ),
+                              )),
                             ));
                       } else {
                         return const Center(child: CircularProgressIndicator());
                       }
                     },
                   )),
-              const Spacer(flex: 20),
+              const Spacer(flex: 22),
               Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
                   child: TextFormField(

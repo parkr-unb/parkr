@@ -71,7 +71,6 @@ class _LoginFormState extends State<LoginForm> {
                 ]);
           });
       if (signedIn) {
-        await CurrentUser().update();
         final user = await CurrentUser().get();
         await Gateway().addOfficer(user.userId);
       }
