@@ -36,7 +36,7 @@ class _ParkrAppState extends State<ParkrApp> {
       });
     } on TimeoutException {
       // just continue, and let the user sign in, as usual
-      print('Poor network quality while fetching user session timed out');
+      print('Poor network quality. Fetching user session timed out');
     } on Exception catch (e) {
       print(e);
       rethrow;
