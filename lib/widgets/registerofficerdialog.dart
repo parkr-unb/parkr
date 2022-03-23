@@ -97,7 +97,7 @@ class _RegisterOfficerDialogState extends State<RegisterOfficerDialog> {
                           lastNameCtrl.text, passCtrl.text),
                       "Registering Officer...",
                       "${firstNameCtrl.text} is Registered",
-                      "") !=
+                      "Failed to register officer") !=
                   null) {
                 Navigator.of(context).pop();
               }

@@ -6,7 +6,7 @@ import 'package:parkr/gateway.dart';
 import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/models/Officer.dart';
 
-Future<void> registerOfficer(
+Future<Object?> registerOfficer(
     String email, String firstName, String lastName, String password) async {
   // basic email validation before sending cognito request
   final emailTrimmed = email.trim();
@@ -43,6 +43,7 @@ Future<void> registerOfficer(
     final presentableMsg = msgParts.sublist(ignoreIdx).join(':').trim();
     throw DisplayableException(presentableMsg);
   }
+  return "Success";
 }
 
 Future<bool> signInUser(String email, String password) async {
@@ -74,7 +75,7 @@ Future<SignUpResult> confirmUser(String email, String confirmCode) async {
 
 class CurrentUser {
   static CurrentUser _instance = CurrentUser._privateConstructor();
-  static AuthUser? _user;
+  AuthUser? _user;
   String? _name;
   Officer? _officer;
   bool _admin = false;
@@ -99,14 +100,7 @@ class CurrentUser {
     var res = await Amplify.Auth.fetchUserAttributes();
     for (var element in res) {
       if (element.userAttributeKey.key == "name") {
-        var rawName = element.value;
-        var commaIdx = rawName.indexOf(',');
-        var firstName = rawName.substring(commaIdx + 1);
-        var lastName = "";
-        if (commaIdx != -1) {
-          lastName = rawName.substring(0, commaIdx);
-        }
-        _name = firstName + " " + lastName;
+        _name = element.value;
       }
     }
   }

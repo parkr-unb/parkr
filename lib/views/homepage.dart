@@ -202,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                   firstChild: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (CurrentUser().isAdmin())
+                      if (kDebugMode || CurrentUser().isAdmin())
                         ElevatedButton(
                             child: const Text('Officers',
                                 style: TextStyle(fontSize: 20.0)),
