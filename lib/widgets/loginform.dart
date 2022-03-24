@@ -125,8 +125,6 @@ class _LoginFormState extends State<LoginForm> {
                     if (await login(context) != null) {
                       Navigator.pushNamedAndRemoveUntil(
                           context, "home", (_) => false);
-                    } else {
-                      print("LITERALLY FUCK YOU");
                     }
                   },
                   child: const Text('Login'),

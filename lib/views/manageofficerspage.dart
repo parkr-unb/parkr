@@ -58,82 +58,84 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
           title: const Text("Parking Officers"),
         ),
         body: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-              FutureBuilder<List<Officer>>(
-                future: _fetchOfficers(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Officer>> snapshot) {
-                  if (snapshot.hasError) {
-                    print(snapshot.error);
-                    return const Text(
-                        "An Error Occurred Fetching Your Officers");
-                  }
-                  final officers =
-                      snapshot.hasData ? snapshot.data as List<Officer> : [];
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: <
+                    Widget>[
+          FutureBuilder<List<Officer>>(
+            future: _fetchOfficers(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Officer>> snapshot) {
+              if (snapshot.hasError) {
+                print(snapshot.error);
+                return const Text("An Error Occurred Fetching Your Officers");
+              }
+              final officers =
+                  snapshot.hasData ? snapshot.data as List<Officer> : [];
 
-                  if (officers.isEmpty) {
-                    return Expanded(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                          Text("No Officers",
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold))
-                        ]));
-                  }
+              if (officers.isEmpty) {
+                return Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                      Text("No Officers",
+                          style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold))
+                    ]));
+              }
 
-                  return Expanded(
-                      child: ListView.separated(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    padding: const EdgeInsets.all(8),
-                    itemCount: officers.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final officer = officers[index];
-                      return Container(
-                          height: 50,
-                          color: Colors.black54,
-                          child: Center(
-                              child: Row(children: [
-                            const Spacer(flex: 2),
-                            RichText(
-                                text: TextSpan(
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                    text: officer.name + ":  " + officer.role)),
-                            const Spacer(flex: 1),
-                            IconButton(
-                                color: Colors.white,
-                                icon: const Icon(Icons.delete),
-                                onPressed: () async {
-                                  await removeOfficer(context, officer);
-                                }),
-                          ])));
-                    },
-                    separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
-                  ));
+              return Expanded(
+                  child: ListView.separated(
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.all(8),
+                itemCount: officers.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final officer = officers[index];
+                  return Container(
+                      decoration: const BoxDecoration(
+                          color: Color.fromRGBO(207, 62, 63, 1),
+                          borderRadius: BorderRadius.all(Radius.circular(15))),
+                      height: 50,
+                      //color: const Color.fromRGBO(207, 62, 63, 1),
+                      child: Center(
+                          child: Row(children: [
+                        const Spacer(flex: 2),
+                        RichText(
+                            text: TextSpan(
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                                text: officer.name + ":  " + officer.role)),
+                        const Spacer(flex: 1),
+                        IconButton(
+                            color: Colors.white,
+                            icon: const Icon(Icons.delete),
+                            onPressed: () async {
+                              await removeOfficer(context, officer);
+                            }),
+                      ])));
                 },
-              ),
-              const Divider(thickness: 3),
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child: ElevatedButton(
-                      child: const Text('New Officer'),
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return const RegisterOfficerDialog();
-                            });
-                      })),
-            ])));
+                separatorBuilder: (BuildContext context, int index) =>
+                    const Divider(),
+              ));
+            },
+          ),
+          const Divider(thickness: 3),
+          Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+              child: ElevatedButton(
+                  child: const Text('New Officer'),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const RegisterOfficerDialog();
+                        });
+                  })),
+        ])));
   } // build
 
 }

@@ -72,8 +72,7 @@ class _ParkrAppState extends State<ParkrApp> {
               return const Text(
                   "An internal Parkr error occurred. Please reload the application.");
             }
-            return snapshot.hasData ? snapshot.data as Widget : const Text(
-                "Jesus Loves You");
+            return snapshot.hasData ? snapshot.data as Widget : Image.asset('assets/transparent_parkr_logo.png');
           }),
       routes: {
         "plate": (BuildContext context) => const PlatePage(),
