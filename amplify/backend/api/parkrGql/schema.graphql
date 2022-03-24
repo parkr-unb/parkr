@@ -40,11 +40,22 @@ type Officer @model {
     organization: Organization @belongsTo
 }
 
+type GeoCoord {
+    latitude: Float!
+    longitude: Float!
+}
+
+type ParkingLot {
+    name: String!
+    coords: [GeoCoord!]!
+}
+
 type Organization @model {
     # id is orgName
     id: ID!
     domainAllow: [String!]
     officers: [Officer!] @hasMany
+    parkingLots: [ParkingLot!]
 }
 
 type AppKeys @model {
