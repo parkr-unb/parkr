@@ -32,6 +32,7 @@ class Organization extends Model {
   final String id;
   final List<String>? _domainAllow;
   final List<Officer>? _officers;
+  final List<ParkingLot>? _parkingLots;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -51,6 +52,10 @@ class Organization extends Model {
     return _officers;
   }
   
+  List<ParkingLot>? get parkingLots {
+    return _parkingLots;
+  }
+  
   TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -59,13 +64,14 @@ class Organization extends Model {
     return _updatedAt;
   }
   
-  const Organization._internal({required this.id, domainAllow, officers, createdAt, updatedAt}): _domainAllow = domainAllow, _officers = officers, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Organization._internal({required this.id, domainAllow, officers, parkingLots, createdAt, updatedAt}): _domainAllow = domainAllow, _officers = officers, _parkingLots = parkingLots, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Organization({String? id, List<String>? domainAllow, List<Officer>? officers}) {
+  factory Organization({String? id, List<String>? domainAllow, List<Officer>? officers, List<ParkingLot>? parkingLots}) {
     return Organization._internal(
       id: id == null ? UUID.getUUID() : id,
       domainAllow: domainAllow != null ? List<String>.unmodifiable(domainAllow) : domainAllow,
-      officers: officers != null ? List<Officer>.unmodifiable(officers) : officers);
+      officers: officers != null ? List<Officer>.unmodifiable(officers) : officers,
+      parkingLots: parkingLots != null ? List<ParkingLot>.unmodifiable(parkingLots) : parkingLots);
   }
   
   bool equals(Object other) {
@@ -78,7 +84,8 @@ class Organization extends Model {
     return other is Organization &&
       id == other.id &&
       DeepCollectionEquality().equals(_domainAllow, other._domainAllow) &&
-      DeepCollectionEquality().equals(_officers, other._officers);
+      DeepCollectionEquality().equals(_officers, other._officers) &&
+      DeepCollectionEquality().equals(_parkingLots, other._parkingLots);
   }
   
   @override
@@ -91,6 +98,7 @@ class Organization extends Model {
     buffer.write("Organization {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("domainAllow=" + (_domainAllow != null ? _domainAllow!.toString() : "null") + ", ");
+    buffer.write("parkingLots=" + (_parkingLots != null ? _parkingLots!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -98,11 +106,12 @@ class Organization extends Model {
     return buffer.toString();
   }
   
-  Organization copyWith({String? id, List<String>? domainAllow, List<Officer>? officers}) {
+  Organization copyWith({String? id, List<String>? domainAllow, List<Officer>? officers, List<ParkingLot>? parkingLots}) {
     return Organization._internal(
       id: id ?? this.id,
       domainAllow: domainAllow ?? this.domainAllow,
-      officers: officers ?? this.officers);
+      officers: officers ?? this.officers,
+      parkingLots: parkingLots ?? this.parkingLots);
   }
   
   Organization.fromJson(Map<String, dynamic> json)  
@@ -114,11 +123,17 @@ class Organization extends Model {
           .map((e) => Officer.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
         : null,
+      _parkingLots = json['parkingLots'] is List
+        ? (json['parkingLots'] as List)
+          .where((e) => e != null)
+          .map((e) => ParkingLot.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null,
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'domainAllow': _domainAllow, 'officers': _officers?.map((Officer? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'domainAllow': _domainAllow, 'officers': _officers?.map((Officer? e) => e?.toJson()).toList(), 'parkingLots': _parkingLots?.map((ParkingLot? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "organization.id");
@@ -126,6 +141,7 @@ class Organization extends Model {
   static final QueryField OFFICERS = QueryField(
     fieldName: "officers",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Officer).toString()));
+  static final QueryField PARKINGLOTS = QueryField(fieldName: "parkingLots");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Organization";
     modelSchemaDefinition.pluralName = "Organizations";
@@ -144,6 +160,13 @@ class Organization extends Model {
       isRequired: true,
       ofModelName: (Officer).toString(),
       associatedKey: Officer.ORGANIZATION
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.embedded(
+      fieldName: 'parkingLots',
+      isRequired: false,
+      isArray: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.embeddedCollection, ofCustomTypeName: 'ParkingLot')
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
