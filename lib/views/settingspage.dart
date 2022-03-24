@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/user.dart';
 
@@ -38,7 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
               }),
             // TODO: GEOFENCING STUFF
-            if(CurrentUser().isAdmin()) const Text('ADMIN SHIT'),
+            if(kDebugMode || CurrentUser().isAdmin()) const Text('Under Construction'),
           ],
         ),
       ),

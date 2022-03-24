@@ -30,6 +30,7 @@ class Officer extends Model {
   static const classType = const _OfficerModelType();
   final String id;
   final String? _role;
+  final String? _name;
   final Organization? _organization;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
@@ -55,6 +56,19 @@ class Officer extends Model {
     }
   }
   
+  String get name {
+    try {
+      return _name!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
   Organization? get organization {
     return _organization;
   }
@@ -67,12 +81,13 @@ class Officer extends Model {
     return _updatedAt;
   }
   
-  const Officer._internal({required this.id, required role, organization, createdAt, updatedAt}): _role = role, _organization = organization, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Officer._internal({required this.id, required role, required name, organization, createdAt, updatedAt}): _role = role, _name = name, _organization = organization, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Officer({String? id, required String role, Organization? organization}) {
+  factory Officer({String? id, required String role, required String name, Organization? organization}) {
     return Officer._internal(
       id: id == null ? UUID.getUUID() : id,
       role: role,
+      name: name,
       organization: organization);
   }
   
@@ -86,6 +101,7 @@ class Officer extends Model {
     return other is Officer &&
       id == other.id &&
       _role == other._role &&
+      _name == other._name &&
       _organization == other._organization;
   }
   
@@ -99,6 +115,7 @@ class Officer extends Model {
     buffer.write("Officer {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("role=" + "$_role" + ", ");
+    buffer.write("name=" + "$_name" + ", ");
     buffer.write("organization=" + (_organization != null ? _organization!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -107,16 +124,18 @@ class Officer extends Model {
     return buffer.toString();
   }
   
-  Officer copyWith({String? id, String? role, Organization? organization}) {
+  Officer copyWith({String? id, String? role, String? name, Organization? organization}) {
     return Officer._internal(
       id: id ?? this.id,
       role: role ?? this.role,
+      name: name ?? this.name,
       organization: organization ?? this.organization);
   }
   
   Officer.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _role = json['role'],
+      _name = json['name'],
       _organization = json['organization']?['serializedData'] != null
         ? Organization.fromJson(new Map<String, dynamic>.from(json['organization']['serializedData']))
         : null,
@@ -124,11 +143,12 @@ class Officer extends Model {
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'role': _role, 'organization': _organization?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'role': _role, 'name': _name, 'organization': _organization?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "officer.id");
   static final QueryField ROLE = QueryField(fieldName: "role");
+  static final QueryField NAME = QueryField(fieldName: "name");
   static final QueryField ORGANIZATION = QueryField(
     fieldName: "organization",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Organization).toString()));
@@ -140,6 +160,12 @@ class Officer extends Model {
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Officer.ROLE,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Officer.NAME,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));

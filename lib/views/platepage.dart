@@ -96,7 +96,7 @@ class _PlatePageState extends State<PlatePage> {
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
     final registration = arguments["reg"] as Registration;
-    final username = CurrentUser().getName();
+    final username = CurrentUser().getFirstName();
     _hasPass = registration.verified;
     valid = (_hasPass && !_invalidLot && !_blocking && !_multiple && !_alt);
 
@@ -190,8 +190,7 @@ class _PlatePageState extends State<PlatePage> {
                       ),
                     ],
                   ),
-                  const VerticalDivider(),
-                  const VerticalDivider(),
+                  const Expanded(child: VerticalDivider()),
                   Expanded(
                       child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -202,7 +201,7 @@ class _PlatePageState extends State<PlatePage> {
                         children: [
                           const SizedBox(height: 50),
                           const Text('Parking Officer'),
-                          Text(username!,
+                          Text(username,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 50),
@@ -221,8 +220,29 @@ class _PlatePageState extends State<PlatePage> {
                   ))
                 ],
               ),
-              const Expanded(
-                child: SizedBox(height: 50),
+              const SizedBox(height: 20),
+              Expanded(
+                child: SizedBox(
+                  height: 40,
+                  child: valid
+                      ? const Icon(Icons.check, color: Colors.green, size: 80.0)
+                      : const Icon(Icons.error, color: Colors.red, size: 80.0),
+                ),
+              ),
+              Expanded(
+                child: SizedBox(
+                    height: 10,
+                    child: valid
+                        ? const Text('Valid',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                                fontSize: 45))
+                        : const Text('Invalid',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                                fontSize: 45))),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -283,6 +303,7 @@ class _PlatePageState extends State<PlatePage> {
                       ])),
                 ],
               ),
+              const SizedBox(height: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,

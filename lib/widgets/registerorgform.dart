@@ -1,6 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
@@ -19,46 +19,20 @@ class RegisterOrgForm extends StatefulWidget {
 
 class _RegisterOrgFormState extends State<RegisterOrgForm> {
   TextEditingController orgNameCtrl = TextEditingController();
-  TextEditingController nameCtrl = TextEditingController();
+  TextEditingController firstNameCtrl = TextEditingController();
+  TextEditingController lastNameCtrl = TextEditingController();
   TextEditingController emailCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  Future<bool> signInUser() async {
-    try {
-      await Amplify.Auth.signOut();
-      SignInResult result = await Amplify.Auth.signIn(
-        username: emailCtrl.text.trim(),
-        password: passCtrl.text.trim(),
-      );
-      if (result.isSignedIn) {
-        return true;
-      }
-    } on UserNotConfirmedException {
-      rethrow;
-    } on AuthException catch (e) {
-      print(e.message);
-    }
-
-    return false;
-  }
-
-  // TODO: Chris, why are you returning empty strings here??
   Future<Object?> registerAdmin(BuildContext context) async {
-    Map<CognitoUserAttributeKey, String> userAttributes = {
-      CognitoUserAttributeKey.name: nameCtrl.text.trim()
-      // additional attributes as needed
-    };
-
-    SignUpResult result = await Amplify.Auth.signUp(
-        username: emailCtrl.text.trim(),
-        password: passCtrl.text.trim(),
-        options: CognitoSignUpOptions(userAttributes: userAttributes));
+    await registerOfficer(
+        emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
 
     // process login
     bool signedIn = false;
     try {
-      signedIn = await signInUser();
+      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -87,39 +61,23 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      // TODO: use result to check for error
-                      await Amplify.Auth.confirmSignUp(
-                          username: emailCtrl.text.trim(),
-                          confirmationCode: code);
+                      final res = await confirmUser(emailCtrl.text, code);
+                      if (res.isSignUpComplete) {
+                        signedIn =
+                            await signInUser(emailCtrl.text, passCtrl.text);
+                      }
                       Navigator.of(context).pop();
                     },
                   ),
                 ]);
           });
-      return "";
     }
     if (!signedIn) {
-      await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                title: const Text('Failed to add Admin'),
-                content: const Text('The admin was not able to be created'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ]);
-          });
-      final user = await CurrentUser().get();
-      await Gateway().addAdmin(user.userId);
-      await CurrentUser().update();
-      return "";
+      return null;
     }
-    return "";
+    final user = await CurrentUser().get();
+    await Gateway().addAdmin(user.userId);
+    return "Success";
   }
 
   Future<Object> registerOrg(BuildContext context) async {
@@ -135,70 +93,83 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   //This is just a temporary form. We will need a way for organizations to
   // register themselves. Credit card info, parking lot geography, contact phone
   // number, etc. may be needed
-  // maybe a scrollable form?
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: SingleChildScrollView(
-            child: Column(
-          children: <Widget>[
-            const Logo(),
-            VisibleTextField(
-              controller: orgNameCtrl,
-              label: 'Organization Name',
-              hint: 'Enter New Organization Name',
-              validatorText: 'Organization name is mandatory',
-            ),
-            VisibleTextField(
-              controller: nameCtrl,
-              label: 'Full Name',
-              hint: 'Enter Organization Administrator\'s Name',
-              validatorText: 'Name is mandatory',
-            ),
-            VisibleTextField(
-              controller: emailCtrl,
-              label: 'Admin Email',
-              hint: 'Enter Organization Administrator\'s Email',
-              validatorText: 'Admin email is mandatory',
-            ),
-            ObscuredTextField(
-              controller: passCtrl,
-              label: 'Admin Password',
-              hint: 'Enter the Organization Administrator\'s Password',
-              validatorText: 'Admin password is mandatory',
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  // Validate returns true if the form is valid, or false otherwise.
-                  if (_formKey.currentState!.validate()) {
-                    // If the form is valid, display a snackbar. In the real world,
-                    // you'd often call a server or save the information in a database.
-
-                    await loadingDialog(
-                        context,
-                        registerAdmin(context),
-                        "Registering Admin...",
-                        null,
-                        "Failed to register organization manager");
-                    await loadingDialog(
-                        context,
-                        registerOrg(context),
-                        "Registering Organization...",
-                        "Your organization is registered",
-                        "Failed to register organization");
-
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, "home", (_) => false);
-                  }
-                },
-                child: const Text('Create Organization'),
+    return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+      return Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: SingleChildScrollView(
+              child: Column(
+            children: <Widget>[
+              Logo(keyboard: isKeyboardVisible),
+              VisibleTextField(
+                controller: orgNameCtrl,
+                label: 'Organization Name',
+                hint: 'Enter New Organization Name',
+                validatorText: 'Organization name is mandatory',
               ),
-            ),
-          ],
-        )));
+              VisibleTextField(
+                controller: firstNameCtrl,
+                label: 'First Name',
+                hint: 'Enter Organization Admin\'s First Name',
+                validatorText: 'Name is mandatory',
+              ),
+              VisibleTextField(
+                controller: lastNameCtrl,
+                label: 'Last Name',
+                hint: 'Enter Organization Admin\'s Last Name',
+                validatorText: 'Name is mandatory',
+              ),
+              VisibleTextField(
+                controller: emailCtrl,
+                label: 'Admin Email',
+                hint: 'Enter Organization Administrator\'s Email',
+                validatorText: 'Admin email is mandatory',
+              ),
+              ObscuredTextField(
+                controller: passCtrl,
+                label: 'Admin Password',
+                hint: 'Enter the Organization Administrator\'s Password',
+                validatorText: 'Admin password is mandatory',
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    // Validate returns true if the form is valid, or false otherwise.
+                    if (_formKey.currentState!.validate()) {
+                      if (await loadingDialog(
+                              context,
+                              registerAdmin(context),
+                              "Registering Admin...",
+                              null,
+                              "Failed to register organization manager") ==
+                          null) {
+                        return;
+                      }
+
+                      if (await loadingDialog(
+                              context,
+                              registerOrg(context),
+                              "Registering Organization...",
+                              "Your organization is registered",
+                              "Failed to register organization") ==
+                          null) {
+                        return;
+                      }
+
+                      CurrentUser().admin = true;
+
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "home", (_) => false);
+                    }
+                  },
+                  child: const Text('Create Organization'),
+                ),
+              ),
+            ],
+          )));
+    });
   } // build
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -22,6 +23,17 @@ class HomePage extends StatefulWidget {
 
   @override
   State<HomePage> createState() => _HomePageState();
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
 }
 
 class _HomePageState extends State<HomePage> {
@@ -52,27 +64,34 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final username = CurrentUser().getName();
+    final username = CurrentUser().getFirstName();
 
     return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
       return Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text('Home - Welcome $username'),
-        ),
+            automaticallyImplyLeading: false,
+            title: Row(children: [
+              Text('Welcome, $username'),
+              const Spacer(),
+              const Text('Home'),
+            ])),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              const Spacer(),
-              FutureBuilder(
-                future: _cameraFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    final size = MediaQuery.of(context).size;
-                    return Expanded(
-                        child: GestureDetector(
+              const Spacer(flex: 23),
+              Expanded(
+                  flex: 25,
+                  child: FutureBuilder(
+                    future: _cameraFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        final size = MediaQuery.of(context).size;
+                        var scaler =
+                            size.aspectRatio / _camera.value.aspectRatio;
+                        if (scaler < 1) scaler = 1 / scaler;
+                        return GestureDetector(
                             onTap: () async {
                               try {
                                 await _cameraFuture;
@@ -82,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                                     getPlate(img),
                                     "Reading plate...",
                                     null,
-                                    null) as String?;
+                                    "Could not read plate") as String?;
                                 plateCtrl.text = plate ?? "";
                                 if (plateCtrl.text.isNotEmpty) {
                                   setState(() {
@@ -95,42 +114,50 @@ class _HomePageState extends State<HomePage> {
                               }
                             },
                             child: Transform.scale(
-                                scale: ((_camera.value.aspectRatio /
-                                    size.aspectRatio)),
-                                child: Center(
-                                    child: AspectRatio(
-                                        aspectRatio: _camera.value.aspectRatio,
-                                        child: CameraPreview(_camera))))));
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
-              ),
-              const Spacer(),
-              TextFormField(
-                  textAlign: TextAlign.center,
-                  //keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
-                  ],
-                  style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 5,
-                      debugLabel: 'blackMountainView displayLarge'),
-                  controller: plateCtrl,
-                  decoration: const InputDecoration(
-                    labelStyle: TextStyle(letterSpacing: 1, fontSize: 25),
-                    hintStyle: TextStyle(letterSpacing: 1, fontSize: 18),
-                    icon: Icon(Icons.confirmation_number),
-                    hintText: 'License plate to examine',
-                    labelText: 'License Plate Number *',
-                  ),
-                  onChanged: (String? value) {
-                    setState(() {
-                      _enableExamination = value != null && value.isNotEmpty;
-                    });
-                  }),
+                              scale: scaler,
+                              child: Center(
+                                  child: Container(
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 1.0, color: Colors.red),
+                                ),
+                                child: CameraPreview(_camera),
+                              )),
+                            ));
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  )),
+              const Spacer(flex: 22),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
+                  child: TextFormField(
+                      textAlign: TextAlign.center,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9]')),
+                        UpperCaseTextFormatter()
+                      ],
+                      style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 5,
+                          debugLabel: 'blackMountainView displayLarge'),
+                      controller: plateCtrl,
+                      decoration: const InputDecoration(
+                        labelStyle: TextStyle(letterSpacing: 1, fontSize: 25),
+                        hintStyle: TextStyle(letterSpacing: 1, fontSize: 18),
+                        icon: Icon(Icons.confirmation_number),
+                        hintText: 'License plate to examine',
+                        labelText: 'License Plate Number *',
+                      ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _enableExamination =
+                              value != null && value.isNotEmpty;
+                        });
+                      })),
               ElevatedButton(
                   child: const Text('Examine Registration',
                       style: TextStyle(fontSize: 20.0)),
@@ -169,9 +196,10 @@ class _HomePageState extends State<HomePage> {
                                 });
                           }
                         }),
-              if (!isKeyboardVisible)
-                Expanded(
-                  child: Row(
+              if (!isKeyboardVisible) const Spacer(flex: 5),
+              AnimatedCrossFade(
+                  duration: const Duration(milliseconds: 250),
+                  firstChild: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (CurrentUser().isAdmin())
@@ -192,6 +220,7 @@ class _HomePageState extends State<HomePage> {
                               style: TextStyle(fontSize: 20.0)),
                           onPressed: () {
                             Amplify.Auth.signOut();
+                            CurrentUser().clear();
 
                             // completely wipe navigation stack and replace with welcome
                             Navigator.pushNamedAndRemoveUntil(
@@ -210,7 +239,11 @@ class _HomePageState extends State<HomePage> {
                           })
                     ],
                   ),
-                )
+                  secondChild: const SizedBox(),
+                  crossFadeState: !isKeyboardVisible
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond),
+              if (!isKeyboardVisible) const Spacer(flex: 2)
             ],
           ),
         ),
@@ -218,7 +251,7 @@ class _HomePageState extends State<HomePage> {
     });
   } // build
 
-  Future<String> getPlate(XFile img) async {
+  Future<String?> getPlate(XFile img) async {
     var uri = Uri.parse('https://api.platerecognizer.com/v1/plate-reader/');
     var request = http.MultipartRequest("POST", uri);
     request.files.add(http.MultipartFile.fromBytes(
@@ -237,9 +270,11 @@ class _HomePageState extends State<HomePage> {
 
     if (response['results'].isNotEmpty) {
       print("Plate: " + response['results'][0]['candidates'][0]['plate']);
-      return response['results'][0]['candidates'][0]['plate'];
+      return response['results'][0]['candidates'][0]['plate']
+          .toString()
+          .toUpperCase();
     } else {
-      return "";
+      return null;
     }
   }
 }
