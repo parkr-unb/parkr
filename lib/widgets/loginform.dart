@@ -1,5 +1,4 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -31,7 +30,13 @@ class _LoginFormState extends State<LoginForm> {
     // process login
     bool signedIn = false;
     try {
-      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
+      signedIn = (await loadingDialog(
+              context,
+              signInUser(emailCtrl.text, passCtrl.text),
+              "Logging In...",
+              null,
+              "Failed to log ${emailCtrl.text} in") as bool?) ??
+          false;
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -44,6 +49,7 @@ class _LoginFormState extends State<LoginForm> {
                     child: Column(children: [
                       const Text('Enter your confirmation code'),
                       TextField(
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 25),
                         onChanged: (value) {
                           code = value.trim();
@@ -60,12 +66,25 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      final res = await confirmUser(emailCtrl.text, code);
-                      if (res.isSignUpComplete) {
-                        signedIn =
-                            await signInUser(emailCtrl.text, passCtrl.text);
+                      final res = await loadingDialog(
+                          context,
+                          confirmUser(emailCtrl.text, code),
+                          "Confirming User...",
+                          null,
+                          "Failed to confirm user") as SignUpResult?;
+                      if (res == null) {
+                        signedIn = false;
+                      } else if (res.isSignUpComplete) {
+                        signedIn = await loadingDialog(
+                                    context,
+                                    signInUser(emailCtrl.text, passCtrl.text),
+                                    "Signing In...",
+                                    null,
+                                    "Parkr experienced an error signing you in. Please try again.")
+                                as bool? ??
+                            false;
+                        Navigator.of(context).pop();
                       }
-                      Navigator.of(context).pop();
                     },
                   ),
                 ]);
@@ -103,14 +122,7 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () async {
-                    Amplify.Auth.signOut();
-                    if (await loadingDialog(
-                            context,
-                            login(context),
-                            "Logging In...",
-                            null,
-                            "Failed to log ${emailCtrl.text} in") !=
-                        null) {
+                    if (await login(context) != null) {
                       Navigator.pushNamedAndRemoveUntil(
                           context, "home", (_) => false);
                     }
