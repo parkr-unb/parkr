@@ -38,6 +38,11 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
 
               }),
+            ElevatedButton(
+                child: const Text('Geofence Setup'),
+                onPressed: () {
+                  Navigator.pushNamed(context, "geo");
+                }),
             // TODO: GEOFENCING STUFF
             if(kDebugMode || CurrentUser().isAdmin()) const Text('Under Construction'),
           ],
