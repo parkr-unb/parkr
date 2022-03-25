@@ -38,6 +38,7 @@ type Officer @model {
     role: String!
     name: String!
     organization: Organization @belongsTo
+    confirmed: Boolean
 }
 
 type Organization @model {
