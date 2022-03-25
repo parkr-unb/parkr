@@ -45,6 +45,10 @@ class _GeofencingState extends State<GeofencingPage> {
     )); // Polygon
   }
 
+  void addGeofence(List<LatLng>) {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +96,7 @@ class _GeofencingState extends State<GeofencingPage> {
                           child: const Text('Save'),
                           onPressed: () {
                             //TODO: send to db and exit, call gateway
-                            print(polygonLatLngs.toString());
+                            addGeofence(polygonLatLngs);
                           },
                         ),
                         const SizedBox(
