@@ -14,14 +14,14 @@ import 'package:parkr/views/welcomepage.dart';
 import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/views/platepage.dart';
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class ParkrApp extends StatefulWidget {
   final CameraDescription camera;
   final LocationData locationData;
 
-  ParkrApp({Key? key, required this.camera, required this.locationData}) : super(key: key);
+  ParkrApp({Key? key, required this.camera, required this.locationData})
+      : super(key: key);
 
   @override
   State<ParkrApp> createState() => _ParkrAppState();
@@ -77,19 +77,22 @@ class _ParkrAppState extends State<ParkrApp> {
               return const Text(
                   "An internal Parkr error occurred. Please reload the application.");
             }
-            return snapshot.hasData ? snapshot.data as Widget : Image.asset('assets/transparent_parkr_logo.png');
+            return snapshot.hasData
+                ? snapshot.data as Widget
+                : Image.asset('assets/transparent_parkr_logo.png');
           }),
       routes: {
         "plate": (BuildContext context) => const PlatePage(),
         "home": (BuildContext context) => HomePage(camera: widget.camera),
         "welcome": (BuildContext context) => const WelcomePage(),
-        "geo": (BuildContext context) => GeofencingPage(location: widget.locationData),
+        "geo": (BuildContext context) =>
+            GeofencingPage(location: widget.locationData),
       },
     );
   } // build
 }
 
-Future<void> setupAmplify() async {
+Future<void> _setupAmplify() async {
   try {
     await Amplify.addPlugin(AmplifyAPI(modelProvider: ModelProvider.instance));
     await Amplify.addPlugin(AmplifyAuthCognito());
@@ -100,41 +103,39 @@ Future<void> setupAmplify() async {
   }
 }
 
-late CameraDescription camera;
-
 Location location = Location();
-bool _serviceEnabled = false;
-PermissionStatus? _permissionGranted;
-late LocationData locationData;
 
-_checkLocationPermission() async {
-  _serviceEnabled = await location.serviceEnabled();
+Future<LocationData?> _checkLocationPermission() async {
+  var _serviceEnabled = await location.serviceEnabled();
   if (!_serviceEnabled) {
     _serviceEnabled = await location.requestService();
     if (!_serviceEnabled) {
-      return;
+      return null;
     }
   }
-  _permissionGranted = await location.hasPermission();
+  var _permissionGranted = await location.hasPermission();
   if (_permissionGranted == PermissionStatus.denied) {
     _permissionGranted = await location.requestPermission();
     if (_permissionGranted != PermissionStatus.granted) {
-      return;
+      return null;
     }
   }
-  locationData = await location.getLocation();
+  final locationData = await location.getLocation();
+  return locationData;
 }
 
-Future<void> setupCamera() async {
+Future<CameraDescription?> _setupCamera() async {
+  CameraDescription? camera;
   try {
     final cameras = await availableCameras();
     camera = cameras.first;
   } on Exception catch (e) {
     print("Tried to initialize camera but failed: $e");
   }
+  return camera;
 }
 
-void setupAppKeys() async {
+Future<void> _setupAppKeys() async {
   try {
     await Gateway().queryAppKeys();
   } on Exception catch (e) {
@@ -144,17 +145,16 @@ void setupAppKeys() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await Future.wait([
-      setupAmplify(),
-      setupCamera(),
-    ]);
-  } on Exception catch (e) {
-    print("Failed setup the application: $e");
-  }
 
+  CameraDescription? camera;
+  LocationData? locationData;
   try {
-    await _checkLocationPermission();
+    await Future.wait<Object?>([
+      _setupAmplify(),
+      _setupAppKeys(),
+      _setupCamera().then((c) => camera = c),
+      _checkLocationPermission().then((l) => locationData = l)
+    ]);
   } on Exception catch (e) {
     print("Failed setup the application: $e");
   }
