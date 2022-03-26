@@ -45,9 +45,9 @@ class _GeofencingState extends State<GeofencingPage> {
     _polygons.add(Polygon(
       polygonId: PolygonId(polygonIdVal),
       points: polygonLatLngs,
-      strokeWidth: 2,
-      strokeColor: Colors.yellow,
-      fillColor: Colors.yellow.withOpacity(0.15),
+      strokeWidth: 5,
+      strokeColor: Colors.red,
+      fillColor: Colors.red.withOpacity(0.15),
     )); // Polygon
   }
 
