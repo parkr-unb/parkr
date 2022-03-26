@@ -6,6 +6,7 @@ import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
 
 import '../displayable_exception.dart';
+import '../gateway.dart';
 import '../widgets/obscuredtextfield.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -32,6 +33,38 @@ class _SettingsPageState extends State<SettingsPage> {
       throw DisplayableException("Cannot update password, try again tomorrow");
     }
 
+  }
+
+  Future<Object?> removeLots(BuildContext context) async {
+    Object? res;
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: const Text('Remove Parking Lots'),
+              content: const Text('Are you sure you want to remove all parking lots?'),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Remove'),
+                  onPressed: () async {
+                    res = await loadingDialog(
+                        context,
+                        Gateway().removeParkingLots(),
+                        "Removing parking lots...",
+                        "Success",
+                        "Failed to remove parking lots");
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ]);
+        });
+    return res;
   }
 
   @override
@@ -74,9 +107,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 }
               }),
             ElevatedButton(
-                child: const Text('Geofence Setup'),
+                child: const Text('Add Parking Lot'),
                 onPressed: () {
                   Navigator.pushNamed(context, "geo");
+                }),
+            ElevatedButton(
+                child: const Text('Remove Parking Lots'),
+                onPressed: () {
+                  removeLots(context);
                 }),
           ],
         ),

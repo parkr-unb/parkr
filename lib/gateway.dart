@@ -299,6 +299,31 @@ class Gateway {
     }
   }
 
+  Future<Object?> removeParkingLots() async {
+    GraphQLRequest<Organization> request;
+    GraphQLResponse<Organization> response;
+    try {
+      Organization? organization = await getOrganization('unb');
+      if (organization?.parkingLots == null) {
+        return "Success";
+      }
+      else {
+        if (organization?.parkingLots != null) {
+          organization?.parkingLots = <ParkingLot>[];
+        }
+      }
+      if (organization != null) {
+        request = ModelMutations.update(organization);
+        response = await Amplify.API.mutate(request: request).response;
+        return "Success";
+      }
+    } on ApiException catch (e) {
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
+    }
+  }
+
   Future<Organization?> getOrganization(String org) async {
     try {
       final request = ModelQueries.get(Organization.classType, org);
