@@ -6,6 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/user.dart';
 
+import 'package:maps_toolkit/maps_toolkit.dart';
+import 'package:location/location.dart';
+
+
 class Gateway {
   static final Gateway _instance = Gateway._privateConstructor();
 
@@ -265,6 +269,81 @@ class Gateway {
     } on ApiException catch (e) {
       if (kDebugMode) {
         print('Query failed: $e');
+      }
+    }
+    return null;
+  }
+
+  Future<Object?> addParkingLot(List<GeoCoord> coords, String name) async {
+    final ParkingLot lot = ParkingLot(name: name, coords: coords);
+    GraphQLRequest<Organization> request;
+    GraphQLResponse<Organization> response;
+    try {
+      Organization? organization = await getOrganization('unb');
+      if (organization?.parkingLots == null) {
+        final List<ParkingLot> lots = List.filled(1, lot, growable: true);
+        organization?.parkingLots = lots;
+      }
+      else {
+        organization?.parkingLots?.add(lot);
+      }
+      if (organization != null) {
+        request = ModelMutations.update(organization);
+        response = await Amplify.API.mutate(request: request).response;
+        return "Success";
+      }
+    } on ApiException catch (e) {
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
+    }
+  }
+
+  Future<Organization?> getOrganization(String org) async {
+    try {
+      final request = ModelQueries.get(Organization.classType, org);
+      final response = await Amplify.API.query(request: request).response;
+      Organization? organization = response.data;
+      if (organization == null) {
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
+        return null;
+      }
+      return organization;
+    } on ApiException catch (e) {
+      if (kDebugMode) {
+        print('Query failed: $e');
+      }
+    }
+    return null;
+  }
+
+  List<LatLng> convertGeoCoordLatLng(List<GeoCoord>? coords) {
+    List<LatLng> polygon = <LatLng>[];
+    for (int i=0; i<(coords?.length ?? 0); i++) {
+      polygon.add(LatLng(coords?.elementAt(i).latitude ?? 0.0, coords?.elementAt(i).longitude ?? 0.0));
+    }
+    return polygon;
+  }
+
+  Future<Object?> inParkingLot(LocationData? curLocation, String org) async {
+    GraphQLRequest<Organization> request;
+    GraphQLResponse<Organization> response;
+    try {
+      Organization? organization = await getOrganization('unb');
+      if (organization?.parkingLots != null) {
+        for(int i=0; i<(organization?.parkingLots?.length ?? 0); i++) {
+          if (PolygonUtil.containsLocation(LatLng(curLocation?.latitude ?? 0.0,
+              curLocation?.longitude ?? 0.0), convertGeoCoordLatLng(
+              organization?.parkingLots?.elementAt(i).coords), false)) {
+            return organization?.parkingLots?.elementAt(i)?.name;
+          }
+        }
+      }
+    } on ApiException catch (e) {
+      if (kDebugMode) {
+        print('Mutation failed: $e');
       }
     }
     return null;

@@ -32,7 +32,7 @@ class Organization extends Model {
   final String id;
   final List<String>? _domainAllow;
   final List<Officer>? _officers;
-  final List<ParkingLot>? _parkingLots;
+  List<ParkingLot>? _parkingLots;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -51,7 +51,7 @@ class Organization extends Model {
   List<Officer>? get officers {
     return _officers;
   }
-  
+
   List<ParkingLot>? get parkingLots {
     return _parkingLots;
   }
@@ -63,8 +63,12 @@ class Organization extends Model {
   TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
+
+  set parkingLots(List<ParkingLot>? lot) {
+    _parkingLots = lot;
+  }
   
-  const Organization._internal({required this.id, domainAllow, officers, parkingLots, createdAt, updatedAt}): _domainAllow = domainAllow, _officers = officers, _parkingLots = parkingLots, _createdAt = createdAt, _updatedAt = updatedAt;
+  Organization._internal({required this.id, domainAllow, officers, parkingLots, createdAt, updatedAt}): _domainAllow = domainAllow, _officers = officers, _parkingLots = parkingLots, _createdAt = createdAt, _updatedAt = updatedAt;
   
   factory Organization({String? id, List<String>? domainAllow, List<Officer>? officers, List<ParkingLot>? parkingLots}) {
     return Organization._internal(

@@ -96,8 +96,12 @@ class _PlatePageState extends State<PlatePage> {
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
     final registration = arguments["reg"] as Registration;
+    final parkingLot = arguments["loc"];
     final username = CurrentUser().getFirstName();
     _hasPass = registration.verified;
+    if (parkingLot == null) {
+      _invalidLot = true;
+    }
     valid = (_hasPass && !_invalidLot && !_blocking && !_multiple && !_alt);
 
     return Scaffold(
@@ -211,8 +215,8 @@ class _PlatePageState extends State<PlatePage> {
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 50),
                           const Text('Infraction Location'),
-                          const Text('Head Hall Lot 4',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(parkingLot ?? 'N/A',
+                              style: const TextStyle(fontWeight: FontWeight.bold)),
                           const Text('')
                         ],
                       )
