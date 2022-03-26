@@ -82,14 +82,13 @@ class _GeofencingState extends State<GeofencingPage> {
                 TextButton(
                   child: const Text('Save'),
                   onPressed: () async {
-                    Navigator.of(context).pop();
-                    //TODO: This is busted
                     res = await loadingDialog(
                         context,
                         addGeofence(polygonLatLngs, nameCtrl.text),
                         "Creating parking lot...",
                         "Success",
                         "Failed to create parking lot");
+                    Navigator.of(context).pop();
                   },
                 ),
               ]);
@@ -126,6 +125,22 @@ class _GeofencingState extends State<GeofencingPage> {
                 },
               ),
               Align(
+                  alignment: Alignment.topLeft,
+                  child: Row(
+                      children: <Widget>[
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                          child: const Text('Back'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ]
+                  )
+              ),
+              Align(
                   alignment: Alignment.bottomCenter,
                   child: Row(
                       children: <Widget>[
@@ -148,7 +163,6 @@ class _GeofencingState extends State<GeofencingPage> {
                         ElevatedButton(
                           child: const Text('Save'),
                           onPressed: () {
-                            //TODO: send to db and exit, call gateway
                             saveParkingLot(context);
                           },
                         ),
