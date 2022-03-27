@@ -73,7 +73,7 @@ Future<bool?> signInUser(String email, String password) async {
     if (result.isSignedIn) {
       await CurrentUser().get();
       if(CurrentUser().officer == null) {
-        var ex = DisplayableException("${CurrentUser().getFirstName()} has been removed");
+        var ex = DisplayableException("${CurrentUser().getFirstName()} ${CurrentUser().getLastName()} has been removed");
         await CurrentUser().logout();
         throw ex;
       }
