@@ -26,11 +26,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   final _formKey = GlobalKey<FormState>();
 
   Future<Object?> registerAdmin(BuildContext context) async {
-    try{
-      await registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
-    } on Exception catch(e) {
-
-    }
+    await registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text, admin: true, orgID: orgNameCtrl.text);
     // process login
     bool signedIn = false;
     try {
@@ -53,6 +49,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     child: Column(children: [
                       const Text('Enter your confirmation code'),
                       TextField(
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 25),
                         onChanged: (value) {
                           code = value.trim();
@@ -95,6 +92,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
     if (!signedIn) {
       return null;
     }
+    await Gateway().confirmOfficer();
 
     return "Success";
   }
@@ -158,19 +156,20 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   onPressed: () async {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
-                      var success = await registerAdmin(context);
-                      if(success == null)
-                      {
+
+                      if (await loadingDialog(
+                          context,
+                          registerOrg(context),
+                          "Registering Organization...",
+                          "Your organization is registered",
+                          "Failed to register organization") ==
+                          null) {
                         return;
                       }
 
-                      if (await loadingDialog(
-                              context,
-                              registerOrg(context),
-                              "Registering Organization...",
-                              "Your organization is registered",
-                              "Failed to register organization") ==
-                          null) {
+                      var success = await registerAdmin(context);
+                      if(success == null)
+                      {
                         return;
                       }
 

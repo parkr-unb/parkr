@@ -11,7 +11,7 @@ String buildTempUserID(String email) {
 }
 
 Future<Object?> registerOfficer(
-    String email, String firstName, String lastName, String password, {bool admin=false}) async {
+    String email, String firstName, String lastName, String password, {bool admin=false, String? orgID}) async {
   // basic email validation before sending cognito request
   final emailTrimmed = email.trim();
   final splitEmail = emailTrimmed.split("@");
@@ -36,7 +36,12 @@ Future<Object?> registerOfficer(
     }
     final id = buildTempUserID(email);
     if(admin) {
-      Gateway().addAdmin(id);
+      if (orgID == null) {
+        if (kDebugMode) {
+          print("ORG MUST BE SPECIFIED WHEN CREATING ADMIN");
+        }
+      }
+      Gateway().addAdmin(id, fullName, orgID!);
     } else {
       Gateway().addOfficer(id, fullName);
     }

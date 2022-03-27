@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
+import 'package:parkr/displayable_exception.dart';
 import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/user.dart';
 
@@ -94,12 +95,26 @@ class Gateway {
     }
   }
 
-  Future<Officer?> _addOfficer(String userId, String name, String role) async {
+  Future<Officer?> _addOfficer(String userId, String name, String role, {String? orgID=null}) async {
     try {
+      Organization org;
+      if(orgID == null) {
+        Officer currentOfficer = CurrentUser().officer;
+        org = currentOfficer.organization!;
+      } else {
+        final request = ModelQueries.get(Organization.classType, orgID);
+        final response = await Amplify.API.query(request: request).response;
+        if(response.data == null)
+        {
+          throw DisplayableException("Cannot find organization identifier: $orgID");
+        }
+        org = response.data!;
+      }
       final officer = Officer(
           id: userId,
           role: role,
           name: name,
+          organization: org,
           confirmed: false,
       );
       final request = ModelMutations.create(officer);
@@ -141,6 +156,7 @@ class Gateway {
         id: (await CurrentUser().get()).userId,
         name: officer.name,
         role: officer.role,
+        organization: officer.organization,
         confirmed: true,
       );
 
@@ -162,12 +178,12 @@ class Gateway {
 
   }
 
-  Future<Officer?> addOfficer(String userId, String name) async {
-    return await _addOfficer(userId, name, "officer");
+  Future<Officer?> addOfficer(String userId, String fullName) async {
+    return await _addOfficer(userId, fullName, "officer");
   }
 
-  Future<Officer?> addAdmin(String userId) async {
-    return await _addOfficer(userId, CurrentUser().getFullName(), "admin");
+  Future<Officer?> addAdmin(String userId, String fullName, String oId) async {
+    return await _addOfficer(userId, fullName, "admin", orgID: oId);
   }
 
   Future<Officer?> removeOfficer(String userId) async {
