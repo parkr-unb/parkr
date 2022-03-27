@@ -45,7 +45,7 @@ class Gateway {
   Future<Tickets?> administerTicket(String license, String ticketType) async {
     // TODO: accept org in a better way
     // TODO: also send an email to parker
-    final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
+    final licenseOrg = license.trim().replaceAll("-", "") + "-" + CurrentUser().getOrg();
     try {
       final request = ModelQueries.get(Tickets.classType, licenseOrg);
       final response = await Amplify.API.query(request: request).response;
@@ -94,9 +94,14 @@ class Gateway {
     }
   }
 
-  Future<Officer?> _addOfficer(String userId, String role) async {
+  Future<Officer?> _addOfficer(String userId, String name, String role) async {
     try {
-      final officer = Officer(id: userId, role: role, name: CurrentUser().getFullName());
+      final officer = Officer(
+          id: userId,
+          role: role,
+          name: name,
+          confirmed: false,
+      );
       final request = ModelMutations.create(officer);
       final response = await Amplify.API.mutate(request: request).response;
 
@@ -114,12 +119,55 @@ class Gateway {
     }
   }
 
-  Future<Officer?> addOfficer(String userId) async {
-    return await _addOfficer(userId, "officer");
+  Future<Officer?> confirmOfficer() async {
+    Officer officer = CurrentUser().officer;
+    try {
+      final request = ModelMutations.delete(officer);
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data == null) {
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
+      }
+    } on ApiException catch (e) {
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
+    }
+
+    try {
+      Officer updated = Officer(
+        id: (await CurrentUser().get()).userId,
+        name: officer.name,
+        role: officer.role,
+        confirmed: true,
+      );
+
+      final request = ModelMutations.create(updated);
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data == null) {
+        if (kDebugMode) {
+          print('errors: ' + response.errors.toString());
+        }
+      }
+      return response.data;
+    } on ApiException catch (e) {
+      if (kDebugMode) {
+        print('Mutation failed: $e');
+      }
+      rethrow;
+    }
+
+  }
+
+  Future<Officer?> addOfficer(String userId, String name) async {
+    return await _addOfficer(userId, name, "officer");
   }
 
   Future<Officer?> addAdmin(String userId) async {
-    return await _addOfficer(userId, "admin");
+    return await _addOfficer(userId, CurrentUser().getFullName(), "admin");
   }
 
   Future<Officer?> removeOfficer(String userId) async {
@@ -216,7 +264,7 @@ class Gateway {
     final List<ParkingPermit> passes = List.filled(1, pass, growable: true);
     try {
       ParkingPermits permits = ParkingPermits(
-          id: '$license-unb',
+          id: '$license-' + CurrentUser().getOrg(),
           permits: passes,
           firstName: firstName,
           lastName: lastName,
@@ -244,7 +292,7 @@ class Gateway {
   }
 
   Future<ParkingPermits?> queryParkingPermits(String license) async {
-    final licenseOrg = license.trim().replaceAll("-", "") + "-" + "unb";
+    final licenseOrg = license.trim().replaceAll("-", "") + "-" + CurrentUser().getOrg();
     if (kDebugMode) {
       print(licenseOrg);
     }

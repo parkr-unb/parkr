@@ -6,8 +6,12 @@ import 'package:parkr/gateway.dart';
 import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/models/Officer.dart';
 
+String buildTempUserID(String email) {
+  return email + "-UNCONFIRMED";
+}
+
 Future<Object?> registerOfficer(
-    String email, String firstName, String lastName, String password) async {
+    String email, String firstName, String lastName, String password, {bool admin=false}) async {
   // basic email validation before sending cognito request
   final emailTrimmed = email.trim();
   final splitEmail = emailTrimmed.split("@");
@@ -26,8 +30,15 @@ Future<Object?> registerOfficer(
         username: emailTrimmed,
         password: password.trim(),
         options: CognitoSignUpOptions(userAttributes: userAttributes));
+
     if (!result.isSignUpComplete) {
       throw DisplayableException("Register Operation did not complete");
+    }
+    final id = buildTempUserID(email);
+    if(admin) {
+      Gateway().addAdmin(id);
+    } else {
+      Gateway().addOfficer(id, fullName);
     }
   } on InvalidPasswordException {
     throw DisplayableException("Password must be at least 8 characters");
@@ -46,9 +57,11 @@ Future<Object?> registerOfficer(
   return "Success";
 }
 
-Future<bool> signInUser(String email, String password) async {
+Future<bool?> signInUser(String email, String password) async {
   try {
-    await Amplify.Auth.signOut();
+    CurrentUser().clear();
+    SignOutResult signoutResult = await Amplify.Auth.signOut();
+
     SignInResult result = await Amplify.Auth.signIn(
       username: email.trim(),
       password: password.trim(),
@@ -65,16 +78,22 @@ Future<bool> signInUser(String email, String password) async {
     print(e.message);
   }
 
-  return false;
+  return null;
 }
 
 Future<SignUpResult> confirmUser(String email, String confirmCode) async {
-  return await Amplify.Auth.confirmSignUp(
-      username: email.trim(), confirmationCode: confirmCode.trim());
+  try {
+    return await Amplify.Auth.confirmSignUp(
+        username: email.trim(), confirmationCode: confirmCode.trim());
+  } on CodeMismatchException catch(e) {
+    throw DisplayableException("Incorrect Code");
+  } on InvalidParameterException catch(e) {
+    throw DisplayableException("Incorrect Code");
+  }
 }
 
 class CurrentUser {
-  static CurrentUser _instance = CurrentUser._privateConstructor();
+  static final CurrentUser _instance = CurrentUser._privateConstructor();
   AuthUser? _user;
   String? _name;
   Officer? _officer;
@@ -87,12 +106,20 @@ class CurrentUser {
   }
 
   void clear() {
-    _instance = CurrentUser._privateConstructor();
+    _user = null;
+    _name = null;
+    _officer = null;
+    _admin = false;
   }
 
   Future<void> update({String? userId}) async {
     userId ??= (await get()).userId;
     _officer ??= await Gateway().getOfficerByID(userId);
+    if(_officer == null && _user != null)
+    {
+      _officer ??= await Gateway().getOfficerByID(buildTempUserID(_user!.username));
+    }
+
     if (_officer != null) {
       admin = _officer?.role == "admin";
     }
@@ -135,6 +162,9 @@ class CurrentUser {
 
   set admin(bool auth) {
     _admin = auth;
+  }
+  get officer {
+    return _officer;
   }
 
   bool isAdmin() {

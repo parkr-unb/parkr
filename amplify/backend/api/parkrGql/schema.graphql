@@ -41,6 +41,15 @@ type Officer @model {
     confirmed: Boolean
 }
 
+type GeoCoord {
+    latitude: Float!
+}
+
+type ParkingLot {
+    name: String!
+    coords: [GeoCoord!]!
+}
+
 type Organization @model {
     # id is orgName
     id: ID!

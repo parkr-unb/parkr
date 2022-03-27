@@ -9,6 +9,8 @@ import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 
+import '../models/Officer.dart';
+
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
 
@@ -60,6 +62,7 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Cancel'),
                     onPressed: () {
+                      signedIn = false;
                       Navigator.of(context).pop();
                     },
                   ),
@@ -91,7 +94,7 @@ class _LoginFormState extends State<LoginForm> {
           });
       if (signedIn) {
         final user = await CurrentUser().get();
-        await Gateway().addOfficer(user.userId);
+        await Gateway().confirmOfficer();
       }
     }
     if (!signedIn) {

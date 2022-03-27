@@ -92,11 +92,11 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 padding: const EdgeInsets.all(8),
                 itemCount: officers.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final officer = officers[index];
+                  final officer = officers[index] as Officer;
                   return Container(
-                      decoration: const BoxDecoration(
-                          color: Color.fromRGBO(207, 62, 63, 1),
-                          borderRadius: BorderRadius.all(Radius.circular(15))),
+                      decoration: BoxDecoration(
+                          color: ((officer.confirmed == null || officer.confirmed!) ? const Color.fromRGBO(207, 62, 63, 1) : Colors.black54),
+                          borderRadius: const BorderRadius.all(Radius.circular(15))),
                       height: 50,
                       //color: const Color.fromRGBO(207, 62, 63, 1),
                       child: Center(
@@ -128,12 +128,15 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
               child: ElevatedButton(
                   child: const Text('New Officer'),
-                  onPressed: () {
-                    showDialog(
+                  onPressed: () async {
+                    await showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return const RegisterOfficerDialog();
                         });
+                    setState(() {
+
+                    });
                   })),
         ])));
   } // build

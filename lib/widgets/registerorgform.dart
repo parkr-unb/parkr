@@ -26,13 +26,21 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   final _formKey = GlobalKey<FormState>();
 
   Future<Object?> registerAdmin(BuildContext context) async {
-    await registerOfficer(
-        emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
+    try{
+      await registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
+    } on Exception catch(e) {
 
+    }
     // process login
     bool signedIn = false;
     try {
-      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
+      signedIn = (await loadingDialog(
+          context,
+          signInUser(emailCtrl.text, passCtrl.text),
+          "Creating admin",
+          null,
+          "Failed to create admin: ${emailCtrl.text}") as bool?) ??
+          false;
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -61,12 +69,24 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      final res = await confirmUser(emailCtrl.text, code);
-                      if (res.isSignUpComplete) {
-                        signedIn =
-                            await signInUser(emailCtrl.text, passCtrl.text);
+                      final res = await loadingDialog(
+                            context,
+                            confirmUser(emailCtrl.text, code),
+                            "Confirming User...",
+                            null,
+                            "Failed to confirm user") as SignUpResult?;
+                      if (res == null) {
+                        signedIn = false;
+                      } else if (res.isSignUpComplete) {
+                        signedIn = await loadingDialog(
+                            context,
+                            signInUser(emailCtrl.text, passCtrl.text),
+                            "Signing In...",
+                            null,
+                            "Parkr experienced an error signing you in. Please try again.")
+                        as bool? ?? false;
+                        Navigator.of(context).pop();
                       }
-                      Navigator.of(context).pop();
                     },
                   ),
                 ]);
@@ -75,8 +95,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
     if (!signedIn) {
       return null;
     }
-    final user = await CurrentUser().get();
-    await Gateway().addAdmin(user.userId);
+
     return "Success";
   }
 
@@ -139,13 +158,9 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   onPressed: () async {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
-                      if (await loadingDialog(
-                              context,
-                              registerAdmin(context),
-                              "Registering Admin...",
-                              null,
-                              "Failed to register organization manager") ==
-                          null) {
+                      var success = await registerAdmin(context);
+                      if(success == null)
+                      {
                         return;
                       }
 

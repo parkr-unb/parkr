@@ -26,13 +26,17 @@ import 'Organization.dart';
 import 'ParkingPermits.dart';
 import 'Tickets.dart';
 import 'EmailTicketResponse.dart';
+import 'GeoCoord.dart';
+import 'ParkingLot.dart';
 import 'ParkingPermit.dart';
 import 'Ticket.dart';
 
 export 'AppKeys.dart';
 export 'EmailTicketResponse.dart';
+export 'GeoCoord.dart';
 export 'Officer.dart';
 export 'Organization.dart';
+export 'ParkingLot.dart';
 export 'ParkingPermit.dart';
 export 'ParkingPermits.dart';
 export 'Ticket.dart';
@@ -40,12 +44,12 @@ export 'Tickets.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "95082d16277ed25bf21919f95199a7e7";
+  String version = "e198410721c7de77d05e05a76491dc3c";
   @override
   List<ModelSchema> modelSchemas = [AppKeys.schema, Officer.schema, Organization.schema, ParkingPermits.schema, Tickets.schema];
   static final ModelProvider _instance = ModelProvider();
   @override
-  List<ModelSchema> customTypeSchemas = [EmailTicketResponse.schema, ParkingPermit.schema, Ticket.schema];
+  List<ModelSchema> customTypeSchemas = [EmailTicketResponse.schema, GeoCoord.schema, ParkingLot.schema, ParkingPermit.schema, Ticket.schema];
 
   static ModelProvider get instance => _instance;
   
