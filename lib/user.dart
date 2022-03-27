@@ -59,8 +59,7 @@ Future<Object?> registerOfficer(
 
 Future<bool?> signInUser(String email, String password) async {
   try {
-    CurrentUser().clear();
-    SignOutResult signoutResult = await Amplify.Auth.signOut();
+    CurrentUser().logout();
 
     SignInResult result = await Amplify.Auth.signIn(
       username: email.trim(),
@@ -105,7 +104,8 @@ class CurrentUser {
     return _instance;
   }
 
-  void clear() {
+  Future<void> logout() async {
+    await Amplify.Auth.signOut();
     _user = null;
     _name = null;
     _officer = null;
