@@ -38,6 +38,16 @@ type Officer @model {
     role: String!
     name: String!
     organization: Organization @belongsTo
+    confirmed: Boolean
+}
+
+type GeoCoord {
+    latitude: Float!
+}
+
+type ParkingLot {
+    name: String!
+    coords: [GeoCoord!]!
 }
 
 type Organization @model {

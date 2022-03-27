@@ -32,6 +32,7 @@ class Officer extends Model {
   final String? _role;
   final String? _name;
   final Organization? _organization;
+  final bool? _confirmed;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -73,6 +74,10 @@ class Officer extends Model {
     return _organization;
   }
   
+  bool? get confirmed {
+    return _confirmed;
+  }
+  
   TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -81,14 +86,15 @@ class Officer extends Model {
     return _updatedAt;
   }
   
-  const Officer._internal({required this.id, required role, required name, organization, createdAt, updatedAt}): _role = role, _name = name, _organization = organization, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Officer._internal({required this.id, required role, required name, organization, confirmed, createdAt, updatedAt}): _role = role, _name = name, _organization = organization, _confirmed = confirmed, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Officer({String? id, required String role, required String name, Organization? organization}) {
+  factory Officer({String? id, required String role, required String name, Organization? organization, bool? confirmed}) {
     return Officer._internal(
       id: id == null ? UUID.getUUID() : id,
       role: role,
       name: name,
-      organization: organization);
+      organization: organization,
+      confirmed: confirmed);
   }
   
   bool equals(Object other) {
@@ -102,7 +108,8 @@ class Officer extends Model {
       id == other.id &&
       _role == other._role &&
       _name == other._name &&
-      _organization == other._organization;
+      _organization == other._organization &&
+      _confirmed == other._confirmed;
   }
   
   @override
@@ -117,6 +124,7 @@ class Officer extends Model {
     buffer.write("role=" + "$_role" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("organization=" + (_organization != null ? _organization!.toString() : "null") + ", ");
+    buffer.write("confirmed=" + (_confirmed != null ? _confirmed!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -124,12 +132,13 @@ class Officer extends Model {
     return buffer.toString();
   }
   
-  Officer copyWith({String? id, String? role, String? name, Organization? organization}) {
+  Officer copyWith({String? id, String? role, String? name, Organization? organization, bool? confirmed}) {
     return Officer._internal(
       id: id ?? this.id,
       role: role ?? this.role,
       name: name ?? this.name,
-      organization: organization ?? this.organization);
+      organization: organization ?? this.organization,
+      confirmed: confirmed ?? this.confirmed);
   }
   
   Officer.fromJson(Map<String, dynamic> json)  
@@ -139,11 +148,12 @@ class Officer extends Model {
       _organization = json['organization']?['serializedData'] != null
         ? Organization.fromJson(new Map<String, dynamic>.from(json['organization']['serializedData']))
         : null,
+      _confirmed = json['confirmed'],
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'role': _role, 'name': _name, 'organization': _organization?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'role': _role, 'name': _name, 'organization': _organization?.toJson(), 'confirmed': _confirmed, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "officer.id");
@@ -152,6 +162,7 @@ class Officer extends Model {
   static final QueryField ORGANIZATION = QueryField(
     fieldName: "organization",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Organization).toString()));
+  static final QueryField CONFIRMED = QueryField(fieldName: "confirmed");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Officer";
     modelSchemaDefinition.pluralName = "Officers";
@@ -175,6 +186,12 @@ class Officer extends Model {
       isRequired: false,
       targetName: "organizationOfficersId",
       ofModelName: (Organization).toString()
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Officer.CONFIRMED,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.bool)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(

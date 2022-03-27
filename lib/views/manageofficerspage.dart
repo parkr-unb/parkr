@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/widgets/registerofficerdialog.dart';
@@ -21,6 +22,14 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
         .toList();
   }
 
+  Future<Object?> eraseOfficer(Officer o) async {
+    // Delete user from cognito -- THIS DELETES CURRENT USER
+    //var res = await Amplify.Auth.deleteUser();
+
+    await Gateway().removeOfficer(o.id);
+    return "Success";
+  }
+
   Future<void> removeOfficer(BuildContext ctx, Officer o) async {
     showDialog(
         context: context,
@@ -38,13 +47,14 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 TextButton(
                   child: const Text('Remove'),
                   onPressed: () async {
-                    Navigator.of(context).pop();
                     await loadingDialog(
                         context,
-                        Gateway().removeOfficer(o.id),
+                        eraseOfficer(o),
                         "Removing ${o.name}...",
                         "Success",
                         "Failed to remove ${o.name}");
+                    Navigator.of(context).pop();
+                    setState(() {});
                   },
                 ),
               ]);
@@ -92,11 +102,11 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 padding: const EdgeInsets.all(8),
                 itemCount: officers.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final officer = officers[index];
+                  final officer = officers[index] as Officer;
                   return Container(
-                      decoration: const BoxDecoration(
-                          color: Color.fromRGBO(207, 62, 63, 1),
-                          borderRadius: BorderRadius.all(Radius.circular(15))),
+                      decoration: BoxDecoration(
+                          color: ((officer.confirmed == null || officer.confirmed!) ? const Color.fromRGBO(207, 62, 63, 1) : Colors.black54),
+                          borderRadius: const BorderRadius.all(Radius.circular(15))),
                       height: 50,
                       //color: const Color.fromRGBO(207, 62, 63, 1),
                       child: Center(
@@ -128,12 +138,15 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
               child: ElevatedButton(
                   child: const Text('New Officer'),
-                  onPressed: () {
-                    showDialog(
+                  onPressed: () async {
+                    await showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return const RegisterOfficerDialog();
                         });
+                    setState(() {
+
+                    });
                   })),
         ])));
   } // build

@@ -82,6 +82,7 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
         "Poor Network Quality. Request timed out. Please try again.");
   } catch (e) {
     print(e);
+    Navigator.pop(context);
     rethrow;
   }
   Navigator.pop(context);
