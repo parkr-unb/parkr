@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/widgets/registerofficerdialog.dart';
@@ -21,6 +22,14 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
         .toList();
   }
 
+  Future<Object?> eraseOfficer(Officer o) async {
+    // Delete user from cognito -- THIS DELETES CURRENT USER
+    //var res = await Amplify.Auth.deleteUser();
+
+    await Gateway().removeOfficer(o.id);
+    return "Success";
+  }
+
   Future<void> removeOfficer(BuildContext ctx, Officer o) async {
     showDialog(
         context: context,
@@ -38,13 +47,14 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 TextButton(
                   child: const Text('Remove'),
                   onPressed: () async {
-                    Navigator.of(context).pop();
                     await loadingDialog(
                         context,
-                        Gateway().removeOfficer(o.id),
+                        eraseOfficer(o),
                         "Removing ${o.name}...",
                         "Success",
                         "Failed to remove ${o.name}");
+                    Navigator.of(context).pop();
+                    setState(() {});
                   },
                 ),
               ]);

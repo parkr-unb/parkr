@@ -64,7 +64,7 @@ Future<Object?> registerOfficer(
 
 Future<bool?> signInUser(String email, String password) async {
   try {
-    CurrentUser().logout();
+    await CurrentUser().logout();
 
     SignInResult result = await Amplify.Auth.signIn(
       username: email.trim(),
@@ -72,6 +72,15 @@ Future<bool?> signInUser(String email, String password) async {
     );
     if (result.isSignedIn) {
       await CurrentUser().get();
+      if(CurrentUser().officer == null) {
+        var ex = DisplayableException("${CurrentUser().getFirstName()} has been removed");
+        await CurrentUser().logout();
+        throw ex;
+      }
+      final o = CurrentUser().officer as Officer;
+      if(!o.confirmed!) {
+        Gateway().confirmOfficer();
+      }
       return true;
     }
   } on UserNotFoundException {
