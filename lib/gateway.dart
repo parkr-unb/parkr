@@ -279,7 +279,7 @@ class Gateway {
     GraphQLRequest<Organization> request;
     GraphQLResponse<Organization> response;
     try {
-      Organization? organization = await getOrganization('unb');
+      Organization? organization = await getOrganization(CurrentUser().getOrg());
       if (organization?.parkingLots == null) {
         final List<ParkingLot> lots = List.filled(1, lot, growable: true);
         organization?.parkingLots = lots;
@@ -303,7 +303,7 @@ class Gateway {
     GraphQLRequest<Organization> request;
     GraphQLResponse<Organization> response;
     try {
-      Organization? organization = await getOrganization('unb');
+      Organization? organization = await getOrganization(CurrentUser().getOrg());
       if (organization?.parkingLots == null) {
         return "Success";
       }
@@ -356,7 +356,7 @@ class Gateway {
     GraphQLRequest<Organization> request;
     GraphQLResponse<Organization> response;
     try {
-      Organization? organization = await getOrganization('unb');
+      Organization? organization = await getOrganization(CurrentUser().getOrg());
       if (organization?.parkingLots != null) {
         for(int i=0; i<(organization?.parkingLots?.length ?? 0); i++) {
           if (PolygonUtil.containsLocation(LatLng(curLocation?.latitude ?? 0.0,

@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
 
                           final loc = await loadingDialog(
                               context,
-                              Gateway().inParkingLot(curLoc, 'unb'),
+                              Gateway().inParkingLot(curLoc, CurrentUser().getOrg()),
                               "Checking location",
                               "Parking lot found!",
                               "Parking lot not found"
