@@ -27,6 +27,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class GeoCoord {
   final double? _latitude;
+  final double? _longitude;
 
   double get latitude {
     try {
@@ -41,12 +42,25 @@ class GeoCoord {
     }
   }
   
-  const GeoCoord._internal({required latitude}): _latitude = latitude;
-  
-  factory GeoCoord({required double latitude}) {
-    return GeoCoord._internal(
-      latitude: latitude);
+  double get longitude {
+    try {
+      return _longitude!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
+  
+  const GeoCoord._internal({required latitude, required longitude}): _latitude = latitude, _longitude = longitude;
+  
+  factory GeoCoord({required double latitude, required double longitude}) {
+    return GeoCoord._internal(
+      latitude: latitude,
+      longitude: longitude);
   
   bool equals(Object other) {
     return this == other;
@@ -56,7 +70,8 @@ class GeoCoord {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is GeoCoord &&
-      _latitude == other._latitude;
+      _latitude == other._latitude &&
+      _longitude == other._longitude;
   }
   
   @override
@@ -67,22 +82,25 @@ class GeoCoord {
     var buffer = new StringBuffer();
     
     buffer.write("GeoCoord {");
-    buffer.write("latitude=" + (_latitude != null ? _latitude!.toString() : "null"));
+    buffer.write("latitude=" + (_latitude != null ? _latitude!.toString() : "null") + ", ");
+    buffer.write("longitude=" + (_longitude != null ? _longitude!.toString() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  GeoCoord copyWith({double? latitude}) {
+  GeoCoord copyWith({double? latitude, double? longitude}) {
     return GeoCoord._internal(
-      latitude: latitude ?? this.latitude);
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude);
   }
   
   GeoCoord.fromJson(Map<String, dynamic> json)  
-    : _latitude = (json['latitude'] as num?)?.toDouble();
+    : _latitude = (json['latitude'] as num?)?.toDouble(),
+      _longitude = (json['longitude'] as num?)?.toDouble();
   
   Map<String, dynamic> toJson() => {
-    'latitude': _latitude
+    'latitude': _latitude, 'longitude': _longitude
   };
 
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
@@ -91,6 +109,12 @@ class GeoCoord {
     
     modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
       fieldName: 'latitude',
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.double)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+      fieldName: 'longitude',
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.double)
     ));

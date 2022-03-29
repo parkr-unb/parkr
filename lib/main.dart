@@ -112,7 +112,6 @@ _checkLocationPermission() async {
   if (!_serviceEnabled) {
     _serviceEnabled = await location.requestService();
     if (!_serviceEnabled) {
-      print("Service is f'd");
       return;
     }
   }
@@ -120,13 +119,10 @@ _checkLocationPermission() async {
   if (_permissionGranted == PermissionStatus.denied) {
     _permissionGranted = await location.requestPermission();
     if (_permissionGranted != PermissionStatus.granted) {
-      print("Permission is f'd");
       return;
     }
   }
-  print("Awaiting locationData");
   locationData = await location.getLocation();
-  print("Done awaiting locationData");
 }
 
 Future<void> setupCamera() async {
@@ -153,6 +149,12 @@ void main() async {
       setupAmplify(),
       setupCamera(),
     ]);
+  } on Exception catch (e) {
+    print("Failed setup the application: $e");
+  }
+
+  try {
+    await _checkLocationPermission();
   } on Exception catch (e) {
     print("Failed setup the application: $e");
   }

@@ -15,6 +15,8 @@ import 'package:parkr/views/settingspage.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/analyzer.dart';
 import 'package:parkr/user.dart';
+import 'package:location/location.dart';
+
 
 class HomePage extends StatefulWidget {
   final CameraDescription camera;
@@ -41,6 +43,7 @@ class _HomePageState extends State<HomePage> {
   bool typing = false;
   late CameraController _camera;
   late Future<void> _cameraFuture;
+  Location location = Location();
 
   bool _enableExamination = false;
 
@@ -171,11 +174,19 @@ class _HomePageState extends State<HomePage> {
                               "Examining registration...",
                               null,
                               null) as Registration?;
-                          // STUB
-                          // examine(plate_ctrl.text);
+
+                          var curLoc = await location.getLocation();
+
+                          final loc = await loadingDialog(
+                              context,
+                              Gateway().inParkingLot(curLoc, CurrentUser().getOrg()),
+                              "Checking location",
+                              "Parking lot found!",
+                              "Parking lot not found"
+                          );
                           if (reg != null) {
                             Navigator.pushNamed(context, "plate",
-                                arguments: {"reg": reg});
+                                arguments: {"reg": reg, "loc": loc});
                           } else {
                             showDialog(
                                 context: context,

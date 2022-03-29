@@ -3,6 +3,11 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:parkr/gateway.dart';
+import 'package:parkr/models/GeoCoord.dart';
+
+import '../widgets/loadingdialog.dart';
+import '../widgets/visibletextfield.dart';
 
 class GeofencingPage extends StatefulWidget {
   final LocationData location;
@@ -14,6 +19,8 @@ class GeofencingPage extends StatefulWidget {
 }
 
 class _GeofencingState extends State<GeofencingPage> {
+  TextEditingController nameCtrl = TextEditingController();
+
   // Location
   late LocationData _locationData;
 
@@ -39,10 +46,60 @@ class _GeofencingState extends State<GeofencingPage> {
     _polygons.add(Polygon(
       polygonId: PolygonId(polygonIdVal),
       points: polygonLatLngs,
-      strokeWidth: 2,
-      strokeColor: Colors.yellow,
-      fillColor: Colors.yellow.withOpacity(0.15),
+      strokeWidth: 5,
+      strokeColor: Colors.red,
+      fillColor: Colors.red.withOpacity(0.15),
     )); // Polygon
+  }
+
+  List<GeoCoord> convertLatLngGeoCoords(List<LatLng> list) {
+    List<GeoCoord> coords = <GeoCoord>[];
+    for (int i=0; i<list.length; i++) {
+      coords.add(GeoCoord(latitude: list[i].latitude, longitude: list[i].longitude));
+    }
+    return coords;
+  }
+
+  Future<Object?> saveParkingLot(BuildContext context) async {
+    Object? res;
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: const Text('Parking Lot Name'),
+              content: VisibleTextField(
+                label: "Name",
+                hint: "Enter a parking lot name",
+                validatorText: "You must enter a valid parking lot name",
+                controller: nameCtrl,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Save'),
+                  onPressed: () async {
+                    res = await loadingDialog(
+                        context,
+                        addGeofence(polygonLatLngs, nameCtrl.text),
+                        "Creating parking lot...",
+                        "Success",
+                        "Failed to create parking lot");
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ]);
+        });
+    return res;
+  }
+
+  Future<Object?> addGeofence(List<LatLng> polygonLatLngs, String name) {
+    List<GeoCoord> coords = convertLatLngGeoCoords(polygonLatLngs);
+    return Gateway().addParkingLot(coords, name);
   }
 
   @override
@@ -69,6 +126,22 @@ class _GeofencingState extends State<GeofencingPage> {
                 },
               ),
               Align(
+                  alignment: Alignment.topLeft,
+                  child: Row(
+                      children: <Widget>[
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                          child: const Text('Back'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ]
+                  )
+              ),
+              Align(
                   alignment: Alignment.bottomCenter,
                   child: Row(
                       children: <Widget>[
@@ -91,8 +164,7 @@ class _GeofencingState extends State<GeofencingPage> {
                         ElevatedButton(
                           child: const Text('Save'),
                           onPressed: () {
-                            //TODO: send to db and exit, call gateway
-                            print(polygonLatLngs.toString());
+                            saveParkingLot(context);
                           },
                         ),
                         const SizedBox(
