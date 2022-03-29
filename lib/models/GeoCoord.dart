@@ -61,6 +61,7 @@ class GeoCoord {
     return GeoCoord._internal(
       latitude: latitude,
       longitude: longitude);
+  }
   
   bool equals(Object other) {
     return this == other;

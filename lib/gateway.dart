@@ -344,15 +344,21 @@ class Gateway {
     GraphQLResponse<Organization> response;
     try {
       Organization? organization = await getOrganization(CurrentUser().getOrg());
+      var newOrg;
       if (organization?.parkingLots == null) {
         final List<ParkingLot> lots = List.filled(1, lot, growable: true);
-        organization?.parkingLots = lots;
+        var newOrg = Organization(
+          id: organization?.id,
+          domainAllow: organization?.domainAllow,
+          officers: organization?.officers,
+          parkingLots: lots
+        );
       }
       else {
         organization?.parkingLots?.add(lot);
       }
-      if (organization != null) {
-        request = ModelMutations.update(organization);
+      if (newOrg != null) {
+        request = ModelMutations.update(newOrg);
         response = await Amplify.API.mutate(request: request).response;
         return "Success";
       }
@@ -367,17 +373,23 @@ class Gateway {
     GraphQLRequest<Organization> request;
     GraphQLResponse<Organization> response;
     try {
+      Organization? replaced;
       Organization? organization = await getOrganization(CurrentUser().getOrg());
       if (organization?.parkingLots == null) {
         return "Success";
       }
       else {
         if (organization?.parkingLots != null) {
-          organization?.parkingLots = <ParkingLot>[];
+          replaced = Organization(
+            id: organization?.id,
+            domainAllow: organization?.domainAllow,
+            officers: organization?.officers,
+            parkingLots: const <ParkingLot>[]
+          );
         }
       }
-      if (organization != null) {
-        request = ModelMutations.update(organization);
+      if (replaced != null) {
+        request = ModelMutations.update(replaced);
         response = await Amplify.API.mutate(request: request).response;
         return "Success";
       }

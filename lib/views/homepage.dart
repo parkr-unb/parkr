@@ -120,14 +120,16 @@ class _HomePageState extends State<HomePage> {
                               scale: scaler,
                               child: Center(
                                   child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(2),
-                                  border:
-                                      Border.all(width: 2, color: const Color.fromRGBO(207, 62, 63, 1)),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(2),
+                                      border: Border.all(width: 2, color: const Color.fromRGBO(207, 62, 63, 1)),
+                                    ),
+                                    child:
+                                          CameraPreview(_camera),
+                                  )
                                 ),
-                                child: CameraPreview(_camera),
-                              )),
-                            ));
+                              )
+                        );
                       } else {
                         return const Center(child: CircularProgressIndicator());
                       }
