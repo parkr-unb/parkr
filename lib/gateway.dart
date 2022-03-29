@@ -347,7 +347,7 @@ class Gateway {
       var newOrg;
       if (organization?.parkingLots == null) {
         final List<ParkingLot> lots = List.filled(1, lot, growable: true);
-        var newOrg = Organization(
+        newOrg = Organization(
           id: organization?.id,
           domainAllow: organization?.domainAllow,
           officers: organization?.officers,
