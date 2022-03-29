@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parkr/displayable_exception.dart';
@@ -39,7 +41,8 @@ AlertDialog createFailureDialog(String text) {
 Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
     String loadingText, String? successText, String? failureText,
     {resultDialogDelay = const Duration(seconds: 2),
-    useExceptionText = true}) async {
+    useExceptionText = true,
+    timeoutDelay = const Duration(seconds: 8)}) async {
   AlertDialog loadingDialog = AlertDialog(
     scrollable: true,
     content: Column(
@@ -71,11 +74,15 @@ Future<Object?> loadingDialog(BuildContext context, Future<Object?> future,
   // execute provided future
   Object? result;
   try {
-    result = await future;
+    result = await (future.timeout(timeoutDelay));
   } on DisplayableException catch (e) {
     failureDialog = createFailureDialog(e.toString());
+  } on TimeoutException catch (e) {
+    failureDialog = createFailureDialog(
+        "Poor Network Quality. Request timed out. Please try again.");
   } catch (e) {
     print(e);
+    Navigator.pop(context);
     rethrow;
   }
   Navigator.pop(context);

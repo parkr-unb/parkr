@@ -20,6 +20,7 @@ class GeofencingPage extends StatefulWidget {
 
 class _GeofencingState extends State<GeofencingPage> {
   TextEditingController nameCtrl = TextEditingController();
+
   // Location
   late LocationData _locationData;
 

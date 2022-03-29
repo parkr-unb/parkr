@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class Logo extends StatefulWidget {
   final bool keyboard;

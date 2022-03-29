@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              const Spacer(flex: 23),
+              const Spacer(flex: 22),
               Expanded(
                   flex: 25,
                   child: FutureBuilder(
@@ -121,8 +121,9 @@ class _HomePageState extends State<HomePage> {
                               child: Center(
                                   child: Container(
                                 decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
                                   border:
-                                      Border.all(width: 1.0, color: Colors.red),
+                                      Border.all(width: 2, color: const Color.fromRGBO(207, 62, 63, 1)),
                                 ),
                                 child: CameraPreview(_camera),
                               )),
@@ -213,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                   firstChild: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (CurrentUser().isAdmin())
+                      if (kDebugMode || CurrentUser().isAdmin())
                         ElevatedButton(
                             child: const Text('Officers',
                                 style: TextStyle(fontSize: 20.0)),
@@ -230,8 +231,7 @@ class _HomePageState extends State<HomePage> {
                           child: const Text('Logout',
                               style: TextStyle(fontSize: 20.0)),
                           onPressed: () {
-                            Amplify.Auth.signOut();
-                            CurrentUser().clear();
+                            CurrentUser().logout();
 
                             // completely wipe navigation stack and replace with welcome
                             Navigator.pushNamedAndRemoveUntil(

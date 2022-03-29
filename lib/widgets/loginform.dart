@@ -1,5 +1,4 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -9,6 +8,8 @@ import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
+
+import '../models/Officer.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -31,7 +32,13 @@ class _LoginFormState extends State<LoginForm> {
     // process login
     bool signedIn = false;
     try {
-      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
+      signedIn = (await loadingDialog(
+              context,
+              signInUser(emailCtrl.text, passCtrl.text),
+              "Logging In...",
+              null,
+              "Failed to log ${emailCtrl.text} in") as bool?) ??
+          false;
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -44,6 +51,7 @@ class _LoginFormState extends State<LoginForm> {
                     child: Column(children: [
                       const Text('Enter your confirmation code'),
                       TextField(
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 25),
                         onChanged: (value) {
                           code = value.trim();
@@ -54,31 +62,51 @@ class _LoginFormState extends State<LoginForm> {
                   TextButton(
                     child: const Text('Cancel'),
                     onPressed: () {
+                      signedIn = false;
                       Navigator.of(context).pop();
                     },
                   ),
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      final res = await confirmUser(emailCtrl.text, code);
-                      if (res.isSignUpComplete) {
-                        signedIn =
-                            await signInUser(emailCtrl.text, passCtrl.text);
+                      final res = await loadingDialog(
+                          context,
+                          confirmUser(emailCtrl.text, code),
+                          "Confirming User...",
+                          null,
+                          "Failed to confirm user") as SignUpResult?;
+                      if (res == null) {
+                        signedIn = false;
+                      } else if (res.isSignUpComplete) {
+                        signedIn = await loadingDialog(
+                                    context,
+                                    signInUser(emailCtrl.text, passCtrl.text),
+                                    "Signing In...",
+                                    null,
+                                    "Parkr experienced an error signing you in. Please try again.")
+                                as bool? ??
+                            false;
+                        Navigator.of(context).pop();
                       }
-                      Navigator.of(context).pop();
                     },
                   ),
                 ]);
           });
-      if (signedIn) {
-        final user = await CurrentUser().get();
-        await Gateway().addOfficer(user.userId);
+    }
+    if (signedIn) {
+      final user = await CurrentUser().get();
+      if(CurrentUser().officer == null) {
+        return null;
+      }
+      final o = CurrentUser().officer as Officer;
+      if(!o.confirmed!) {
+        Gateway().confirmOfficer();
       }
     }
-    if (!signedIn) {
+    else if (CurrentUser().officer == null) {
       return null;
     }
-    return "Success";
+    return signedIn ? "Success" : null;
   }
 
   @override
@@ -103,14 +131,7 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () async {
-                    Amplify.Auth.signOut();
-                    if (await loadingDialog(
-                            context,
-                            login(context),
-                            "Logging In...",
-                            null,
-                            "Failed to log ${emailCtrl.text} in") !=
-                        null) {
+                    if (await login(context) != null) {
                       Navigator.pushNamedAndRemoveUntil(
                           context, "home", (_) => false);
                     }
