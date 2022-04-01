@@ -90,6 +90,7 @@ class _GeofencingState extends State<GeofencingPage> {
                         "Success",
                         "Failed to create parking lot");
                     Navigator.of(context).pop();
+                    Navigator.of(context).pop();
                   },
                 ),
               ]);
