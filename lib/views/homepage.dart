@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:parkr/gateway.dart';
@@ -16,10 +15,10 @@ import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/analyzer.dart';
 import 'package:parkr/user.dart';
 import 'package:location/location.dart';
-
+import 'package:parkr/widgets/unavailableicon.dart';
 
 class HomePage extends StatefulWidget {
-  final CameraDescription camera;
+  final CameraDescription? camera;
 
   const HomePage({Key? key, required this.camera}) : super(key: key);
 
@@ -50,18 +49,23 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _camera = CameraController(widget.camera, ResolutionPreset.medium);
-    _cameraFuture = _camera.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
+    if (widget.camera != null) {
+      _camera = CameraController(
+          widget.camera as CameraDescription, ResolutionPreset.medium);
+      _cameraFuture = _camera.initialize().then((_) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {});
+      });
+    }
   }
 
   @override
   void dispose() {
-    _camera.dispose();
+    if (widget.camera != null) {
+      _camera.dispose();
+    }
     super.dispose();
   }
 
@@ -84,57 +88,64 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               const Spacer(flex: 22),
-              Expanded(
-                  flex: 25,
-                  child: FutureBuilder(
-                    future: _cameraFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        final size = MediaQuery.of(context).size;
-                        var scaler =
-                            size.aspectRatio / _camera.value.aspectRatio;
-                        if (scaler < 1) scaler = 1 / scaler;
-                        return GestureDetector(
-                            onTap: () async {
-                              try {
-                                await _cameraFuture;
-                                XFile img = await _camera.takePicture();
-                                final plate = await loadingDialog(
-                                    context,
-                                    getPlate(img),
-                                    "Reading plate...",
-                                    null,
-                                    "Could not read plate") as String?;
-                                plateCtrl.text = plate ?? "";
-                                if (plateCtrl.text.isNotEmpty) {
-                                  setState(() {
-                                    _enableExamination = true;
-                                  });
+              if (widget.camera == null)
+                const Expanded(
+                    flex: 25,
+                    child: UnavailableIcon(
+                        message: "Device Camera is Unavailable"))
+              else
+                Expanded(
+                    flex: 25,
+                    child: FutureBuilder(
+                      future: _cameraFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          final size = MediaQuery.of(context).size;
+                          var scaler =
+                              size.aspectRatio / _camera.value.aspectRatio;
+                          if (scaler < 1) scaler = 1 / scaler;
+                          return GestureDetector(
+                              onTap: () async {
+                                try {
+                                  await _cameraFuture;
+                                  XFile img = await _camera.takePicture();
+                                  final plate = await loadingDialog(
+                                      context,
+                                      getPlate(img),
+                                      "Reading plate...",
+                                      null,
+                                      "Could not read plate") as String?;
+                                  plateCtrl.text = plate ?? "";
+                                  if (plateCtrl.text.isNotEmpty) {
+                                    setState(() {
+                                      _enableExamination = true;
+                                    });
+                                  }
+                                } catch (e) {
+                                  print("Failed to capture photo");
+                                  print(e);
                                 }
-                              } catch (e) {
-                                print("Failed to capture photo");
-                                print(e);
-                              }
-                            },
-                            child: Transform.scale(
-                              scale: scaler,
-                              child: Center(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(2),
-                                      border: Border.all(width: 2, color: const Color.fromRGBO(207, 62, 63, 1)),
-                                    ),
-                                    child:
-                                          CameraPreview(_camera),
-                                  )
-                                ),
-                              )
-                        );
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  )),
+                              },
+                              child: Transform.scale(
+                                scale: scaler,
+                                child: Center(
+                                    child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(2),
+                                    border: Border.all(
+                                        width: 2,
+                                        color: const Color.fromRGBO(
+                                            207, 62, 63, 1)),
+                                  ),
+                                  child: CameraPreview(_camera),
+                                )),
+                              ));
+                        } else {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                      },
+                    )),
               const Spacer(flex: 22),
               Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
@@ -181,11 +192,11 @@ class _HomePageState extends State<HomePage> {
 
                           final loc = await loadingDialog(
                               context,
-                              Gateway().inParkingLot(curLoc, CurrentUser().getOrg()),
+                              Gateway()
+                                  .inParkingLot(curLoc, CurrentUser().getOrg()),
                               "Checking location",
                               "Parking lot found!",
-                              "Parking lot not found"
-                          );
+                              "Parking lot not found");
                           if (reg != null) {
                             Navigator.pushNamed(context, "plate",
                                 arguments: {"reg": reg, "loc": loc});

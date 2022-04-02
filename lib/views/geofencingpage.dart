@@ -5,12 +5,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/models/GeoCoord.dart';
-
-import '../widgets/loadingdialog.dart';
-import '../widgets/visibletextfield.dart';
+import 'package:parkr/widgets/loadingdialog.dart';
+import 'package:parkr/widgets/unavailableicon.dart';
+import 'package:parkr/widgets/visibletextfield.dart';
 
 class GeofencingPage extends StatefulWidget {
-  final LocationData location;
+  final LocationData? location;
 
   const GeofencingPage({required this.location});
 
@@ -21,11 +21,8 @@ class GeofencingPage extends StatefulWidget {
 class _GeofencingState extends State<GeofencingPage> {
   TextEditingController nameCtrl = TextEditingController();
 
-  // Location
-  late LocationData _locationData;
-
   // Maps
-  Set<Polygon> _polygons = HashSet<Polygon>();
+  final Set<Polygon> _polygons = HashSet<Polygon>();
   List<LatLng> polygonLatLngs = <LatLng>[];
 
   //ids
@@ -33,12 +30,6 @@ class _GeofencingState extends State<GeofencingPage> {
 
   // Type controllers
   bool _isPolygon = true; //Default
-
-  @override
-  void initState() {
-    super.initState();
-    _locationData = widget.location;
-  }
 
   // Draw Polygon to the map
   void setPolygon() {
@@ -54,8 +45,9 @@ class _GeofencingState extends State<GeofencingPage> {
 
   List<GeoCoord> convertLatLngGeoCoords(List<LatLng> list) {
     List<GeoCoord> coords = <GeoCoord>[];
-    for (int i=0; i<list.length; i++) {
-      coords.add(GeoCoord(latitude: list[i].latitude, longitude: list[i].longitude));
+    for (int i = 0; i < list.length; i++) {
+      coords.add(
+          GeoCoord(latitude: list[i].latitude, longitude: list[i].longitude));
     }
     return coords;
   }
@@ -104,13 +96,20 @@ class _GeofencingState extends State<GeofencingPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.location == null) {
+      return const UnavailableIcon(message: "Location Services are Unavailable");
+    }
+
+    final LocationData _locationData = widget.location as LocationData;
     return Scaffold(
-        body: Stack(
+        body:
+        Stack(
             children: <Widget>[
               GoogleMap(
                 initialCameraPosition: CameraPosition(
                   target: LatLng(
-                      _locationData.latitude ?? 0.0, _locationData.longitude ?? 0.0),
+                      _locationData.latitude ?? 0.0,
+                      _locationData.longitude ?? 0.0),
                   zoom: 16,
                 ),
                 mapType: MapType.hybrid,
@@ -149,14 +148,14 @@ class _GeofencingState extends State<GeofencingPage> {
                           width: 10,
                         ),
                         ElevatedButton(
-                            child: _isPolygon ?
-                              const Text('Drawing ON') :
-                              const Text('Drawing OFF'),
-                            onPressed: () {
-                              setState(() {
-                                _isPolygon = !_isPolygon;
-                              });
-                            },
+                          child: _isPolygon ?
+                          const Text('Drawing ON') :
+                          const Text('Drawing OFF'),
+                          onPressed: () {
+                            setState(() {
+                              _isPolygon = !_isPolygon;
+                            });
+                          },
                         ),
                         const SizedBox(
                           width: 10,
