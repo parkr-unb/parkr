@@ -8,8 +8,7 @@ import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
-
-import '../models/Officer.dart';
+import 'package:parkr/models/Officer.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
