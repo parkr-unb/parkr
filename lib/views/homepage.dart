@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              const Spacer(flex: 22),
+              const Spacer(flex: 16),
               if (widget.camera == null)
                 const Expanded(
                     flex: 25,
@@ -96,15 +96,12 @@ class _HomePageState extends State<HomePage> {
                         message: "Device Camera is Unavailable"))
               else
                 Expanded(
-                    flex: 25,
+                    flex: 800,
                     child: FutureBuilder(
                       future: _cameraFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           final size = MediaQuery.of(context).size;
-                          var scaler =
-                              size.aspectRatio / _camera.value.aspectRatio;
-                          if (scaler < 1) scaler = 1 / scaler;
                           return GestureDetector(
                               onTap: () async {
                                 try {
@@ -127,19 +124,15 @@ class _HomePageState extends State<HomePage> {
                                   print(e);
                                 }
                               },
-                              child: Transform.scale(
-                                scale: scaler,
-                                child: Center(
-                                    child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(2),
-                                    border: Border.all(
-                                        width: 2,
-                                        color: const Color.fromRGBO(
-                                            207, 62, 63, 1)),
-                                  ),
-                                  child: CameraPreview(_camera),
-                                )),
+                              child: Container(
+                                child: CameraPreview(_camera),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
+                                  border: Border.all(
+                                      width: 3,
+                                      color:
+                                          const Color.fromRGBO(207, 62, 63, 1)),
+                                ),
                               ));
                         } else {
                           return const Center(
@@ -222,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                                 });
                           }
                         }),
-              if (!isKeyboardVisible) const Spacer(flex: 5),
+              if (!isKeyboardVisible) const Spacer(flex: 50),
               AnimatedCrossFade(
                   duration: const Duration(milliseconds: 250),
                   firstChild: Row(
@@ -268,7 +261,7 @@ class _HomePageState extends State<HomePage> {
                   crossFadeState: !isKeyboardVisible
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond),
-              if (!isKeyboardVisible) const Spacer(flex: 2)
+              if (!isKeyboardVisible) const Spacer(flex: 30)
             ],
           ),
         ),
