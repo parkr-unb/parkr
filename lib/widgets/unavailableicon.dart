@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 
 class UnavailableIcon extends StatelessWidget {
   final String message;
-  final Icon icon;
+  final IconData iconData;
 
   const UnavailableIcon(
       {Key? key,
       required this.message,
-      this.icon = const Icon(Icons.warning, color: Colors.grey, size: 60)})
+      this.iconData = Icons.warning})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final Icon icon = Icon(iconData, color: Colors.grey, size: 60);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,

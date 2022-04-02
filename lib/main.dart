@@ -93,8 +93,7 @@ class _ParkrAppState extends State<ParkrApp> {
                     UnavailableIcon(
                         message:
                             "${(snapshot.error as DisplayableException).cause}\n Please restart Parkr",
-                        icon: const Icon(Icons.error,
-                            color: Colors.grey, size: 60)),
+                        iconData: Icons.error),
                     const Spacer(flex: 4)
                   ]);
             }

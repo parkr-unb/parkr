@@ -438,7 +438,7 @@ class Gateway {
           if (PolygonUtil.containsLocation(LatLng(curLocation?.latitude ?? 0.0,
               curLocation?.longitude ?? 0.0), convertGeoCoordLatLng(
               organization?.parkingLots?.elementAt(i).coords), false)) {
-            return organization?.parkingLots?.elementAt(i)?.name;
+            return organization?.parkingLots?.elementAt(i).name;
           }
         }
       }
