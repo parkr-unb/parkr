@@ -51,7 +51,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     if (widget.camera != null) {
       _camera = CameraController(
-          widget.camera as CameraDescription, ResolutionPreset.medium);
+          widget.camera as CameraDescription, ResolutionPreset.medium,
+          enableAudio: false);
       _cameraFuture = _camera.initialize().then((_) {
         if (!mounted) {
           return;
