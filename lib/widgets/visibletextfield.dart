@@ -1,34 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class VisibleTextField extends StatefulWidget {
-  const VisibleTextField({Key? key,
-    required this.controller,
-    this.label = "Email",
-    this.hint = "Enter your email",
-    this.validatorText = "You must enter a valid email"}) : super(key: key);
+class VisibleTextField extends StatelessWidget {
+  const VisibleTextField(
+      {Key? key,
+      required this.controller,
+      this.label = "Email",
+      this.hint = "Enter your email",
+      this.validatorText = "You must enter a valid email",
+      this.inputRegex = "",
+      this.padding = 25.0})
+      : super(key: key);
   final TextEditingController controller;
   final String label;
   final String hint;
   final String validatorText;
-
-  @override
-  State<VisibleTextField> createState() => _VisibleTextFieldState();
-}
-
-class _VisibleTextFieldState extends State<VisibleTextField> {
+  final String inputRegex;
+  final double padding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      padding: EdgeInsets.symmetric(horizontal: padding),
       child: TextFormField(
-          controller: widget.controller,
-          decoration: InputDecoration(
-              labelText: widget.label,
-              hintText: widget.hint),
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.deny(RegExp(inputRegex)),
+          ],
+          controller: controller,
+          decoration:
+              InputDecoration(labelText: label, hintText: hint),
           validator: (val) {
             if (val == null || val.isEmpty) {
-              return widget.validatorText;
+              return validatorText;
             }
             return null;
           }),

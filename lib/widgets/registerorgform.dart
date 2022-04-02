@@ -143,6 +143,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                 label: 'Admin Email',
                 hint: 'Enter Organization Administrator\'s Email',
                 validatorText: 'Admin email is mandatory',
+                inputRegex: r"[A-Z]",
               ),
               ObscuredTextField(
                 controller: passCtrl,

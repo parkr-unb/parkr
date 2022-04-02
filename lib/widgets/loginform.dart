@@ -123,6 +123,7 @@ class _LoginFormState extends State<LoginForm> {
               Logo(keyboard: isKeyboardVisible),
               VisibleTextField(
                 controller: emailCtrl,
+                inputRegex: r"[A-Z]",
               ),
               ObscuredTextField(
                 controller: passCtrl,
