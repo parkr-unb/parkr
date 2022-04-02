@@ -23,11 +23,7 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
   }
 
   Future<Object?> eraseOfficer(Officer o) async {
-    // Delete user from cognito -- THIS DELETES CURRENT USER
-    //var res = await Amplify.Auth.deleteUser();
-
-    await Gateway().removeOfficer(o.id);
-    return "Success";
+    return await Gateway().removeOfficer(o.id) != null ? "Success" : null;
   }
 
   Future<void> removeOfficer(BuildContext ctx, Officer o) async {

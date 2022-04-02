@@ -101,7 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 if(passCtrl.text == confirmpassCtrl.text){
                   await loadingDialog(context,
                       changePass(),
-                      "Updating password",
+                      "Updating password...",
                       "Updated password",
                       "Failed to update password");
                 }
