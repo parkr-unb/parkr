@@ -96,93 +96,85 @@ class _GeofencingState extends State<GeofencingPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.location == null) {
-      return const UnavailableIcon(message: "Location Services are Unavailable");
-    }
-
-    final LocationData _locationData = widget.location as LocationData;
-    return Scaffold(
-        body:
-        Stack(
-            children: <Widget>[
-              GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(
-                      _locationData.latitude ?? 0.0,
-                      _locationData.longitude ?? 0.0),
-                  zoom: 16,
-                ),
-                mapType: MapType.hybrid,
-                polygons: _polygons,
-                myLocationEnabled: true,
-                onTap: (point) {
-                  if (_isPolygon) {
-                    setState(() {
-                      polygonLatLngs.add(point);
-                      setPolygon();
-                    });
-                  }
+    late Widget body;
+    if (widget.location != null) {
+      final LocationData _locationData = widget.location as LocationData;
+      body = Stack(children: <Widget>[
+        GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: LatLng(
+                _locationData.latitude ?? 0.0, _locationData.longitude ?? 0.0),
+            zoom: 16,
+          ),
+          mapType: MapType.hybrid,
+          polygons: _polygons,
+          myLocationEnabled: true,
+          onTap: (point) {
+            if (_isPolygon) {
+              setState(() {
+                polygonLatLngs.add(point);
+                setPolygon();
+              });
+            }
+          },
+        ),
+        Align(
+            alignment: Alignment.topLeft,
+            child: Row(children: <Widget>[
+              const SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                child: const Text('Back'),
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
               ),
-              Align(
-                  alignment: Alignment.topLeft,
-                  child: Row(
-                      children: <Widget>[
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                          child: const Text('Back'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ]
-                  )
+            ])),
+        Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(children: <Widget>[
+              const SizedBox(
+                width: 10,
               ),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                      children: <Widget>[
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                          child: _isPolygon ?
-                          const Text('Drawing ON') :
-                          const Text('Drawing OFF'),
-                          onPressed: () {
-                            setState(() {
-                              _isPolygon = !_isPolygon;
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                          child: const Text('Save'),
-                          onPressed: () {
-                            saveParkingLot(context);
-                          },
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                          child: const Text('Reset'),
-                          onPressed: () {
-                            setState(() {
-                              _polygons.clear();
-                              polygonLatLngs.clear();
-                            });
-                          },
-                        ),
-                      ]
-                  )
-              )
-            ]
-        )
-    );
+              ElevatedButton(
+                child: _isPolygon
+                    ? const Text('Drawing ON')
+                    : const Text('Drawing OFF'),
+                onPressed: () {
+                  setState(() {
+                    _isPolygon = !_isPolygon;
+                  });
+                },
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                child: const Text('Save'),
+                onPressed: () {
+                  saveParkingLot(context);
+                },
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                child: const Text('Reset'),
+                onPressed: () {
+                  setState(() {
+                    _polygons.clear();
+                    polygonLatLngs.clear();
+                  });
+                },
+              ),
+            ]))
+      ]);
+    } else {
+      body = const Center(
+          child: UnavailableIcon(message: "Location Services are Unavailable"));
+    }
+
+    return Scaffold(body: body);
   }
 }
