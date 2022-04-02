@@ -48,8 +48,6 @@ class Gateway {
   }
 
   Future<Tickets?> administerTicket(String license, String ticketType) async {
-    // TODO: accept org in a better way
-    // TODO: also send an email to parker
     final licenseOrg = license.trim().replaceAll("-", "") + "-" + CurrentUser().getOrg();
     try {
       final request = ModelQueries.get(Tickets.classType, licenseOrg);
@@ -340,11 +338,9 @@ class Gateway {
 
   Future<Object?> addParkingLot(List<GeoCoord> coords, String name) async {
     final ParkingLot lot = ParkingLot(name: name, coords: coords);
-    GraphQLRequest<Organization> request;
-    GraphQLResponse<Organization> response;
     try {
       Organization? organization = await getOrganization(CurrentUser().getOrg());
-      var newOrg;
+      Organization? newOrg;
       if (organization?.parkingLots == null) {
         final List<ParkingLot> lots = List.filled(1, lot, growable: true);
         newOrg = Organization(
@@ -358,20 +354,19 @@ class Gateway {
         organization?.parkingLots?.add(lot);
       }
       if (newOrg != null) {
-        request = ModelMutations.update(newOrg);
-        response = await Amplify.API.mutate(request: request).response;
-        return "Success";
+        final request = ModelMutations.update(newOrg);
+        final response = await Amplify.API.mutate(request: request).response;
+        return response.data != null ? "Success" : null;
       }
     } on ApiException catch (e) {
       if (kDebugMode) {
         print('Mutation failed: $e');
       }
     }
+    return null;
   }
 
   Future<Object?> removeParkingLots() async {
-    GraphQLRequest<Organization> request;
-    GraphQLResponse<Organization> response;
     try {
       Organization? replaced;
       Organization? organization = await getOrganization(CurrentUser().getOrg());
@@ -389,15 +384,16 @@ class Gateway {
         }
       }
       if (replaced != null) {
-        request = ModelMutations.update(replaced);
-        response = await Amplify.API.mutate(request: request).response;
-        return "Success";
+        final request = ModelMutations.update(replaced);
+        final response = await Amplify.API.mutate(request: request).response;
+        return response.data != null ? "Success" : null;
       }
     } on ApiException catch (e) {
       if (kDebugMode) {
         print('Mutation failed: $e');
       }
     }
+    return null;
   }
 
   Future<Organization?> getOrganization(String org) async {
@@ -429,8 +425,6 @@ class Gateway {
   }
 
   Future<Object?> inParkingLot(LocationData? curLocation, String org) async {
-    GraphQLRequest<Organization> request;
-    GraphQLResponse<Organization> response;
     try {
       Organization? organization = await getOrganization(CurrentUser().getOrg());
       if (organization?.parkingLots != null) {
