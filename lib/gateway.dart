@@ -344,7 +344,6 @@ class Gateway {
     GraphQLResponse<Organization> response;
     try {
       Organization? organization = await getOrganization(CurrentUser().getOrg());
-      print(organization?.id);
       var newOrg;
       if (organization?.parkingLots == null) {
         final List<ParkingLot> lots = List.filled(1, lot, growable: true);
@@ -377,7 +376,6 @@ class Gateway {
         print('Mutation failed: $e');
       }
     }
-    print("Returns void");
   }
 
   Future<Object?> removeParkingLots() async {
