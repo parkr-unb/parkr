@@ -100,8 +100,9 @@ class _PlatePageState extends State<PlatePage> {
     final parkingLot = arguments["loc"];
     final username = CurrentUser().getFirstName();
     _hasPass = registration.verified;
-    if (parkingLot == null) {
+    if (parkingLot == null && init == false) {
       _invalidLot = true;
+      init = true;
     }
     valid = (_hasPass && !_invalidLot && !_blocking && !_multiple && !_alt);
 
