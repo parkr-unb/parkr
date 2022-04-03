@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -121,7 +122,9 @@ Future<void> _setupAmplify() async {
   } on Exception catch (e) {
     print(
         "Tried to reconfigure Amplify; this can occur when your app restarts on Android:  $e");
-    rethrow;
+    if (!kDebugMode) {
+      rethrow;
+    }
   }
 }
 

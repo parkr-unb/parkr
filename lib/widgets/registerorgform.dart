@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:parkr/displayable_exception.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
@@ -26,16 +27,25 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   final _formKey = GlobalKey<FormState>();
 
   Future<Object?> registerAdmin(BuildContext context) async {
-    await registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text, admin: true, orgID: orgNameCtrl.text);
+    bool created = await loadingDialog(
+      context,
+      registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text, admin: true, orgID: orgNameCtrl.text),
+      "Signing up Admin",
+      null,
+      "Failed to create ${emailCtrl.text} as admin"
+    ) as bool? ?? false;
+    if(!created) {
+      throw DisplayableException("Failed to create Admin");
+    }
     // process login
     bool signedIn = false;
     try {
       signedIn = (await loadingDialog(
           context,
           signInUser(emailCtrl.text, passCtrl.text),
-          "Creating admin",
+          "Logging in",
           null,
-          "Failed to create admin: ${emailCtrl.text}") as bool?) ??
+          "Failed to Login to: ${emailCtrl.text}") as bool?) ??
           false;
     } on UserNotConfirmedException {
       String code = "";

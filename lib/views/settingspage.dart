@@ -73,8 +73,8 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const Spacer(),
             const Text('Change Profile Settings',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -104,6 +104,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       "Failed to update password");
                 }
               }),
+            const Spacer(flex: 2),
             ElevatedButton(
                 child: const Text('Add Parking Lot'),
                 onPressed: () {
@@ -114,6 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: () {
                   removeLots(context);
                 }),
+            const Spacer(),
           ],
         ),
       ),

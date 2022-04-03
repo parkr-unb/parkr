@@ -183,14 +183,7 @@ class _HomePageState extends State<HomePage> {
                               null) as Registration?;
 
                           var curLoc = await location.getLocation();
-
-                          final loc = await loadingDialog(
-                              context,
-                              Gateway()
-                                  .inParkingLot(curLoc, CurrentUser().getOrg()),
-                              "Checking location",
-                              "Parking lot found!",
-                              "Parking lot not found");
+                          final loc = await Gateway().inParkingLot(curLoc, CurrentUser().getOrg());
                           if (reg != null) {
                             Navigator.pushNamed(context, "plate",
                                 arguments: {"reg": reg, "loc": loc});
