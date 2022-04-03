@@ -7,6 +7,8 @@ import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/models/Tickets.dart';
 
+import '../widgets/visibletextfield.dart';
+
 class PlatePage extends StatefulWidget {
   static const String title = 'Examining plates';
 
@@ -71,6 +73,7 @@ class _PlatePageState extends State<PlatePage> {
   bool _alt = false;
   bool init = false;
   bool valid = false;
+  TextEditingController reasonCtrl = TextEditingController();
 
   String generateTicketType(String licensePlate) {
     var ticketString =
@@ -93,6 +96,37 @@ class _PlatePageState extends State<PlatePage> {
     return ticketString.substring(0, ticketString.length - 2);
   }
 
+  Future<Object?> getTicketReason(BuildContext context) async {
+    Object? res;
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: const Text('Additional Ticket Information'),
+              content: VisibleTextField(
+                label: "What is the reason for ticketing?",
+                hint: "Reason for ticketing",
+                validatorText: "You must enter a valid reason",
+                controller: reasonCtrl,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Save'),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ]);
+        });
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
@@ -107,6 +141,7 @@ class _PlatePageState extends State<PlatePage> {
     valid = (_hasPass && !_invalidLot && !_blocking && !_multiple && !_alt);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text(PlatePage.title),
       ),
@@ -188,6 +223,9 @@ class _PlatePageState extends State<PlatePage> {
                             onChanged: (bool? newValue) {
                               setState(() {
                                 _alt = newValue!;
+                                if (_alt == true) {
+                                  getTicketReason(context);
+                                }
                               });
                             },
                           ),
@@ -321,7 +359,6 @@ class _PlatePageState extends State<PlatePage> {
                           : () async {
                               Future<Tickets?> administerTicket() async {
                                 if (registration.email != 'N/A') {
-                                  //TODO: Make email body an actual email
                                   final emailResp = await Gateway().emailTicket(
                                       registration.email,
                                       generateTicketType(registration.plate));
