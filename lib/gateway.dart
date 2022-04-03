@@ -344,29 +344,44 @@ class Gateway {
     GraphQLResponse<Organization> response;
     try {
       Organization? organization = await getOrganization(CurrentUser().getOrg());
-      var newOrg;
-      if (organization?.parkingLots == null) {
-        final List<ParkingLot> lots = List.filled(1, lot, growable: true);
-        newOrg = Organization(
-          id: organization?.id,
-          domainAllow: organization?.domainAllow,
-          officers: organization?.officers,
-          parkingLots: lots
-        );
-      }
-      else {
-        organization?.parkingLots?.add(lot);
-      }
-      if (newOrg != null) {
-        request = ModelMutations.update(newOrg);
-        response = await Amplify.API.mutate(request: request).response;
+      if (organization != null) {
+        var newOrg;
+        if (organization?.parkingLots == null) {
+          final List<ParkingLot> lots = List.filled(1, lot, growable: true);
+          newOrg = Organization(
+              id: organization?.id,
+              domainAllow: organization?.domainAllow,
+              officers: organization?.officers,
+              parkingLots: lots
+          );
+          request = ModelMutations.update(newOrg);
+          response = await Amplify.API
+              .mutate(request: request)
+              .response;
+          print(response.data);
+          if (response.errors.isEmpty) {
+            return "Success";
+          }
+          print(response.errors);
+        }
+        else {
+          organization?.parkingLots?.add(lot);
+          request = ModelMutations.update(organization!);
+          response = await Amplify.API
+              .mutate(request: request)
+              .response;
+          if (response.errors.isEmpty) {
+            return "Success";
+          }
+          print(response.errors);
+        }
         return "Success";
       }
     } on ApiException catch (e) {
       if (kDebugMode) {
         print('Mutation failed: $e');
       }
-    }
+      }
   }
 
   Future<Object?> removeParkingLots() async {
@@ -391,7 +406,9 @@ class Gateway {
       if (replaced != null) {
         request = ModelMutations.update(replaced);
         response = await Amplify.API.mutate(request: request).response;
-        return "Success";
+        if (response.errors.isEmpty) {
+          return "Success";
+        }
       }
     } on ApiException catch (e) {
       if (kDebugMode) {

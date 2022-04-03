@@ -159,11 +159,5 @@ void main() async {
     print("Failed setup the application: $e");
   }
 
-  try {
-    await _checkLocationPermission();
-  } on Exception catch (e) {
-    print("Failed setup the application: $e");
-  }
-
   runApp(ParkrApp(camera: camera, locationData: locationData));
 }
