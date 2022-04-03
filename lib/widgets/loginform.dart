@@ -8,8 +8,7 @@ import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
-
-import '../models/Officer.dart';
+import 'package:parkr/models/Officer.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -123,6 +122,7 @@ class _LoginFormState extends State<LoginForm> {
               Logo(keyboard: isKeyboardVisible),
               VisibleTextField(
                 controller: emailCtrl,
+                inputRegex: r"[A-Z]",
               ),
               ObscuredTextField(
                 controller: passCtrl,
@@ -138,18 +138,7 @@ class _LoginFormState extends State<LoginForm> {
                   },
                   child: const Text('Login'),
                 ),
-              ),
-              if (kDebugMode)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, "home", (_) => false);
-                    },
-                    child: const Text('Debug Skip Login'),
-                  ),
-                ),
+              )
             ],
           )));
     });

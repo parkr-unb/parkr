@@ -188,4 +188,8 @@ class CurrentUser {
   String getOrg() {
     return _officer?.organization?.getId() ?? "";
   }
+
+  Organization? getOrgModel() {
+    return _officer?.organization;
+  }
 }

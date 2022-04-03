@@ -10,7 +10,6 @@ import 'package:parkr/user.dart';
 import 'package:maps_toolkit/maps_toolkit.dart';
 import 'package:location/location.dart';
 
-
 class Gateway {
   static final Gateway _instance = Gateway._privateConstructor();
 
@@ -48,9 +47,8 @@ class Gateway {
   }
 
   Future<Tickets?> administerTicket(String license, String ticketType) async {
-    // TODO: accept org in a better way
-    // TODO: also send an email to parker
-    final licenseOrg = license.trim().replaceAll("-", "") + "-" + CurrentUser().getOrg();
+    final licenseOrg =
+        license.trim().replaceAll("-", "") + "-" + CurrentUser().getOrg();
     try {
       final request = ModelQueries.get(Tickets.classType, licenseOrg);
       final response = await Amplify.API.query(request: request).response;
@@ -99,27 +97,28 @@ class Gateway {
     }
   }
 
-  Future<Officer?> _addOfficer(String userId, String name, String role, {String? orgID=null}) async {
+  Future<Officer?> _addOfficer(String userId, String name, String role,
+      {String? orgID = null}) async {
     try {
       Organization org;
-      if(orgID == null) {
+      if (orgID == null) {
         Officer currentOfficer = CurrentUser().officer;
         org = currentOfficer.organization!;
       } else {
         final request = ModelQueries.get(Organization.classType, orgID);
         final response = await Amplify.API.query(request: request).response;
-        if(response.data == null)
-        {
-          throw DisplayableException("Cannot find organization identifier: $orgID");
+        if (response.data == null) {
+          throw DisplayableException(
+              "Cannot find organization identifier: $orgID");
         }
         org = response.data!;
       }
       final officer = Officer(
-          id: userId,
-          role: role,
-          name: name,
-          organization: org,
-          confirmed: false,
+        id: userId,
+        role: role,
+        name: name,
+        organization: org,
+        confirmed: false,
       );
       final request = ModelMutations.create(officer);
       final response = await Amplify.API.mutate(request: request).response;
@@ -179,7 +178,6 @@ class Gateway {
       }
       rethrow;
     }
-
   }
 
   Future<Officer?> addOfficer(String userId, String fullName) async {
@@ -251,7 +249,7 @@ class Gateway {
     return null;
   }
 
-  Future<List<Officer?>?> listOfficers() async {
+  Future<List<Officer?>?> listOfficers(String orgName) async {
     try {
       final request = ModelQueries.list(Officer.classType);
       final response = await Amplify.API.query(request: request).response;
@@ -261,7 +259,9 @@ class Gateway {
         }
         return null;
       } else {
-        return response.data?.items;
+        return response.data?.items
+            .where((o) => o?.organization?.id == orgName)
+            .toList();
       }
     } on ApiException catch (e) {
       if (kDebugMode) {
@@ -312,7 +312,8 @@ class Gateway {
   }
 
   Future<ParkingPermits?> queryParkingPermits(String license) async {
-    final licenseOrg = license.trim().replaceAll("-", "") + "-" + CurrentUser().getOrg();
+    final licenseOrg =
+        license.trim().replaceAll("-", "") + "-" + CurrentUser().getOrg();
     if (kDebugMode) {
       print(licenseOrg);
     }
@@ -343,7 +344,8 @@ class Gateway {
     GraphQLRequest<Organization> request;
     GraphQLResponse<Organization> response;
     try {
-      Organization? organization = await getOrganization(CurrentUser().getOrg());
+      Organization? organization =
+          await getOrganization(CurrentUser().getOrg());
       if (organization != null) {
         var newOrg;
         if (organization.parkingLots == null) {
@@ -355,10 +357,7 @@ class Gateway {
               parkingLots: lots
           );
           request = ModelMutations.update(newOrg);
-          response = await Amplify.API
-              .mutate(request: request)
-              .response;
-          print(response.data);
+          response = await Amplify.API.mutate(request: request).response;
           if (response.errors.isEmpty) {
             return "Success";
           }
@@ -381,7 +380,8 @@ class Gateway {
       if (kDebugMode) {
         print('Mutation failed: $e');
       }
-      }
+    }
+    return null;
   }
 
   Future<Object?> removeParkingLots() async {
@@ -389,18 +389,17 @@ class Gateway {
     GraphQLResponse<Organization> response;
     try {
       Organization? replaced;
-      Organization? organization = await getOrganization(CurrentUser().getOrg());
+      Organization? organization =
+          await getOrganization(CurrentUser().getOrg());
       if (organization?.parkingLots == null) {
         return "Success";
-      }
-      else {
+      } else {
         if (organization?.parkingLots != null) {
           replaced = Organization(
-            id: organization?.id,
-            domainAllow: organization?.domainAllow,
-            officers: organization?.officers,
-            parkingLots: const <ParkingLot>[]
-          );
+              id: organization?.id,
+              domainAllow: organization?.domainAllow,
+              officers: organization?.officers,
+              parkingLots: const <ParkingLot>[]);
         }
       }
       if (replaced != null) {
@@ -410,11 +409,17 @@ class Gateway {
           return "Success";
         }
       }
+      if (replaced != null) {
+        final request = ModelMutations.update(replaced);
+        final response = await Amplify.API.mutate(request: request).response;
+        return response.data != null ? "Success" : null;
+      }
     } on ApiException catch (e) {
       if (kDebugMode) {
         print('Mutation failed: $e');
       }
     }
+    return null;
   }
 
   Future<Organization?> getOrganization(String org) async {
@@ -439,23 +444,26 @@ class Gateway {
 
   List<LatLng> convertGeoCoordLatLng(List<GeoCoord>? coords) {
     List<LatLng> polygon = <LatLng>[];
-    for (int i=0; i<(coords?.length ?? 0); i++) {
-      polygon.add(LatLng(coords?.elementAt(i).latitude ?? 0.0, coords?.elementAt(i).longitude ?? 0.0));
+    for (int i = 0; i < (coords?.length ?? 0); i++) {
+      polygon.add(LatLng(coords?.elementAt(i).latitude ?? 0.0,
+          coords?.elementAt(i).longitude ?? 0.0));
     }
     return polygon;
   }
 
   Future<Object?> inParkingLot(LocationData? curLocation, String org) async {
-    GraphQLRequest<Organization> request;
-    GraphQLResponse<Organization> response;
     try {
-      Organization? organization = await getOrganization(CurrentUser().getOrg());
+      Organization? organization =
+          await getOrganization(CurrentUser().getOrg());
       if (organization?.parkingLots != null) {
-        for(int i=0; i<(organization?.parkingLots?.length ?? 0); i++) {
-          if (PolygonUtil.containsLocation(LatLng(curLocation?.latitude ?? 0.0,
-              curLocation?.longitude ?? 0.0), convertGeoCoordLatLng(
-              organization?.parkingLots?.elementAt(i).coords), false)) {
-            return organization?.parkingLots?.elementAt(i)?.name;
+        for (int i = 0; i < (organization?.parkingLots?.length ?? 0); i++) {
+          if (PolygonUtil.containsLocation(
+              LatLng(
+                  curLocation?.latitude ?? 0.0, curLocation?.longitude ?? 0.0),
+              convertGeoCoordLatLng(
+                  organization?.parkingLots?.elementAt(i).coords),
+              false)) {
+            return organization?.parkingLots?.elementAt(i).name;
           }
         }
       }

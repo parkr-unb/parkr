@@ -1,13 +1,11 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
 
-import '../displayable_exception.dart';
-import '../gateway.dart';
-import '../widgets/obscuredtextfield.dart';
+import 'package:parkr/displayable_exception.dart';
+import 'package:parkr/gateway.dart';
+import 'package:parkr/widgets/obscuredtextfield.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -101,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 if(passCtrl.text == confirmpassCtrl.text){
                   await loadingDialog(context,
                       changePass(),
-                      "Updating password",
+                      "Updating password...",
                       "Updated password",
                       "Failed to update password");
                 }
