@@ -16,7 +16,8 @@ class ManageOfficersPage extends StatefulWidget {
 class _ManageOfficersPageState extends State<ManageOfficersPage> {
   Future<List<Officer>> _fetchOfficers() async {
     final currentUserId = (await CurrentUser().get()).userId;
-    return (await Gateway().listOfficers() ?? [])
+    final currentUserOrg = CurrentUser().getOrg();
+    return (await Gateway().listOfficers(currentUserOrg) ?? [])
         .where((officer) => officer != null && officer.id != currentUserId)
         .map((officer) => (officer as Officer))
         .toList();
