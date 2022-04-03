@@ -347,23 +347,28 @@ class Gateway {
       Organization? organization =
           await getOrganization(CurrentUser().getOrg());
       if (organization != null) {
+        var newOrg;
         if (organization.parkingLots == null) {
           final List<ParkingLot> lots = List.filled(1, lot, growable: true);
-          final newOrg = Organization(
+          newOrg = Organization(
               id: organization.id,
               domainAllow: organization.domainAllow,
               officers: organization.officers,
-              parkingLots: lots);
+              parkingLots: lots
+          );
           request = ModelMutations.update(newOrg);
           response = await Amplify.API.mutate(request: request).response;
           if (response.errors.isEmpty) {
             return "Success";
           }
           print(response.errors);
-        } else {
+        }
+        else {
           organization.parkingLots?.add(lot);
           request = ModelMutations.update(organization);
-          response = await Amplify.API.mutate(request: request).response;
+          response = await Amplify.API
+              .mutate(request: request)
+              .response;
           if (response.errors.isEmpty) {
             return "Success";
           }

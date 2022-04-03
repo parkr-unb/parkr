@@ -100,8 +100,9 @@ class _PlatePageState extends State<PlatePage> {
     final parkingLot = arguments["loc"];
     final username = CurrentUser().getFirstName();
     _hasPass = registration.verified;
-    if (parkingLot == null) {
+    if (parkingLot == null && init == false) {
       _invalidLot = true;
+      init = true;
     }
     valid = (_hasPass && !_invalidLot && !_blocking && !_multiple && !_alt);
 
@@ -238,12 +239,12 @@ class _PlatePageState extends State<PlatePage> {
                 child: SizedBox(
                     height: 10,
                     child: valid
-                        ? const Text('Valid',
+                        ? const Text('',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,
                                 fontSize: 45))
-                        : const Text('Invalid',
+                        : const Text('',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.red,
