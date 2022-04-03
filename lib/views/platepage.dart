@@ -237,12 +237,12 @@ class _PlatePageState extends State<PlatePage> {
                 child: SizedBox(
                     height: 10,
                     child: valid
-                        ? const Text('Valid',
+                        ? const Text('',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,
                                 fontSize: 45))
-                        : const Text('Invalid',
+                        : const Text('',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.red,
