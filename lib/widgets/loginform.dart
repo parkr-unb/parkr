@@ -138,18 +138,7 @@ class _LoginFormState extends State<LoginForm> {
                   },
                   child: const Text('Login'),
                 ),
-              ),
-              if (kDebugMode)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, "home", (_) => false);
-                    },
-                    child: const Text('Debug Skip Login'),
-                  ),
-                ),
+              )
             ],
           )));
     });
