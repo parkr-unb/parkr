@@ -1,5 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/displayable_exception.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/user.dart';
@@ -329,10 +330,12 @@ class _PlatePageState extends State<PlatePage> {
                                         "Failure submitting ticket: ${emailResp.error}");
                                     return null;
                                   }
-                                }
                                 return await Gateway().administerTicket(
                                     registration.plate,
                                     generateTicketType(registration.plate));
+                                } else {
+                                    throw DisplayableException("Registration does not exist: Administer paper ticket");
+                                }
                               }
 
                               Tickets? tickets = await loadingDialog(
@@ -342,7 +345,7 @@ class _PlatePageState extends State<PlatePage> {
                                   "Success",
                                   "Failed to administer ticket") as Tickets?;
                               Navigator.pop(context);
-                            }),
+                    }),
                   ElevatedButton(
                       child: const Text('Back'),
                       onPressed: () {
