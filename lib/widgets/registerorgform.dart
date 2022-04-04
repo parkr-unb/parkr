@@ -33,7 +33,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
       "Signing up Admin",
       null,
       "Failed to create ${emailCtrl.text} as admin"
-    ) as bool? ?? false;
+    ) != null;
     if(!created) {
       throw DisplayableException("Failed to create Admin");
     }

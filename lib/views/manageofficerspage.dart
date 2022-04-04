@@ -33,7 +33,7 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
         builder: (BuildContext context) {
           return AlertDialog(
               title: const Text('Remove Officer'),
-              content: Text("Are you sure you want to remove ${o.name}?"),
+              content: Text("Are you sure you want to remove ${o.name.split(',').join(', ')}?"),
               actions: [
                 TextButton(
                   child: const Text('Cancel'),
@@ -128,7 +128,7 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                                         color: Colors.white,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
-                                    text: officer.name + ":  " + officer.role)),
+                                    text: officer.name.split(',').join(', ') + ":  " + officer.role)),
                             const Spacer(flex: 1),
                             IconButton(
                                 color: Colors.white,

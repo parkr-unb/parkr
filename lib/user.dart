@@ -155,7 +155,7 @@ class CurrentUser {
   }
 
   String getFullName() {
-    return _name ?? "Biletskiy,Yevgen";
+    return _name ?? "-,-";
   }
 
   String getFirstName() {

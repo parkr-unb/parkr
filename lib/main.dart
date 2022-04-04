@@ -10,6 +10,7 @@ import 'package:location/location.dart';
 
 import 'package:parkr/amplifyconfiguration.dart';
 import 'package:parkr/gateway.dart';
+import 'package:parkr/user.dart';
 import 'package:parkr/views/geofencingpage.dart';
 import 'package:parkr/views/homepage.dart';
 import 'package:parkr/views/welcomepage.dart';
@@ -45,7 +46,7 @@ class _ParkrAppState extends State<ParkrApp> {
     try {
       final session = await Amplify.Auth.fetchAuthSession()
           .timeout(const Duration(seconds: 5));
-      if (session.isSignedIn) {
+      if (session.isSignedIn && CurrentUser().getFullName() != "-,-") {
         startPage = HomePage(camera: widget.camera);
       }
     } on TimeoutException {
