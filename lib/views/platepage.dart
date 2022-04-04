@@ -1,10 +1,13 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:parkr/displayable_exception.dart';
 import 'package:parkr/gateway.dart';
 import 'package:parkr/registration.dart';
 import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/models/Tickets.dart';
+
+import '../widgets/visibletextfield.dart';
 
 class PlatePage extends StatefulWidget {
   static const String title = 'Examining plates';
@@ -70,6 +73,7 @@ class _PlatePageState extends State<PlatePage> {
   bool _alt = false;
   bool init = false;
   bool valid = false;
+  TextEditingController reasonCtrl = TextEditingController();
 
   String generateTicketType(String licensePlate) {
     var ticketString =
@@ -92,15 +96,52 @@ class _PlatePageState extends State<PlatePage> {
     return ticketString.substring(0, ticketString.length - 2);
   }
 
+  Future<Object?> getTicketReason(BuildContext context) async {
+    Object? res;
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: const Text('Additional Ticket Information'),
+              content: VisibleTextField(
+                label: "What is the reason for ticketing?",
+                hint: "Reason for ticketing",
+                validatorText: "You must enter a valid reason",
+                controller: reasonCtrl,
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Save'),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ]);
+        });
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments as Map);
     final registration = arguments["reg"] as Registration;
+    final parkingLot = arguments["loc"];
     final username = CurrentUser().getFirstName();
     _hasPass = registration.verified;
+    if (parkingLot == null && init == false) {
+      _invalidLot = true;
+      init = true;
+    }
     valid = (_hasPass && !_invalidLot && !_blocking && !_multiple && !_alt);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text(PlatePage.title),
       ),
@@ -182,6 +223,9 @@ class _PlatePageState extends State<PlatePage> {
                             onChanged: (bool? newValue) {
                               setState(() {
                                 _alt = newValue!;
+                                if (_alt == true) {
+                                  getTicketReason(context);
+                                }
                               });
                             },
                           ),
@@ -211,8 +255,8 @@ class _PlatePageState extends State<PlatePage> {
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 50),
                           const Text('Infraction Location'),
-                          const Text('Head Hall Lot 4',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(parkingLot ?? 'N/A',
+                              style: const TextStyle(fontWeight: FontWeight.bold)),
                           const Text('')
                         ],
                       )
@@ -233,12 +277,12 @@ class _PlatePageState extends State<PlatePage> {
                 child: SizedBox(
                     height: 10,
                     child: valid
-                        ? const Text('Valid',
+                        ? const Text('',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,
                                 fontSize: 45))
-                        : const Text('Invalid',
+                        : const Text('',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.red,
@@ -315,7 +359,6 @@ class _PlatePageState extends State<PlatePage> {
                           : () async {
                               Future<Tickets?> administerTicket() async {
                                 if (registration.email != 'N/A') {
-                                  //TODO: Make email body an actual email
                                   final emailResp = await Gateway().emailTicket(
                                       registration.email,
                                       generateTicketType(registration.plate));
@@ -325,10 +368,12 @@ class _PlatePageState extends State<PlatePage> {
                                         "Failure submitting ticket: ${emailResp.error}");
                                     return null;
                                   }
-                                }
                                 return await Gateway().administerTicket(
                                     registration.plate,
                                     generateTicketType(registration.plate));
+                                } else {
+                                    throw DisplayableException("Registration does not exist: Administer paper ticket");
+                                }
                               }
 
                               Tickets? tickets = await loadingDialog(
@@ -338,7 +383,7 @@ class _PlatePageState extends State<PlatePage> {
                                   "Success",
                                   "Failed to administer ticket") as Tickets?;
                               Navigator.pop(context);
-                            }),
+                    }),
                   ElevatedButton(
                       child: const Text('Back'),
                       onPressed: () {

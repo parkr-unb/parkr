@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:parkr/displayable_exception.dart';
 import 'package:parkr/widgets/visibletextfield.dart';
 import 'package:parkr/widgets/logo.dart';
 import 'package:parkr/widgets/obscuredtextfield.dart';
@@ -26,13 +27,26 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
   final _formKey = GlobalKey<FormState>();
 
   Future<Object?> registerAdmin(BuildContext context) async {
-    await registerOfficer(
-        emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text);
-
+    bool created = await loadingDialog(
+      context,
+      registerOfficer(emailCtrl.text, firstNameCtrl.text, lastNameCtrl.text, passCtrl.text, admin: true, orgID: orgNameCtrl.text),
+      "Signing up Admin",
+      null,
+      "Failed to create ${emailCtrl.text} as admin"
+    ) as bool? ?? false;
+    if(!created) {
+      throw DisplayableException("Failed to create Admin");
+    }
     // process login
     bool signedIn = false;
     try {
-      signedIn = await signInUser(emailCtrl.text, passCtrl.text);
+      signedIn = (await loadingDialog(
+          context,
+          signInUser(emailCtrl.text, passCtrl.text),
+          "Logging in",
+          null,
+          "Failed to Login to: ${emailCtrl.text}") as bool?) ??
+          false;
     } on UserNotConfirmedException {
       String code = "";
       await showDialog(
@@ -45,6 +59,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                     child: Column(children: [
                       const Text('Enter your confirmation code'),
                       TextField(
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 25),
                         onChanged: (value) {
                           code = value.trim();
@@ -61,12 +76,24 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   TextButton(
                     child: const Text('Confirm'),
                     onPressed: () async {
-                      final res = await confirmUser(emailCtrl.text, code);
-                      if (res.isSignUpComplete) {
-                        signedIn =
-                            await signInUser(emailCtrl.text, passCtrl.text);
+                      final res = await loadingDialog(
+                            context,
+                            confirmUser(emailCtrl.text, code),
+                            "Confirming User...",
+                            null,
+                            "Failed to confirm user") as SignUpResult?;
+                      if (res == null) {
+                        signedIn = false;
+                      } else if (res.isSignUpComplete) {
+                        signedIn = await loadingDialog(
+                            context,
+                            signInUser(emailCtrl.text, passCtrl.text),
+                            "Signing In...",
+                            null,
+                            "Parkr experienced an error signing you in. Please try again.")
+                        as bool? ?? false;
+                        Navigator.of(context).pop();
                       }
-                      Navigator.of(context).pop();
                     },
                   ),
                 ]);
@@ -75,8 +102,8 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
     if (!signedIn) {
       return null;
     }
-    final user = await CurrentUser().get();
-    await Gateway().addAdmin(user.userId);
+    await Gateway().confirmOfficer();
+
     return "Success";
   }
 
@@ -126,6 +153,7 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                 label: 'Admin Email',
                 hint: 'Enter Organization Administrator\'s Email',
                 validatorText: 'Admin email is mandatory',
+                inputRegex: r"[A-Z]",
               ),
               ObscuredTextField(
                 controller: passCtrl,
@@ -139,23 +167,20 @@ class _RegisterOrgFormState extends State<RegisterOrgForm> {
                   onPressed: () async {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
+
                       if (await loadingDialog(
-                              context,
-                              registerAdmin(context),
-                              "Registering Admin...",
-                              null,
-                              "Failed to register organization manager") ==
+                          context,
+                          registerOrg(context),
+                          "Registering Organization...",
+                          "Your organization is registered",
+                          "Failed to register organization") ==
                           null) {
                         return;
                       }
 
-                      if (await loadingDialog(
-                              context,
-                              registerOrg(context),
-                              "Registering Organization...",
-                              "Your organization is registered",
-                              "Failed to register organization") ==
-                          null) {
+                      var success = await registerAdmin(context);
+                      if(success == null)
+                      {
                         return;
                       }
 

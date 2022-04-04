@@ -4,6 +4,7 @@ import 'package:parkr/widgets/registerofficerdialog.dart';
 import 'package:parkr/models/Officer.dart';
 import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
+import 'package:parkr/widgets/unavailableicon.dart';
 
 class ManageOfficersPage extends StatefulWidget {
   const ManageOfficersPage({Key? key}) : super(key: key);
@@ -15,10 +16,15 @@ class ManageOfficersPage extends StatefulWidget {
 class _ManageOfficersPageState extends State<ManageOfficersPage> {
   Future<List<Officer>> _fetchOfficers() async {
     final currentUserId = (await CurrentUser().get()).userId;
-    return (await Gateway().listOfficers() ?? [])
+    final currentUserOrg = CurrentUser().getOrg();
+    return (await Gateway().listOfficers(currentUserOrg) ?? [])
         .where((officer) => officer != null && officer.id != currentUserId)
         .map((officer) => (officer as Officer))
         .toList();
+  }
+
+  Future<Object?> eraseOfficer(Officer o) async {
+    return await Gateway().removeOfficer(o.id) != null ? "Success" : null;
   }
 
   Future<void> removeOfficer(BuildContext ctx, Officer o) async {
@@ -38,13 +44,14 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 TextButton(
                   child: const Text('Remove'),
                   onPressed: () async {
-                    Navigator.of(context).pop();
                     await loadingDialog(
                         context,
-                        Gateway().removeOfficer(o.id),
+                        eraseOfficer(o),
                         "Removing ${o.name}...",
                         "Success",
                         "Failed to remove ${o.name}");
+                    Navigator.of(context).pop();
+                    setState(() {});
                   },
                 ),
               ]);
@@ -67,14 +74,31 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                     AsyncSnapshot<List<Officer>> snapshot) {
                   if (snapshot.hasError) {
                     print(snapshot.error);
-                    return const Text(
-                        "An Error Occurred Fetching Your Officers");
+                    return const UnavailableIcon(
+                        message: "An Error Occurred Fetching Your Officers",
+                        iconData: Icons.error);
                   }
+
+                  if (!snapshot.hasData) {
+                    return const UnavailableIcon(
+                        message: "Retrieving officers...",
+                        iconData: Icons.get_app);
+                  }
+
                   final officers =
                       snapshot.hasData ? snapshot.data as List<Officer> : [];
 
                   if (officers.isEmpty) {
-                    return const Expanded(child: Text("No Officers"));
+                    return Expanded(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                          Text("No Officers",
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold))
+                        ]));
                   }
 
                   return Expanded(
@@ -84,10 +108,17 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                     padding: const EdgeInsets.all(8),
                     itemCount: officers.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final officer = officers[index];
+                      final officer = officers[index] as Officer;
                       return Container(
+                          decoration: BoxDecoration(
+                              color: ((officer.confirmed == null ||
+                                      officer.confirmed!)
+                                  ? const Color.fromRGBO(207, 62, 63, 1)
+                                  : Colors.black54),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15))),
                           height: 50,
-                          color: Colors.black54,
+                          //color: const Color.fromRGBO(207, 62, 63, 1),
                           child: Center(
                               child: Row(children: [
                             const Spacer(flex: 2),
@@ -113,15 +144,18 @@ class _ManageOfficersPageState extends State<ManageOfficersPage> {
                 },
               ),
               const Divider(thickness: 3),
-              ElevatedButton(
-                  child: const Text('New Officer'),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const RegisterOfficerDialog();
-                        });
-                  }),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  child: ElevatedButton(
+                      child: const Text('New Officer'),
+                      onPressed: () async {
+                        await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const RegisterOfficerDialog();
+                            });
+                        setState(() {});
+                      })),
             ])));
   } // build
 

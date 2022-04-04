@@ -6,8 +6,12 @@ import 'package:parkr/gateway.dart';
 import 'package:parkr/models/ModelProvider.dart';
 import 'package:parkr/models/Officer.dart';
 
-Future<void> registerOfficer(
-    String email, String firstName, String lastName, String password) async {
+String buildTempUserID(String email) {
+  return email + "-UNCONFIRMED";
+}
+
+Future<Object?> registerOfficer(
+    String email, String firstName, String lastName, String password, {bool admin=false, String? orgID}) async {
   // basic email validation before sending cognito request
   final emailTrimmed = email.trim();
   final splitEmail = emailTrimmed.split("@");
@@ -26,8 +30,20 @@ Future<void> registerOfficer(
         username: emailTrimmed,
         password: password.trim(),
         options: CognitoSignUpOptions(userAttributes: userAttributes));
+
     if (!result.isSignUpComplete) {
       throw DisplayableException("Register Operation did not complete");
+    }
+    final id = buildTempUserID(email);
+    if(admin) {
+      if (orgID == null) {
+        if (kDebugMode) {
+          print("ORG MUST BE SPECIFIED WHEN CREATING ADMIN");
+        }
+      }
+      Gateway().addAdmin(id, fullName, orgID!);
+    } else {
+      Gateway().addOfficer(id, fullName);
     }
   } on InvalidPasswordException {
     throw DisplayableException("Password must be at least 8 characters");
@@ -43,17 +59,28 @@ Future<void> registerOfficer(
     final presentableMsg = msgParts.sublist(ignoreIdx).join(':').trim();
     throw DisplayableException(presentableMsg);
   }
+  return "Success";
 }
 
-Future<bool> signInUser(String email, String password) async {
+Future<bool?> signInUser(String email, String password) async {
   try {
-    await Amplify.Auth.signOut();
+    await CurrentUser().logout();
+
     SignInResult result = await Amplify.Auth.signIn(
       username: email.trim(),
       password: password.trim(),
     );
     if (result.isSignedIn) {
       await CurrentUser().get();
+      if(CurrentUser().officer == null) {
+        var ex = DisplayableException("${CurrentUser().getFirstName()} ${CurrentUser().getLastName()} has been removed");
+        await CurrentUser().logout();
+        throw ex;
+      }
+      final o = CurrentUser().officer as Officer;
+      if(!o.confirmed!) {
+        Gateway().confirmOfficer();
+      }
       return true;
     }
   } on UserNotFoundException {
@@ -64,17 +91,23 @@ Future<bool> signInUser(String email, String password) async {
     print(e.message);
   }
 
-  return false;
+  return null;
 }
 
 Future<SignUpResult> confirmUser(String email, String confirmCode) async {
-  return await Amplify.Auth.confirmSignUp(
-      username: email.trim(), confirmationCode: confirmCode.trim());
+  try {
+    return await Amplify.Auth.confirmSignUp(
+        username: email.trim(), confirmationCode: confirmCode.trim());
+  } on CodeMismatchException catch(e) {
+    throw DisplayableException("Incorrect Code");
+  } on InvalidParameterException catch(e) {
+    throw DisplayableException("Incorrect Code");
+  }
 }
 
 class CurrentUser {
-  static CurrentUser _instance = CurrentUser._privateConstructor();
-  static AuthUser? _user;
+  static final CurrentUser _instance = CurrentUser._privateConstructor();
+  AuthUser? _user;
   String? _name;
   Officer? _officer;
   bool _admin = false;
@@ -85,13 +118,22 @@ class CurrentUser {
     return _instance;
   }
 
-  void clear() {
-    _instance = CurrentUser._privateConstructor();
+  Future<void> logout() async {
+    await Amplify.Auth.signOut();
+    _user = null;
+    _name = null;
+    _officer = null;
+    _admin = false;
   }
 
   Future<void> update({String? userId}) async {
     userId ??= (await get()).userId;
     _officer ??= await Gateway().getOfficerByID(userId);
+    if(_officer == null && _user != null)
+    {
+      _officer ??= await Gateway().getOfficerByID(buildTempUserID(_user!.username));
+    }
+
     if (_officer != null) {
       admin = _officer?.role == "admin";
     }
@@ -99,14 +141,7 @@ class CurrentUser {
     var res = await Amplify.Auth.fetchUserAttributes();
     for (var element in res) {
       if (element.userAttributeKey.key == "name") {
-        var rawName = element.value;
-        var commaIdx = rawName.indexOf(',');
-        var firstName = rawName.substring(commaIdx + 1);
-        var lastName = "";
-        if (commaIdx != -1) {
-          lastName = rawName.substring(0, commaIdx);
-        }
-        _name = firstName + " " + lastName;
+        _name = element.value;
       }
     }
   }
@@ -142,6 +177,9 @@ class CurrentUser {
   set admin(bool auth) {
     _admin = auth;
   }
+  get officer {
+    return _officer;
+  }
 
   bool isAdmin() {
     return _admin;
@@ -149,5 +187,9 @@ class CurrentUser {
 
   String getOrg() {
     return _officer?.organization?.getId() ?? "";
+  }
+
+  Organization? getOrgModel() {
+    return _officer?.organization;
   }
 }

@@ -38,6 +38,18 @@ type Officer @model {
     role: String!
     name: String!
     organization: Organization @belongsTo
+    confirmed: Boolean
+}
+
+
+type ParkingLot {
+    name: String!
+    coords: [GeoCoord!]!
+}
+
+type GeoCoord {
+    latitude: Float!
+    longitude: Float!
 }
 
 type Organization @model {
@@ -45,6 +57,7 @@ type Organization @model {
     id: ID!
     domainAllow: [String!]
     officers: [Officer!] @hasMany
+    parkingLots: [ParkingLot!]
 }
 
 type AppKeys @model {
