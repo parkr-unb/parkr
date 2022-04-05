@@ -40,24 +40,7 @@ class _ParkrAppState extends State<ParkrApp> {
     if (widget.startupException != null) {
       throw widget.startupException as DisplayableException;
     }
-
-    // navigate straight to home page if already signed in
-    Widget startPage = const WelcomePage();
-    try {
-      final session = await Amplify.Auth.fetchAuthSession()
-          .timeout(const Duration(seconds: 5));
-      if (session.isSignedIn && CurrentUser().getFullName() != "-,-") {
-        startPage = HomePage(camera: widget.camera);
-      }
-    } on TimeoutException {
-      // just continue, and let the user sign in, as usual
-      print('Poor network quality. Fetching user session timed out');
-    } on Exception catch (e) {
-      // just continue, and let the user sign in, as usual
-      print(e);
-    }
-
-    return startPage;
+    return const WelcomePage();
   }
 
   @override
