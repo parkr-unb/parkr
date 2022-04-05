@@ -95,7 +95,7 @@ class _PlatePageState extends State<PlatePage> {
     }
     var ticketType = ticketString.substring(0, ticketString.length - 2);
     if(lotLocation != "N/A") {
-      ticketType += "\n\nThese infractions occurred in the '$lotLocation' lot.";
+      ticketType += "\nThese infractions occurred in the '$lotLocation' lot.";
     }
     return ticketType;
   }
