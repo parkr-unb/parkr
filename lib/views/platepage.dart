@@ -6,8 +6,7 @@ import 'package:parkr/registration.dart';
 import 'package:parkr/user.dart';
 import 'package:parkr/widgets/loadingdialog.dart';
 import 'package:parkr/models/Tickets.dart';
-
-import '../widgets/visibletextfield.dart';
+import 'package:parkr/widgets/visibletextfield.dart';
 
 class PlatePage extends StatefulWidget {
   static const String title = 'Examining plates';
@@ -91,7 +90,8 @@ class _PlatePageState extends State<PlatePage> {
       ticketString += 'Occupying multiple spots, ';
     }
     if (_alt) {
-      ticketString += 'Other (contact administration), ';
+      ticketString +=
+          'Other (${reasonCtrl.text.isEmpty ? "Contact Administrator" : reasonCtrl.text}), ';
     }
     return ticketString.substring(0, ticketString.length - 2);
   }
@@ -256,7 +256,8 @@ class _PlatePageState extends State<PlatePage> {
                           const SizedBox(height: 50),
                           const Text('Infraction Location'),
                           Text(parkingLot ?? 'N/A',
-                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           const Text('')
                         ],
                       )
@@ -368,11 +369,12 @@ class _PlatePageState extends State<PlatePage> {
                                         "Failure submitting ticket: ${emailResp.error}");
                                     return null;
                                   }
-                                return await Gateway().administerTicket(
-                                    registration.plate,
-                                    generateTicketType(registration.plate));
+                                  return await Gateway().administerTicket(
+                                      registration.plate,
+                                      generateTicketType(registration.plate));
                                 } else {
-                                    throw DisplayableException("Registration does not exist: Administer paper ticket");
+                                  throw DisplayableException(
+                                      "Registration does not exist: Administer paper ticket");
                                 }
                               }
 
@@ -383,7 +385,7 @@ class _PlatePageState extends State<PlatePage> {
                                   "Success",
                                   "Failed to administer ticket") as Tickets?;
                               Navigator.pop(context);
-                    }),
+                            }),
                   ElevatedButton(
                       child: const Text('Back'),
                       onPressed: () {
