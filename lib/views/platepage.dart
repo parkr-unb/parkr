@@ -74,7 +74,7 @@ class _PlatePageState extends State<PlatePage> {
   bool valid = false;
   TextEditingController reasonCtrl = TextEditingController();
 
-  String generateTicketType(String licensePlate) {
+  String generateTicketType(String licensePlate, String lotLocation) {
     var ticketString =
         'The vehicle with license plate $licensePlate was ticketed for the following infractions: ';
     if (!_hasPass) {
@@ -93,7 +93,11 @@ class _PlatePageState extends State<PlatePage> {
       ticketString +=
           'Other (${reasonCtrl.text.isEmpty ? "Contact Administrator" : reasonCtrl.text}), ';
     }
-    return ticketString.substring(0, ticketString.length - 2);
+    var ticketType = ticketString.substring(0, ticketString.length - 2);
+    if(lotLocation != "N/A") {
+      ticketType += "\n\nThese infractions occurred in the '$lotLocation' lot.";
+    }
+    return ticketType;
   }
 
   Future<Object?> getTicketReason(BuildContext context) async {
@@ -362,7 +366,7 @@ class _PlatePageState extends State<PlatePage> {
                                 if (registration.email != 'N/A') {
                                   final emailResp = await Gateway().emailTicket(
                                       registration.email,
-                                      generateTicketType(registration.plate));
+                                      generateTicketType(registration.plate, parkingLot));
                                   if (emailResp != null &&
                                       emailResp.error != null) {
                                     print(
@@ -371,7 +375,7 @@ class _PlatePageState extends State<PlatePage> {
                                   }
                                   return await Gateway().administerTicket(
                                       registration.plate,
-                                      generateTicketType(registration.plate));
+                                      generateTicketType(registration.plate, parkingLot));
                                 } else {
                                   throw DisplayableException(
                                       "Registration does not exist: Administer paper ticket");
