@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -175,15 +174,22 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _enableExamination == false
                       ? null
                       : () async {
+                          FocusScope.of(context).unfocus();
+                          Object? loc;
                           final reg = await loadingDialog(
                               context,
-                              isValid(plateCtrl.text),
+                              () async {
+
+                                final valid = await isValid(plateCtrl.text);
+                                final curLoc = await location.getLocation();
+                                loc = await Gateway().inParkingLot(curLoc, CurrentUser().getOrg());
+
+                                return valid;
+                              }(),
                               "Examining registration...",
                               null,
                               null) as Registration?;
 
-                          var curLoc = await location.getLocation();
-                          final loc = await Gateway().inParkingLot(curLoc, CurrentUser().getOrg());
                           if (reg != null) {
                             Navigator.pushNamed(context, "plate",
                                 arguments: {"reg": reg, "loc": loc});
@@ -201,6 +207,7 @@ class _HomePageState extends State<HomePage> {
                                         TextButton(
                                           child: const Text('OK'),
                                           onPressed: () {
+                                            FocusScope.of(context).unfocus();
                                             Navigator.of(context).pop();
                                           },
                                         ),
@@ -219,6 +226,7 @@ class _HomePageState extends State<HomePage> {
                             child: const Text('Officers',
                                 style: TextStyle(fontSize: 20.0)),
                             onPressed: () {
+                              FocusScope.of(context).unfocus();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -231,6 +239,7 @@ class _HomePageState extends State<HomePage> {
                           child: const Text('Logout',
                               style: TextStyle(fontSize: 20.0)),
                           onPressed: () {
+                            FocusScope.of(context).unfocus();
                             CurrentUser().logout();
 
                             // completely wipe navigation stack and replace with welcome
@@ -242,6 +251,7 @@ class _HomePageState extends State<HomePage> {
                           child: const Text('Settings',
                               style: TextStyle(fontSize: 20.0)),
                           onPressed: () {
+                            FocusScope.of(context).unfocus();
                             Navigator.push(
                               context,
                               MaterialPageRoute(
