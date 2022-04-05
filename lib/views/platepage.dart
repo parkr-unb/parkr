@@ -74,7 +74,7 @@ class _PlatePageState extends State<PlatePage> {
   bool valid = false;
   TextEditingController reasonCtrl = TextEditingController();
 
-  String generateTicketType(String licensePlate, String lotLocation) {
+  String generateTicketType(String licensePlate, String? lotLocation) {
     var ticketString =
         'The vehicle with license plate $licensePlate was ticketed for the following infractions: ';
     if (!_hasPass) {
@@ -94,7 +94,7 @@ class _PlatePageState extends State<PlatePage> {
           'Other (${reasonCtrl.text.isEmpty ? "Contact Administrator" : reasonCtrl.text}), ';
     }
     var ticketType = ticketString.substring(0, ticketString.length - 2);
-    if(lotLocation != "N/A") {
+    if(lotLocation != null) {
       ticketType += "\nThese infractions occurred in the '$lotLocation' lot.";
     }
     return ticketType;
