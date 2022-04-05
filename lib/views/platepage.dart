@@ -91,7 +91,7 @@ class _PlatePageState extends State<PlatePage> {
       ticketString += 'Occupying multiple spots, ';
     }
     if (_alt) {
-      ticketString += 'Other (${reasonCtrl.text}), ';
+      ticketString += 'Other (contact administration), ';
     }
     return ticketString.substring(0, ticketString.length - 2);
   }
@@ -376,7 +376,7 @@ class _PlatePageState extends State<PlatePage> {
                                 }
                               }
 
-                              await loadingDialog(
+                              Tickets? tickets = await loadingDialog(
                                   context,
                                   administerTicket(),
                                   "Administering ticket...",
